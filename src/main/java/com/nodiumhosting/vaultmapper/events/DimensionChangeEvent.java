@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.events;
 
-import com.nodiumhosting.vaultmapper.gui.overlay.VaultMapOverlay;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
+import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
@@ -20,16 +21,18 @@ public class DimensionChangeEvent {
 
         String dimensionNamespace = event.getTo().location().getNamespace(); // namespace
 
-        VaultMapOverlay.resetMap();
+        VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {
             Direction playerDirection = Objects.requireNonNull(player).getDirection();
             player.sendMessage(new TextComponent("Player direction: " + playerDirection), player.getUUID());
             player.sendMessage(new TextComponent("Player position: " + player.position()), player.getUUID());
-            VaultMapOverlay.enabled = true;
+            VaultMap.enabled = true;
+            VaultMapOverlayRenderer.enabled = true;
         }
         else {
-            VaultMapOverlay.enabled = false;
+            VaultMap.enabled = false;
+            VaultMapOverlayRenderer.enabled = false;
         }
     }
 }
