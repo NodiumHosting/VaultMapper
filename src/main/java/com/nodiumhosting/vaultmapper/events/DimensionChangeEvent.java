@@ -17,6 +17,8 @@ import java.util.Objects;
 public class DimensionChangeEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(PlayerEvent.PlayerChangedDimensionEvent event) {
+        // DOES NOT SEEM TO WORK ON SERVERS, HAVE TO USE SOME KIND OF NETWORKEVENT
+
         String dimensionNamespace = event.getTo().location().getNamespace(); // namespace
 
         VaultMap.resetMap();
