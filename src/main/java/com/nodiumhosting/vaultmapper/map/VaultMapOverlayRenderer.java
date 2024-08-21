@@ -63,7 +63,6 @@ public class VaultMapOverlayRenderer {
         mapStartY = h - mapHeight;
 
         mapRoomWidth = mapWidth / 49;
-        VaultMapper.LOGGER.info("actually did window change stuff");
     };
 
     public static void prep() {
