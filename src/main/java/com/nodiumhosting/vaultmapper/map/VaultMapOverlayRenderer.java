@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.map;
 
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,38 +23,47 @@ public class VaultMapOverlayRenderer {
     static int mapStartY;
     static int mapRoomWidth;
 
+    static boolean prepped = false;
+
 
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Pre event) {
         if (!enabled) return;
+        if (!prepped) prep();
 
         //draw map grid
-        for (int x = -24; x <= 24; x++) {
-            for (int z = -24; z <= 24; z++) {
-                int mapX = mapStartX + (x + 24) * mapRoomWidth;
-                int mapZ = mapStartY + (z + 24) * mapRoomWidth;
+        for (int x = 0; x <= 48; x++) {
+            for (int z = 0; z <= 48; z++) {
+                int mapX = mapStartX + (x) * mapRoomWidth;
+                int mapZ = mapStartY + (z) * mapRoomWidth;
 
-                int[] roomData = VaultMap.mapData[x + 24][z + 24];
+                int[] roomData = VaultMap.mapData[x][z];
 
                 int roomType = roomData[0];
                 int roomSize = roomData[1];
                 int roomVisited = roomData[2];
 
-                if (roomVisited == 1 || roomVisited == 2) GuiComponent.fill(event.getMatrixStack(), mapX - roomSize, mapZ - roomSize, mapX + roomSize, mapZ + roomSize, roomColors.get(roomType));
+                var poseStack = event.getMatrixStack();
 
-                if (roomVisited == 2 || roomVisited == 3) GuiComponent.fill(event.getMatrixStack(), mapX - 1, mapZ - 1, mapX + 1, mapZ + 1, importantRoomColor);
+                if (roomVisited == 1 || roomVisited == 2) GuiComponent.fill(poseStack, mapX - roomSize, mapZ - roomSize, mapX + roomSize, mapZ + roomSize, roomColors.get(roomType));
+
+                if (roomVisited == 2 || roomVisited == 3) GuiComponent.fill(poseStack, mapX - 1, mapZ - 1, mapX + 1, mapZ + 1, importantRoomColor);
             }
         }
     }
 
-    public static void onWindowResize(long window, int width, int height) {
-        int mapWidth = (int) (width * 0.25f);
-        int mapHeight = (int) (width * 0.25f); // this seems weird but it was similar in original implementation
-        mapStartX = width - mapWidth;
-        mapStartY = height - mapHeight;
+    public static void onWindowResize() {
+        int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int h = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+
+        int mapWidth = (int) (w * 0.25f);
+        int mapHeight = (int) (w * 0.25f); // this seems weird but it was similar in original implementation
+        mapStartX = w - mapWidth;
+        mapStartY = h - mapHeight;
 
         mapRoomWidth = mapWidth / 49;
+        VaultMapper.LOGGER.info("actually did window change stuff");
     };
 
     public static void prep() {
@@ -75,5 +85,6 @@ public class VaultMapOverlayRenderer {
         mapStartY = h - mapHeight;
 
         mapRoomWidth = mapWidth / 49;
+        prepped = true;
     }
 }
