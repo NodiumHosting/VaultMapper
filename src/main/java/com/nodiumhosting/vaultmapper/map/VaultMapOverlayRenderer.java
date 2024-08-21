@@ -1,8 +1,10 @@
 package com.nodiumhosting.vaultmapper.map;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,13 +22,33 @@ public class VaultMapOverlayRenderer {
     static boolean prepped = false;
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public static void eventHandler(RenderGameOverlayEvent.Pre event) {
+    public static void eventHandler(RenderGameOverlayEvent.Post event) {
         if (!enabled) return;
         if (!prepped) prep();
 
-        PoseStack poseStack = event.getMatrixStack();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        VaultMap.mapData.forEach((room) -> GuiComponent.fill(poseStack, room.mapStartX, room.mapStartZ, room.mapEndX, room.mapEndZ, room.mapColor.getColor()));
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        VaultMap.mapData.forEach((room) ->{
+            var minX = Math.min(room.mapStartX, room.mapEndX);
+            var maxX = Math.max(room.mapStartX, room.mapEndX);
+            var minZ = Math.min(room.mapStartZ, room.mapEndZ);
+            var maxZ = Math.max(room.mapStartZ, room.mapEndZ);
+            var color = room.mapColor.getColor();
+            bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
+            bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
+            bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
+            bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
+        });
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+
     }
 
     public static void onWindowResize() {
@@ -42,6 +64,7 @@ public class VaultMapOverlayRenderer {
 
     public static void prep() {
         onWindowResize();
+        VaultMapper.LOGGER.info("prep ran");
         prepped = true;
     }
 }
