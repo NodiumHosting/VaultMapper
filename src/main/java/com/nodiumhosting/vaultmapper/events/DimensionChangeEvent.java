@@ -17,18 +17,12 @@ import java.util.Objects;
 public class DimensionChangeEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(PlayerEvent.PlayerChangedDimensionEvent event) {
-        Player player = event.getPlayer();
-
         String dimensionNamespace = event.getTo().location().getNamespace(); // namespace
 
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {
-            Direction playerDirection = Objects.requireNonNull(player).getDirection();
-            player.sendMessage(new TextComponent("Player direction: " + playerDirection), player.getUUID());
-            player.sendMessage(new TextComponent("Player position: " + player.position()), player.getUUID());
             VaultMap.enabled = true;
-            VaultMapOverlayRenderer.enabled = true;
         }
         else {
             VaultMap.enabled = false;

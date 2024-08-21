@@ -13,7 +13,6 @@ public class NetworkEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void loginHandler(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getPlayer().level.dimension().location().getNamespace().equals("the_vault")) {
-            VaultMapOverlayRenderer.enabled = true;
             VaultMap.enabled = true;
         } else {
             VaultMapOverlayRenderer.enabled = false;

@@ -34,7 +34,6 @@ public class VaultMapperCommand {
             if(args.length > 1){
                 if(args[1].equals("enable")){
                     VaultMap.resetMap();
-                    VaultMapOverlayRenderer.enabled = true;
                     VaultMap.enabled = true;
                     player.sendMessage(new TextComponent("Vault Mapper enabled"), player.getUUID());
                 } else if(args[1].equals("disable")){

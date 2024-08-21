@@ -20,12 +20,12 @@ public class VaultMapOverlayRenderer {
         int w = event.getWindow().getGuiScaledWidth();
         int h = event.getWindow().getGuiScaledHeight();
 
-        int mapWidth = (int) (w * 0.2f);
-        int mapHeight = (int) (w * 0.2f);
+        int mapWidth = (int) (w * 0.25f);
+        int mapHeight = (int) (w * 0.25f);
         int mapStartX = w - mapWidth;
         int mapStartY = h - mapHeight;
 
-        int mapRoomWidth = mapWidth / 29;
+        int mapRoomWidth = mapWidth / 49;
 
         HashMap<Integer, Integer> roomColors = new HashMap<>();
         roomColors.put(0, 0xFF000000); // void
@@ -34,16 +34,17 @@ public class VaultMapOverlayRenderer {
         roomColors.put(3, 0xFF0000FF); // room
         roomColors.put(4, 0xFFFF0000); // start
         roomColors.put(5, 0xFF00FF00); // current
+        roomColors.put(6, 0xFFFFD700); // inscription
 
         int importantRoomColor = 0xFFFF00FF;
 
         //draw map grid
-        for (int x = -14; x <= 14; x++) {
-            for (int z = -14; z <= 14; z++) {
-                int mapX = mapStartX + (x + 14) * mapRoomWidth;
-                int mapZ = mapStartY + (z + 14) * mapRoomWidth;
+        for (int x = -24; x <= 24; x++) {
+            for (int z = -24; z <= 24; z++) {
+                int mapX = mapStartX + (x + 24) * mapRoomWidth;
+                int mapZ = mapStartY + (z + 24) * mapRoomWidth;
 
-                int[] roomData = VaultMap.mapData[x + 14][z + 14];
+                int[] roomData = VaultMap.mapData[x + 24][z + 24];
 
                 int roomType = roomData[0];
                 int roomSize = roomData[1];
