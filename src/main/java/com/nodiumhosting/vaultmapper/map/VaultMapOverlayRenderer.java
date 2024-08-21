@@ -26,9 +26,7 @@ public class VaultMapOverlayRenderer {
 
         PoseStack poseStack = event.getMatrixStack();
 
-        VaultMap.mapData.forEach((room) -> {
-            GuiComponent.fill(poseStack, room.mapStartX, room.mapStartZ, room.mapEndX, room.mapEndZ, room.mapColor.getColor());
-        });
+        VaultMap.mapData.forEach((room) -> GuiComponent.fill(poseStack, room.mapStartX, room.mapStartZ, room.mapEndX, room.mapEndZ, room.mapColor.getColor()));
     }
 
     public static void onWindowResize() {
@@ -40,7 +38,7 @@ public class VaultMapOverlayRenderer {
         mapStartY = h - mapSize;
 
         mapRoomWidth = mapSize / 49;
-    };
+    }
 
     public static void prep() {
         onWindowResize();
