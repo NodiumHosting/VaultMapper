@@ -23,9 +23,6 @@ public class VaultMapperCommand {
                 .then(Commands.literal("reset")
                         .executes(VaultMapperCommand::execute)
                 )
-                .then(Commands.literal("important")
-                        .executes(VaultMapperCommand::execute)
-                )
         );
     }
     private static int execute(CommandContext<CommandSourceStack> command){
@@ -43,15 +40,6 @@ public class VaultMapperCommand {
                 } else if(args[1].equals("reset")){
                     VaultMap.resetMap();
                     player.sendMessage(new TextComponent("Vault Mapper reset"), player.getUUID());
-                } else if (args[1].equals("important")) {
-                    int x = (int) Math.floor(player.getX() / 47);
-                    int z = (int) Math.floor(player.getZ() / 47);
-                    try {
-                        VaultMap.toggleImportantRoom(x, z);
-                        player.sendMessage(new TextComponent("Toggled important room at " + x + ", " + z), player.getUUID());
-                    } catch (NumberFormatException e) {
-                        player.sendMessage(new TextComponent("Invalid coordinates"), player.getUUID());
-                    }
                 } else {
                     player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
                 }

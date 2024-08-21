@@ -22,35 +22,12 @@ import java.util.Objects;
 public class ChatEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(ClientChatEvent event) {
-        if (!event.getMessage().startsWith("!nbt")) return;
+        if (!event.getMessage().startsWith("!test")) return;
         event.setCanceled(true);
 
         Player player = Minecraft.getInstance().player;
+        if (player == null) return;
 
-        player.sendMessage(new TextComponent("e"), player.getUUID());
-
-        Direction playerDirection = Objects.requireNonNull(player).getDirection();
-
-//        player.sendMessage(new TextComponent("Player direction: " + playerDirection), player.getUUID());
-
-        HashMap<Direction, BlockPos> hologramBlocks = new HashMap<>();
-        hologramBlocks.put(Direction.NORTH, new BlockPos(23, 27, 13));
-        hologramBlocks.put(Direction.EAST, new BlockPos(33, 27, 23));
-        hologramBlocks.put(Direction.WEST, new BlockPos(13, 27, 23));
-        hologramBlocks.put(Direction.SOUTH, new BlockPos(23, 27, 33));
-
-        BlockPos hologramBlockPos = hologramBlocks.get(playerDirection);
-
-//        player.sendMessage(new TextComponent("Hologram block position: " + hologramBlockPos), player.getUUID());
-
-        BlockState hologramBlockState = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).clientLevel).getChunk(hologramBlockPos).getBlockState(hologramBlockPos);
-        if (!Objects.equals(hologramBlockState.getBlock().getRegistryName(), new ResourceLocation("the_vault:hologram"))) {
-            return;
-        }
-//        player.sendMessage(new TextComponent("Hologram block registry name: " + hologramBlockState.getBlock().getRegistryName()), player.getUUID()); // the_vault:hologram
-
-        BlockEntity hologramBlock = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockEntity(hologramBlockPos);
-
-        player.sendMessage(new TextComponent("Hologram block: " + Objects.requireNonNull(hologramBlock).serializeNBT()), player.getUUID());
+        player.sendMessage(new TextComponent("Test command received"), player.getUUID());
     }
 }

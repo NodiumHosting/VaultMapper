@@ -19,6 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer.*;
+
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMap {
     public static boolean enabled = false;
@@ -82,7 +84,6 @@ public class VaultMap {
 
     private static int[] currentRoom = null;
     private static List<int[]> visitedRooms = new ArrayList<>();
-    private static List<int[]> importantRooms = new ArrayList<>();
     private static List<int[]> inscriptionRooms = new ArrayList<>();
 
     private static boolean addVisitedRoom(int x, int z) {
@@ -93,30 +94,21 @@ public class VaultMap {
         return true;
     }
 
-    public static void toggleImportantRoom(int x, int z) {
-        if (importantRooms.stream().anyMatch(room -> Arrays.equals(room, new int[]{x, z}))) {
-            importantRooms = importantRooms.stream().filter(room -> !Arrays.equals(room, new int[]{x, z})).collect(Collectors.toList());
-        } else {
-            importantRooms.add(new int[]{x, z});
-        }
-    }
-
     public static void resetMap() {
         vaultDirection = null;
         hologramData = null;
         hologramChecked = false;
         visitedRooms.clear();
-        importantRooms.clear();
         inscriptionRooms.clear();
         currentRoom = null;
-        mapData = new int[49][49][3];
+        mapData = new ArrayList<>();
     }
 
     private static boolean isVoidRoom(int x, int z) {
         return Math.abs(x) % 2 == 1 && Math.abs(z) % 2 == 1;
     }
 
-    public static int[][][] mapData = new int[49][49][3]; // x, z matrix of [type (0 = void, 1 = tunnelX, 2 = tunnelZ, 3 = room, 4 = start, 5 = current, 6 = inscription), size (0 = 0x0, = 3x3, 2 = 5x5, 3 = 7x7), visited (0 = false, 1 = true, 2 = true, important, 3 = false, important)]
+    public static List<VaultMapRoom> mapData = new ArrayList<>();
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
@@ -137,25 +129,8 @@ public class VaultMap {
 
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
-        //start room will give 0,0
 
-        boolean isStartRoom = playerRoomX == 0 && playerRoomZ == 0;
-        boolean isVoid = Math.abs(playerRoomX) % 2 == 1 && Math.abs(playerRoomZ) % 2 == 1;
-        boolean isTunnelX = Math.abs(playerRoomX) % 2 == 1 && playerRoomZ % 2 == 0;
-        boolean isTunnelZ = playerRoomX % 2 == 0 && Math.abs(playerRoomZ) % 2 == 1;
-        boolean isTunnel = isTunnelX || isTunnelZ;
-        boolean isRoom = !isVoid && !isTunnel;
-
-        List<String> roomTypes = new ArrayList<>();
-        if (isStartRoom) roomTypes.add("[Start]");
-        if (isVoid) roomTypes.add("[Void]");
-        if (isTunnelX) roomTypes.add("[Tunnel (X)]");
-        if (isTunnelZ) roomTypes.add("[Tunnel (Z)]");
-        if (isRoom) roomTypes.add("[Room]");
-
-        String roomTypeString = " - " + String.join(", ", roomTypes);
-
-        Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + roomTypeString + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)")), false);
+        Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + mapData.size()), false);
 
         boolean mapChanged = addVisitedRoom(playerRoomX, playerRoomZ);
         if (!mapChanged) return;
@@ -169,60 +144,65 @@ public class VaultMap {
             return;
         }
 
+        mapData.clear();
+
         for (int x = -24; x <= 24; x++) {
             for (int z = -24; z <= 24; z++) {
-                final int[] r = new int[]{x, z};
-                boolean isImportant = importantRooms.stream().anyMatch(room -> Arrays.equals(room, r));
-                boolean isInscriptionRoom = inscriptionRooms.stream().anyMatch(room -> Arrays.equals(room, r));
+                int mapX = mapStartX + (x + 24) * mapRoomWidth;
+                int mapZ = mapStartY + (z + 24) * mapRoomWidth;
+                VaultMapRoom vmr = null;
 
                 if (isVoidRoom(x, z)) {
-                    mapData[x + 24][z + 24] = new int[]{0, 0, 0};
                     continue;
                 }
+
+                final int[] r = new int[]{x, z};
+                boolean isInscriptionRoom = inscriptionRooms.stream().anyMatch(room -> Arrays.equals(room, r));
+                boolean isStartRoom = x == 0 && z == 0;
+                boolean isRoom = Math.abs(x) % 2 == 0 && Math.abs(z) % 2 == 0;
+                boolean isTunnelX = Math.abs(x) % 2 == 1 && z % 2 == 0;
+                boolean isTunnelZ = x % 2 == 0 && Math.abs(z) % 2 == 1;
 
                 if (Arrays.equals(new int[]{x, z}, currentRoom)) {
-                    if (isTunnel) {
-                        mapData[x + 24][z + 24] = new int[]{5, 1, isImportant ? 2 : 1};
+                    if (isTunnelX) {
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.CURRENT, mapX - 2, mapZ - 1, mapX + 2, mapZ + 1);
+                    } else if (isTunnelZ) {
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.CURRENT, mapX - 1, mapZ - 2, mapX + 1, mapZ + 2);
                     } else if (isStartRoom) {
-                        mapData[x + 24][z + 24] = new int[]{5, 3, isImportant ? 2 : 1};
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.CURRENT, mapX - 3, mapZ - 3, mapX + 3, mapZ + 3);
                     } else if (isRoom) {
-                        mapData[x + 24][z + 24] = new int[]{5, 2, isImportant ? 2 : 1};
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.CURRENT, mapX - 2, mapZ - 2, mapX + 2, mapZ + 2);
                     }
+
+                    mapData.add(vmr);
                     continue;
                 }
 
-                if (x == 0 && z == 0) {
-                    mapData[x + 24][z + 24] = new int[]{4, 3, isImportant ? 2 : 1};
+                if (isStartRoom) {
+                    vmr = new VaultMapRoom(x, z, VaultMapRoomColor.START, mapX - 3, mapZ - 3, mapX + 3, mapZ + 3);
+
+                    mapData.add(vmr);
                     continue;
                 }
 
-                boolean mapTunnelX = Math.abs(x) % 2 == 1 && z % 2 == 0;
-                boolean mapTunnelZ = x % 2 == 0 && Math.abs(z) % 2 == 1;
+                if (isInscriptionRoom) {
+                    vmr = new VaultMapRoom(x, z, VaultMapRoomColor.INSCRIPTION, mapX - 2, mapZ - 2, mapX + 2, mapZ + 2);
+
+                    mapData.add(vmr);
+                    continue;
+                }
 
                 if (visitedRooms.stream().anyMatch(room -> Arrays.equals(room, r))) {
-                    if (mapTunnelX) {
-                        mapData[x + 24][z + 24] = new int[]{1, 1, isImportant ? 2 : 1};
-                    } else if (mapTunnelZ) {
-                        mapData[x + 24][z + 24] = new int[]{2, 1, isImportant ? 2 : 1};
+                    if (isTunnelX) {
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.TUNNEL, mapX - 2, mapZ - 1, mapX + 2, mapZ + 1);
+                    } else if (isTunnelZ) {
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.TUNNEL, mapX - 1, mapZ - 2, mapX + 1, mapZ + 2);
                     } else {
-                        if (isInscriptionRoom) {
-                            mapData[x + 24][z + 24] = new int[]{6, 2, isImportant ? 2 : 1};
-                        } else {
-                            mapData[x + 24][z + 24] = new int[]{3, 2, isImportant ? 2 : 1};
-                        }
+                        vmr = new VaultMapRoom(x, z, VaultMapRoomColor.ROOM, mapX - 2, mapZ - 2, mapX + 2, mapZ + 2);
                     }
-                } else {
-                    if (mapTunnelX) {
-                        mapData[x + 24][z + 24] = new int[]{1, 1, isImportant ? 3 : 0};
-                    } else if (mapTunnelZ) {
-                        mapData[x + 24][z + 24] = new int[]{2, 1, isImportant ? 3 : 0};
-                    } else {
-                        if (isInscriptionRoom) {
-                            mapData[x + 24][z + 24] = new int[]{6, 2, isImportant ? 2 : 1};
-                        } else {
-                            mapData[x + 24][z + 24] = new int[]{3, 2, isImportant ? 3 : 0};
-                        }
-                    }
+
+                    mapData.add(vmr);
+                    continue;
                 }
             }
         }

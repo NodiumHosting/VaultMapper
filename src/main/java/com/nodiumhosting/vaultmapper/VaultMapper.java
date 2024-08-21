@@ -3,15 +3,12 @@ package com.nodiumhosting.vaultmapper;
 import com.mojang.logging.LogUtils;
 import com.nodiumhosting.vaultmapper.commands.VaultMapperCommand;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixins;
 
@@ -38,9 +35,9 @@ public class VaultMapper
     @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ModEventListener {
         @SubscribeEvent
-        public static void registerCommands(RegisterCommandsEvent event){
+        public static void registerClientCommands(RegisterClientCommandsEvent event){
             VaultMapperCommand.register(event.getDispatcher());
-            LOGGER.info("doin cmd stuff");
+            LOGGER.info("registered client commands");
         }
     }
 
