@@ -112,6 +112,10 @@ public class VaultMap {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
+        doMapUpdate();
+    }
+
+    public static void doMapUpdate() {
         if (!enabled) return;
 
         Player player = Minecraft.getInstance().player;
@@ -123,9 +127,9 @@ public class VaultMap {
         spawnLocations.put(new Vec3(14.5f, 29.0f, 23.5f), Direction.WEST);
         spawnLocations.put(new Vec3(23.5f, 29.0f, 32.5f), Direction.SOUTH);
 
-        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return;
+        //if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return;
         if (spawnLocations.keySet().stream().anyMatch(spawnLocation -> spawnLocation.x == player.getX() && spawnLocation.z == player.getZ())) return;
-        if (!VaultMapOverlayRenderer.enabled) VaultMapOverlayRenderer.enabled = true;
+        //if (!VaultMapOverlayRenderer.enabled) VaultMapOverlayRenderer.enabled = true;
 
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
