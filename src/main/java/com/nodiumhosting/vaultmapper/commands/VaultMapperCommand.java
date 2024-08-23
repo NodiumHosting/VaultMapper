@@ -23,13 +23,19 @@ public class VaultMapperCommand {
                 .then(Commands.literal("reset")
                         .executes(VaultMapperCommand::execute)
                 )
+                .then(Commands.literal("enabledebug")
+                        .executes(VaultMapperCommand::execute)
+                )
+                .then(Commands.literal("disabledebug")
+                        .executes(VaultMapperCommand::execute)
+                )
         );
     }
     private static int execute(CommandContext<CommandSourceStack> command){
         if(command.getSource().getEntity() instanceof Player player) {
             String[] args = command.getInput().split(" ");
             if(args.length > 1){
-                if(args[1].equals("enable")){
+                if (args[1].equals("enable")) {
                     VaultMap.resetMap();
                     VaultMap.enabled = true;
                     player.sendMessage(new TextComponent("Vault Mapper enabled"), player.getUUID());
@@ -40,6 +46,10 @@ public class VaultMapperCommand {
                 } else if(args[1].equals("reset")){
                     VaultMap.resetMap();
                     player.sendMessage(new TextComponent("Vault Mapper reset"), player.getUUID());
+                } else if(args[1].equals("enabledebug")){
+                    VaultMap.debug = true;
+                } else if(args[1].equals("disabledebug")){
+                    VaultMap.debug = false;
                 } else {
                     player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
                 }

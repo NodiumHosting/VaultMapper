@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class NetworkEvent {
+    // NEEDS MORE TESTING
+
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void loginHandler(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getPlayer().level.dimension().location().getNamespace().equals("the_vault")) {

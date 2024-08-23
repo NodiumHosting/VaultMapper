@@ -2,6 +2,7 @@
 A mod that adds an on-screen minimap of the vault you're in for the Vault Hunters 3rd Edition modpack.
 
 ### Planned Features (todo)
+- [ ] Make the map more easily visible (by adding a bg or changing colors or something)
 - [ ] Add an option to rotate the map based on the vault's facing direction or the player's facing direction
 - [x] Grab the inscription data from the hologram block and display it on the map
  - [ ] Show the inscription icons on the map
@@ -19,4 +20,5 @@ A mod that adds an on-screen minimap of the vault you're in for the Vault Hunter
 
 ### Known Issues
 - Tunnels are partly drawn over the start room when the vault is facing east or south
-- The map is not automatically enabled when entering a vault on a server - you can enable it manually by using the `/vaultmapper enable` command
+- If you move before the chunk with the hologram block loads, inscriptions aren't detected
+- (Server Only) If you disconnect right after entering a vault before the inscriptions are detected, when you reconnect the inscriptions won't be detected

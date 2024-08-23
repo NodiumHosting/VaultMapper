@@ -17,13 +17,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer.*;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMap {
     public static boolean enabled = false;
+    public static boolean debug = false;
 
     public static Direction vaultDirection = null;
     private static CompoundTag hologramData = null;
@@ -52,7 +52,7 @@ public class VaultMap {
             BlockEntity hologramBlock = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockEntity(hologramBlockPos);
             CompoundTag hologramData = Objects.requireNonNull(hologramBlock).serializeNBT();
 
-            Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
+            if (debug) Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
 
             vaultDirection = direction;
 
@@ -111,11 +111,8 @@ public class VaultMap {
     public static List<VaultMapRoom> mapData = new ArrayList<>();
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public static void eventHandler(MovementInputUpdateEvent event) {
-        doMapUpdate();
-    }
 
-    public static void doMapUpdate() {
+    public static void eventHandler(MovementInputUpdateEvent event) {
         if (!enabled) return;
 
         Player player = Minecraft.getInstance().player;
@@ -127,14 +124,16 @@ public class VaultMap {
         spawnLocations.put(new Vec3(14.5f, 29.0f, 23.5f), Direction.WEST);
         spawnLocations.put(new Vec3(23.5f, 29.0f, 32.5f), Direction.SOUTH);
 
-        //if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return;
+        // this is a hack to prevent trying to get the hologram data before it's loaded
+        // will change at some point
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return;
         if (spawnLocations.keySet().stream().anyMatch(spawnLocation -> spawnLocation.x == player.getX() && spawnLocation.z == player.getZ())) return;
-        //if (!VaultMapOverlayRenderer.enabled) VaultMapOverlayRenderer.enabled = true;
+        if (!VaultMapOverlayRenderer.enabled) VaultMapOverlayRenderer.enabled = true;
 
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
-        Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + mapData.size()), false);
+        if (debug) Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + mapData.size()), false);
 
         boolean mapChanged = addVisitedRoom(playerRoomX, playerRoomZ);
         if (!mapChanged) return;
