@@ -22,3 +22,6 @@ A mod that adds an on-screen minimap of the vault you're in for the Vault Hunter
 - Tunnels are partly drawn over the start room when the vault is facing east or south
 - If you move before the chunk with the hologram block loads, inscriptions aren't detected
 - (Server Only) If you disconnect right after entering a vault before the inscriptions are detected, when you reconnect the inscriptions won't be detected
+
+# Ad
+Planning to host a Vault Hunters server? With [Nodium Hosting](https://nodiumhosting.com/), you can set up and manage your own game server with ease. Plus, if you [use the code `VAULTMAPPER300`](https://billing.nodiumhosting.com/store?voucher=VAULTMAPPER300), you'll receive 300 free credits to get started!
