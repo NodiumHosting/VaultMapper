@@ -38,6 +38,7 @@ public class VaultMapperCommand {
                 if (args[1].equals("enable")) {
                     VaultMap.resetMap();
                     VaultMap.enabled = true;
+                    VaultMapOverlayRenderer.enabled = true;
                     player.sendMessage(new TextComponent("Vault Mapper enabled"), player.getUUID());
                 } else if(args[1].equals("disable")){
                     VaultMapOverlayRenderer.enabled = false;
