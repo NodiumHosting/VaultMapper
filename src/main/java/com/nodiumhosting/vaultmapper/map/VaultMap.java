@@ -2,16 +2,23 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
@@ -32,6 +39,9 @@ public class VaultMap {
         markedRooms = new ArrayList<>();
         startRoom = new VaultCell(CellType.ROOM, 0, 0);
         currentRoom = new VaultCell();
+        hologramChecked = false;
+        hologramData = null;
+
     }
 
     private static boolean isCurrentRoom(int x, int z) {
@@ -94,6 +104,9 @@ public class VaultMap {
 
     }
 
+    static CompoundTag hologramData;
+    static boolean hologramChecked;
+
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
         if (!enabled) return;
@@ -101,12 +114,20 @@ public class VaultMap {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        if (!hologramChecked) {
+            if (player.level.isLoaded(player.getOnPos())) {
+                if (hologramData == null && player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
+                    hologramData = getHologramData();
+                    hologramChecked = true;
+                }
+            }
+        }
+
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
         if (isWithinBounds(playerRoomX, playerRoomZ)) {
-            //VaultMapper.LOGGER.info("within bounds");
-            if (debug) Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Vault Map Data Size: " + cells.size()), false);
+            if (debug) Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size()), false);
             if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
                 updateMap();
             }
@@ -152,5 +173,60 @@ public class VaultMap {
             return;
         }
         VaultMapOverlayRenderer.enabled = true;
+    }
+
+
+
+    private static CompoundTag getHologramData() {
+        HashMap<BlockPos, Direction> hologramBlocks = new HashMap<>();
+        hologramBlocks.put(new BlockPos(23, 27, 13), Direction.NORTH);
+        hologramBlocks.put(new BlockPos(33, 27, 23), Direction.EAST);
+        hologramBlocks.put(new BlockPos(13, 27, 23), Direction.WEST);
+        hologramBlocks.put(new BlockPos(23, 27, 33), Direction.SOUTH);
+
+        CompoundTag hologramNbt = null;
+
+        // get the required data from hologram
+        for (Map.Entry<BlockPos, Direction> entry : hologramBlocks.entrySet()) {
+            BlockPos hologramBlockPos = entry.getKey();
+            Direction direction = entry.getValue();
+
+            BlockState hologramBlockState = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockState(hologramBlockPos);
+            if (!Objects.equals(hologramBlockState.getBlock().getRegistryName(), new ResourceLocation("the_vault:hologram"))) {
+                continue;
+            }
+
+            BlockEntity hologramBlock = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockEntity(hologramBlockPos);
+            CompoundTag hologramData = Objects.requireNonNull(hologramBlock).serializeNBT();
+
+            if (debug) Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
+
+            // vaultDirection = direction;
+
+            hologramNbt = hologramData;
+        }
+
+        if (hologramNbt == null) return null;
+
+        Tag children = hologramNbt.getCompound("tree").get("children");
+        ListTag childrenList = (ListTag) children;
+
+        // extract the inscription room locations and add them to the inscription room list
+        childrenList.forEach(tag -> {
+            CompoundTag compound = (CompoundTag) tag;
+            CompoundTag stack = compound.getCompound("stack");
+            String id = stack.getString("id");
+            int model = stack.getCompound("tag").getCompound("data").getInt("model");
+            CompoundTag translation = compound.getCompound("translation");
+            byte translationX = translation.getByte("x");
+            byte translationY = translation.getByte("y");
+
+            int translationXInt = translationX;
+            int translationYInt = translationY;
+
+            inscriptionRooms.add(new VaultCell(CellType.ROOM, translationXInt*2, translationYInt*-2));
+        });
+
+        return hologramNbt;
     }
 }

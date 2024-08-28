@@ -55,6 +55,11 @@ public class VaultMapOverlayRenderer {
             renderCell(bufferBuilder, cell, 0xFFFF00FF);
         }));
 
+        // inscription rooms
+        VaultMap.inscriptionRooms.forEach((cell) -> {
+            renderCell(bufferBuilder, cell, 0xFFFFFF00);
+        });
+
         // current room
         //renderCell(bufferBuilder, VaultMap.currentRoom, 0xFF00FF00);
 
