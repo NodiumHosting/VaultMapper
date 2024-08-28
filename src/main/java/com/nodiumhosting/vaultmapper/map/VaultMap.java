@@ -118,6 +118,29 @@ public class VaultMap {
 
             cells.add(newCell);
         }
+        sendMap();
+    }
+
+    private static void sendMap() {
+        VaultMap.cells.forEach((cell) ->{
+            VaultMapper.wsServer.sendData(cell, "#0000FF");
+        });
+
+        // start room
+        VaultMapper.wsServer.sendData(VaultMap.startRoom, "#FF0000");
+
+        // inscription rooms
+        VaultMap.inscriptionRooms.forEach((cell) -> {
+            VaultMapper.wsServer.sendData(cell, "#FFFF00");
+        });
+
+        // marked rooms
+        VaultMap.markedRooms.forEach((cell -> {
+            VaultMapper.wsServer.sendData(cell, "#FF00FF");
+        }));
+
+        VaultMapper.wsServer.sendData(VaultMap.currentRoom, "#00FF00");
+
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
