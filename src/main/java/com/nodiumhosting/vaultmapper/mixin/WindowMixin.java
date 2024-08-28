@@ -2,7 +2,6 @@ package com.nodiumhosting.vaultmapper.mixin;
 
 import com.mojang.blaze3d.platform.Window;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
-import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRendererold;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
