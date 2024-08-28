@@ -1,5 +1,10 @@
 name: Build and upload jar to release
 
+github-token:
+  permissions:
+    contents: write
+    contents-reason: change release assets (upload jar)
+
 on:
   release:
     types: [created]
