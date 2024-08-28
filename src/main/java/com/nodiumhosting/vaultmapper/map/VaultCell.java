@@ -1,10 +1,10 @@
 package com.nodiumhosting.vaultmapper.map;
 
 public class VaultCell {
-    CellType type;
-    TunnelType tType;
-    int x;
-    int z;
+    public CellType type;
+    public TunnelType tType;
+    public int x;
+    public int z;
 
     public VaultCell() {
         type = CellType.NONE;

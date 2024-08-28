@@ -95,12 +95,32 @@ public class VaultMap {
             newCell = new VaultCell();
         }
         currentRoom = newCell;
-        VaultMapper.LOGGER.info(newCell.toString());
 
         if (isNewCell(newCell, cells)) {
             cells.add(newCell);
         }
-        VaultMapper.LOGGER.info(cells.toString());
+        sendMap();
+    }
+
+    private static void sendMap() {
+        VaultMap.cells.forEach((cell) ->{
+            VaultMapper.wsServer.sendData(cell, "#0000FF");
+        });
+
+        // start room
+        VaultMapper.wsServer.sendData(VaultMap.startRoom, "#FF0000");
+
+        // inscription rooms
+        VaultMap.inscriptionRooms.forEach((cell) -> {
+            VaultMapper.wsServer.sendData(cell, "#FFFF00");
+        });
+
+        // marked rooms
+        VaultMap.markedRooms.forEach((cell -> {
+            VaultMapper.wsServer.sendData(cell, "#FF00FF");
+        }));
+
+        VaultMapper.wsServer.sendData(VaultMap.currentRoom, "#00FF00");
 
     }
 

@@ -16,12 +16,13 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 
-version = '1.1'
+version = '1.0'
 group = 'com.nodiumhosting.vaultmapper' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'vaultmapper'
 
@@ -168,6 +169,8 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
@@ -200,6 +203,7 @@ processResources {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
+    archiveClassifier = "slim"
     manifest {
         attributes([
                 "Specification-Title"     : "vaultmapper",
@@ -219,6 +223,23 @@ jar {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
+
+shadowJar {
+    // Only shadow fluent-hc
+    dependencies {
+        include(dependency('org.java-websocket:Java-WebSocket:.*'))
+        include(dependency('org.spongepowered:mixin:0.8.4:processor'))
+    }
+
+    // Relocate fluent-hc to prevent conflicts with other mods that include it
+    relocate 'org.java_websocket', "${project.group}.relocated.org.java_websocket"
+
+    classifier '' // Replace the default JAR
+}
+
+reobf {
+    shadowJar {} // Reobfuscate the shadowed JAR
+}
 
 publishing {
     publications {
