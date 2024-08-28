@@ -1,5 +1,8 @@
 name: Build and upload jar to release
 
+permissions:
+  contents: write
+
 on:
   release:
     types: [created]
