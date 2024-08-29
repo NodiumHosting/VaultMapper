@@ -95,13 +95,10 @@ public class VaultMap {
             newCell = new VaultCell();
         }
         currentRoom = newCell;
-        VaultMapper.LOGGER.info(newCell.toString());
 
         if (isNewCell(newCell, cells)) {
             cells.add(newCell);
         }
-        VaultMapper.LOGGER.info(cells.toString());
-
     }
 
     static CompoundTag hologramData;
@@ -147,6 +144,10 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
+        if (playerRoomX == 0 && playerRoomZ == 0) {
+            player.sendMessage(new TextComponent("You can't mark the start room"), player.getUUID());
+            return;
+        }
 
         if (getCellType(playerRoomX, playerRoomZ) == CellType.ROOM) {
             VaultCell new_cell = new VaultCell(CellType.ROOM, playerRoomX, playerRoomZ);
@@ -154,7 +155,10 @@ public class VaultMap {
                 markedRooms.add(new_cell);
                 player.sendMessage(new TextComponent("The room has been marked"), player.getUUID());
             } else {
-                player.sendMessage(new TextComponent("This room is already marked"), player.getUUID());
+                markedRooms.removeIf((cell) -> {
+                    return cell.type == CellType.ROOM && cell.x == playerRoomX && cell.z == playerRoomZ;
+                });
+                player.sendMessage(new TextComponent("The room has been unmarked"), player.getUUID());
             }
         } else {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
