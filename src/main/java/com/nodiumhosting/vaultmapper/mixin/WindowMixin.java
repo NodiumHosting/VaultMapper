@@ -13,4 +13,9 @@ public class WindowMixin {
     private void onResizeWindow(CallbackInfo ci) {
         VaultMapOverlayRenderer.onWindowResize();
     }
+
+    @Inject(method = "setGuiScale", at=@At("RETURN"))
+    private void onScaleChange(CallbackInfo ci) {
+        VaultMapOverlayRenderer.onWindowResize();
+    }
 }
