@@ -21,6 +21,8 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Math.abs;
+
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMap {
     public static boolean enabled;
@@ -33,6 +35,12 @@ public class VaultMap {
     static VaultCell startRoom = new VaultCell();
     static VaultCell currentRoom = new VaultCell(); // might not be needed
 
+    static int defaultMapSize = 21; // map size in cells
+    static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
+
+    static int currentMapSize = defaultMapSize;
+    static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
+
     public static void resetMap() {
         cells = new ArrayList<>();
         inscriptionRooms = new ArrayList<>();
@@ -42,6 +50,8 @@ public class VaultMap {
         hologramChecked = false;
         hologramData = null;
 
+        currentMapSize = defaultMapSize;
+        currentCoordLimit = defaultCoordLimit;
     }
 
     private static boolean isCurrentRoom(int x, int z) {
@@ -53,9 +63,9 @@ public class VaultMap {
     }
     
     private static CellType getCellType(int x, int z) {
-        if (Math.abs(x) % 2 == 0 && Math.abs(z) % 2 == 0) { // room
+        if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
             return CellType.ROOM;
-        } else if (Math.abs(x) % 2 == 1 && Math.abs(z) % 2 == 1) { //void
+        } else if (abs(x) % 2 == 1 && abs(z) % 2 == 1) { //void
             return CellType.NONE;
         } else {
             return CellType.TUNNEL;
@@ -63,7 +73,7 @@ public class VaultMap {
     }
 
     private static TunnelType getTunnelType(int x, int z) {
-        if (Math.abs(x) % 2 == 1 && z % 2 == 0) {
+        if (abs(x) % 2 == 1 && z % 2 == 0) {
             return TunnelType.X_FACING;
         } else {
             return TunnelType.Z_FACING;
@@ -97,6 +107,11 @@ public class VaultMap {
         currentRoom = newCell;
 
         if (isNewCell(newCell, cells)) {
+            if (currentRoom.x > currentCoordLimit || currentRoom.z > currentCoordLimit) { // resize map
+                currentMapSize += 4;
+                currentCoordLimit += 2;
+            }
+
             cells.add(newCell);
         }
     }

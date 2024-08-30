@@ -69,6 +69,10 @@ public class VaultMapOverlayRenderer {
         // player thingy
         int mapX = mapStartX + (VaultMap.currentRoom.x + 42) * mapRoomWidth;
         int mapZ = mapStartZ + (VaultMap.currentRoom.z + 42) * mapRoomWidth;
+        int centerX = bottomRightAnchorX - (VaultMap.currentMapSize * mapRoomWidth)/2;
+        int centerZ = bottomRightAnchorZ - (VaultMap.currentMapSize * mapRoomWidth)/2;
+        mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth;
+        mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth;
         var triag = getRotatedTriangle();
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         bufferBuilder.vertex(triag.get(0)+mapX+3, triag.get(1)+mapZ, 0).color(0xFF00FF00).endVertex();
@@ -131,6 +135,10 @@ public class VaultMapOverlayRenderer {
         if (cell.type != CellType.NONE) {
             int mapX = mapStartX + (cell.x + 42) * mapRoomWidth;
             int mapZ = mapStartZ + (cell.z + 42) * mapRoomWidth;
+            int centerX = bottomRightAnchorX - (VaultMap.currentMapSize * mapRoomWidth)/2;
+            int centerZ = bottomRightAnchorZ - (VaultMap.currentMapSize * mapRoomWidth)/2;
+            mapX = centerX + cell.x * mapRoomWidth;
+            mapZ = centerZ + cell.z * mapRoomWidth;
             int startX;
             int startZ;
             int endX;
@@ -165,15 +173,27 @@ public class VaultMapOverlayRenderer {
         }
     }
 
+    static int bottomRightAnchorX = 0;
+    static int bottomRightAnchorZ = 0;
+
     public static void onWindowResize() {
         int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        VaultMapper.LOGGER.info("Width scaled: "+w);
         int h = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        VaultMapper.LOGGER.info("Height scaled: "+h);
+
+        bottomRightAnchorX = w - 40;
+        bottomRightAnchorZ = h - 40;
 
         int mapSize = (int) (w * 0.25f);
+        VaultMapper.LOGGER.info("Map size: "+mapSize);
         mapStartX = w - mapSize;
+        VaultMapper.LOGGER.info("Map start X: "+mapStartX);
         mapStartZ = h - mapSize;
+        VaultMapper.LOGGER.info("Map start Z: "+mapStartZ);
 
         mapRoomWidth = mapSize / 49;
+        VaultMapper.LOGGER.info("Room width: "+mapRoomWidth);
     }
 
     public static void prep() {
