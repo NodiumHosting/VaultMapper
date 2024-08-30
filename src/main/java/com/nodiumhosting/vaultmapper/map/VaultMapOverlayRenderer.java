@@ -164,6 +164,10 @@ public class VaultMapOverlayRenderer {
             bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
         }
     }
+    public static void refreshCenter() {
+        centerX = bottomRightAnchorX - (VaultMap.currentMapSize * mapRoomWidth)/2;
+        centerZ = bottomRightAnchorZ - (VaultMap.currentMapSize * mapRoomWidth)/2;
+    }
 
     static int bottomRightAnchorX = 0;
     static int bottomRightAnchorZ = 0;
@@ -175,10 +179,9 @@ public class VaultMapOverlayRenderer {
         bottomRightAnchorX = w - 40;
         bottomRightAnchorZ = h - 40;
 
-        centerX = bottomRightAnchorX - (VaultMap.currentMapSize * mapRoomWidth)/2;
-        centerZ = bottomRightAnchorZ - (VaultMap.currentMapSize * mapRoomWidth)/2;
-
         int mapSize = (int) (w * 0.25f);
+
+        refreshCenter();
 
         mapRoomWidth = mapSize / 49;
     }
