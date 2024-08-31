@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,6 +41,8 @@ public class VaultMap {
 
     static int currentMapSize = defaultMapSize;
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
+    static CompoundTag hologramData;
+    static boolean hologramChecked;
 
     public static void resetMap() {
         cells = new ArrayList<>();
@@ -61,7 +64,7 @@ public class VaultMap {
     private static boolean isWithinBounds(int x, int z) {
         return x >= -24 && x <= 24 && z >= -24 && z <= 24;
     }
-    
+
     private static CellType getCellType(int x, int z) {
         if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
             return CellType.ROOM;
@@ -117,9 +120,6 @@ public class VaultMap {
         }
     }
 
-    static CompoundTag hologramData;
-    static boolean hologramChecked;
-
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
         if (!enabled) return;
@@ -140,7 +140,8 @@ public class VaultMap {
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
         if (isWithinBounds(playerRoomX, playerRoomZ)) {
-            if (debug) Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size()), false);
+            if (debug)
+                Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size()), false);
             if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
                 updateMap();
             }
@@ -183,7 +184,7 @@ public class VaultMap {
 
     public static void toggleRendering() {
         Player player = Minecraft.getInstance().player;
-        if (VaultMapOverlayRenderer.enabled){
+        if (VaultMapOverlayRenderer.enabled) {
             VaultMapOverlayRenderer.enabled = false;
             return;
         }
@@ -194,7 +195,6 @@ public class VaultMap {
         }
         VaultMapOverlayRenderer.enabled = true;
     }
-
 
 
     private static CompoundTag getHologramData() {
@@ -219,7 +219,8 @@ public class VaultMap {
             BlockEntity hologramBlock = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockEntity(hologramBlockPos);
             CompoundTag hologramData = Objects.requireNonNull(hologramBlock).serializeNBT();
 
-            if (debug) Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
+            if (debug)
+                Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
 
             // vaultDirection = direction;
 
@@ -244,9 +245,32 @@ public class VaultMap {
             int translationXInt = translationX;
             int translationYInt = translationY;
 
-            inscriptionRooms.add(new VaultCell(CellType.ROOM, translationXInt*2, translationYInt*-2));
+            inscriptionRooms.add(new VaultCell(CellType.ROOM, translationXInt * 2, translationYInt * -2));
         });
 
         return hologramNbt;
+    }
+
+    /**
+     * Gets the block in cell on specific coordinate
+     *
+     * @param cellX  X coord of cell
+     * @param cellZ  Z coord of cell
+     * @param blockX X coord of block inside a cell
+     * @param blockZ Z coord of block inside a cell
+     * @return Block or null if unavailable
+     */
+    public static Block getCellBlock(int cellX, int cellZ, int blockX, int blockY, int blockZ) {
+        Player player = Minecraft.getInstance().player;
+
+        if (player == null) return null;
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return null;
+
+        int xCoord = cellX * 49 + blockX;
+        int zCoord = cellZ * 49 + blockZ;
+
+        if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
+
+        return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
     }
 }
