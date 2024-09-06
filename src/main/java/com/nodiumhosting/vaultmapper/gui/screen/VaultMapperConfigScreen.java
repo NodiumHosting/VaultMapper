@@ -113,7 +113,7 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Map X Offset", this.width / 2 - 100, getScaledY(2) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map Y Offset", this.width / 2 - 100, getScaledY(3) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map X Anchor (0-left, 1-center, 2-right)", this.width / 2 - 100, getScaledY(4) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map Y Anchor (0-top, 1-center, 2-right)", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map Y Anchor (0-top, 1-center, 2-bottom)", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Pointer Color", this.width / 2 - 100, getScaledY(6) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Room Color", this.width / 2 - 100, getScaledY(7) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Start Room Color", this.width / 2 - 100, getScaledY(8) - offsetY, 0xFFFFFFFF);
