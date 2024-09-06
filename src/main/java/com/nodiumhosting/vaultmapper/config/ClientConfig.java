@@ -7,7 +7,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec SPEC;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_X_OFFSET;
-    public static final ForgeConfigSpec.ConfigValue<Integer> Map_Y_OFFSET;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MAP_Y_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<String> POINTER_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> START_ROOM_COLOR;
@@ -18,7 +18,7 @@ public class ClientConfig {
         BUILDER.push("VaultMapper Client Config");
 
         MAP_X_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the x-axis").define("MAP_X_OFFSET", 0);
-        Map_Y_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the y-axis").define("Map_Y_OFFSET", 0);
+        MAP_Y_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the y-axis").define("Map_Y_OFFSET", 0);
         POINTER_COLOR = BUILDER.comment("Color for the current player position").define("POINTER_COLOR", "#00FF00");
         ROOM_COLOR = BUILDER.comment("Color for normal Rooms & Hallways").define("ROOM_COLOR", "#0000FF");
         START_ROOM_COLOR = BUILDER.comment("Color for the Start room of a Vault").define("START_ROOM_COLOR", "#FF0000");

@@ -33,7 +33,7 @@ public class VaultMapOverlayRenderer {
         if (!prepped) prep();
 
         int offsetX = ClientConfig.MAP_X_OFFSET.get();
-        int offsetZ = ClientConfig.Map_Y_OFFSET.get();
+        int offsetZ = ClientConfig.MAP_Y_OFFSET.get();
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
@@ -128,7 +128,7 @@ public class VaultMapOverlayRenderer {
     private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.type != CellType.NONE) {
             int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.Map_Y_OFFSET.get();
+            int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             int startX;
             int startZ;
             int endX;
