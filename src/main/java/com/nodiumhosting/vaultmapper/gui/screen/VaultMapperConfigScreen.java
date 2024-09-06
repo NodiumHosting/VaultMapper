@@ -51,7 +51,7 @@ public class VaultMapperConfigScreen extends Screen {
         inscriptionRoomColor.setValue(ClientConfig.INSCRIPTION_ROOM_COLOR.get());
         this.addRenderableWidget(inscriptionRoomColor);
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(9), 200, (getScaledY(1) / 3) * 2, new TextComponent("Save"), button -> {
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(9), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             ClientConfig.MAP_Y_OFFSET.set(Integer.parseInt(mapYOffset.getValue()));
             ClientConfig.POINTER_COLOR.set(pointerColor.getValue());
@@ -64,7 +64,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(10), 200, (getScaledY(1) / 3) * 2, new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(10), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
             pointerColor.setValue("#00FF00");
