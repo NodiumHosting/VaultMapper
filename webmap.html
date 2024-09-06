@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>VaultMapper Integration</title>
+	</head>
+	<body>
+		<canvas id="map" width="399px" height="399px"></canvas>
+		<script>
+			const WEBMAP_VERSION = 1;
+
+			const canvas = document.getElementById('map');
+			const ctx = canvas.getContext('2d');
+
+			const width = canvas.width;
+			const height = canvas.height;
+			const middle = Math.floor(width / 2);
+			const cellSize = Math.floor(width / 49);
+
+			let ws = null;
+
+			function tryConnectWebSocket() {
+				if (ws === null || ws.readyState === WebSocket.CLOSED) {
+					ws = new WebSocket('ws://localhost:58008');
+
+					ws.onopen = () => {
+						console.log('WebSocket connection established');
+					};
+
+					ws.onmessage = (event) => onMessage(event);
+
+					ws.onclose = () => {
+						console.log('WebSocket connection closed');
+						ws = null;
+						setTimeout(tryConnectWebSocket, 1000);
+					};
+
+					ws.onerror = (error) => {
+						console.error('WebSocket error:', error);
+						ws.close();
+					};
+				}
+			}
+
+			if (ws === null) {
+				tryConnectWebSocket();
+			}
+
+			function onMessage(event) {
+				console.log('Received data:', event.data);
+
+				const data = event.data.split(':');
+				const type = data[0]; // room, tunnelX, tunnelZ
+
+				if (type === 'version') {
+					const version = parseInt(data[1]);
+
+					if (version !== WEBMAP_VERSION) {
+						console.error('WebMap version mismatch');
+						ctx.fillStyle = 'red';
+						ctx.fillRect(0, 0, width, height);
+						ctx.fillStyle = 'black';
+						ctx.font = '20px Arial';
+						ctx.fillText(
+							'WebMap version mismatch',
+							middle - 100,
+							middle,
+						);
+						ws.close();
+						return;
+					}
+				}
+
+				if (type === 'reset') {
+					ctx.fillStyle = 'white';
+					ctx.fillRect(0, 0, width, height);
+				}
+
+				const x = parseInt(data[1]);
+				const y = parseInt(data[2]);
+				const color = data[3]; // hex color
+
+				switch (type) {
+					case 'room':
+						fillCell(x, y, color);
+						break;
+					case 'tunnelX':
+						fillTunnel(x, y, color, 'x');
+						break;
+					case 'tunnelZ':
+						fillTunnel(x, y, color, 'z');
+						break;
+				}
+			}
+
+			function fillCell(x, y, color) {
+				x += 24;
+				y += 24;
+				ctx.fillStyle = color;
+				ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+			}
+
+			function fillTunnel(x, y, color, tunnelType) {
+				x += 24;
+				y += 24;
+				ctx.fillStyle = color;
+
+				switch (tunnelType) {
+					case 'x':
+						ctx.fillRect(
+							x * cellSize,
+							y * cellSize + cellSize / 4,
+							cellSize,
+							(cellSize / 4) * 2,
+						);
+						break;
+					case 'z':
+						ctx.fillRect(
+							x * cellSize + cellSize / 4,
+							y * cellSize,
+							(cellSize / 4) * 2,
+							cellSize,
+						);
+						break;
+				}
+			}
+		</script>
+	</body>
+</html>

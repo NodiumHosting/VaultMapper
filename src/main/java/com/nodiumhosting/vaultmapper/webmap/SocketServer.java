@@ -17,11 +17,14 @@ public class SocketServer extends WebSocketServer {
         wslist = new ArrayList<>();
     }
 
+    int WEBMAP_VERSION = 1;
     ArrayList<WebSocket> wslist;
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         wslist.add(conn);
+
+        conn.send("version:"+WEBMAP_VERSION);
     }
 
     @Override
