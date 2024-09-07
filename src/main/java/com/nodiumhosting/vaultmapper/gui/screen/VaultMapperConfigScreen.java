@@ -130,6 +130,8 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.INSCRIPTION_ROOM_COLOR.set("#FFFF00");
 
             ClientConfig.SPEC.save();
+
+            VaultMapOverlayRenderer.updateAnchor();
         });
         this.addRenderableWidget(resetButton);
     }
