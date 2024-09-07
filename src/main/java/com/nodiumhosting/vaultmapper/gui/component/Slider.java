@@ -9,9 +9,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
 
 public class Slider extends Button {
-    public int sliderValue = 1;
-    public float sliderMaxValue = 1.0F;
-    public float sliderMinValue = 1.0F;
+    public int sliderValue;
+    public float sliderMaxValue;
+    public float sliderMinValue;
     public boolean dragging = false;
     public String text;
     public Function<Float, String> optionGetter;
