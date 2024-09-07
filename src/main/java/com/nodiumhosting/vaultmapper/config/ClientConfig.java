@@ -21,8 +21,8 @@ public class ClientConfig {
 
         MAP_X_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the x-axis").define("MAP_X_OFFSET", -10);
         MAP_Y_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the y-axis").define("Map_Y_OFFSET", -25);
-        MAP_X_ANCHOR = BUILDER.comment("0-left, 1-center, 2-right").define("MAP_X_ANCHOR", 2);
-        MAP_Y_ANCHOR = BUILDER.comment("0-top, 1-center, 2-bottom").define("Map_Y_ANCHOR", 2);
+        MAP_X_ANCHOR = BUILDER.comment("Anchor the Map on the x-axis (0-left, 1-center, 2-right)").define("MAP_X_ANCHOR", 2);
+        MAP_Y_ANCHOR = BUILDER.comment("Anchor the Map on the y-axis (0-top, 1-center, 2-bottom)").define("MAP_Y_ANCHOR", 2);
         POINTER_COLOR = BUILDER.comment("Color for the current player position").define("POINTER_COLOR", "#00FF00");
         ROOM_COLOR = BUILDER.comment("Color for normal Rooms & Hallways").define("ROOM_COLOR", "#0000FF");
         START_ROOM_COLOR = BUILDER.comment("Color for the Start room of a Vault").define("START_ROOM_COLOR", "#FF0000");

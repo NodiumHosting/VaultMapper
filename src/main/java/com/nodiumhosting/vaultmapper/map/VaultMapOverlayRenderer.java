@@ -181,7 +181,6 @@ public class VaultMapOverlayRenderer {
 
         int mapSize = (VaultMap.currentMapSize * mapRoomWidth);
 
-
         switch (ClientConfig.MAP_X_ANCHOR.get()) {
             case 0 -> {
                 mapAnchorX = mapSize / 2;

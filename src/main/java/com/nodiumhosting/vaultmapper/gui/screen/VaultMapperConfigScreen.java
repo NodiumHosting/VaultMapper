@@ -2,7 +2,9 @@ package com.nodiumhosting.vaultmapper.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.gui.component.Slider;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import it.unimi.dsi.fastutil.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -31,12 +33,42 @@ public class VaultMapperConfigScreen extends Screen {
         mapYOffset.setValue(ClientConfig.MAP_Y_OFFSET.get().toString());
         this.addRenderableWidget(mapYOffset);
 
-        EditBox mapXAnchor = new EditBox(this.font, this.width / 2 - 100, getScaledY(4), 200, getScaledY(1) / 2, new TextComponent("MAP_X_ANCHOR"));
-        mapXAnchor.setValue(ClientConfig.MAP_X_ANCHOR.get().toString());
+//        EditBox mapXAnchor = new EditBox(this.font, this.width / 2 - 100, getScaledY(4), 200, getScaledY(1) / 2, new TextComponent("MAP_X_ANCHOR"));
+//        mapXAnchor.setValue(ClientConfig.MAP_X_ANCHOR.get().toString());
+//        this.addRenderableWidget(mapXAnchor);
+//
+//        EditBox mapYAnchor = new EditBox(this.font, this.width / 2 - 100, getScaledY(5), 200, getScaledY(1) / 2, new TextComponent("MAP_Y_ANCHOR"));
+//        mapYAnchor.setValue(ClientConfig.MAP_Y_ANCHOR.get().toString());
+//        this.addRenderableWidget(mapYAnchor);
+
+        Function<Float, String> anchorGetterX = (value) -> {
+            switch ((int) value) {
+                case 0:
+                    return "Left";
+                case 1:
+                    return "Center";
+                case 2:
+                    return "Right";
+                default:
+                    return "Unknown";
+            }
+        };
+        Slider mapXAnchor = new Slider(this.width / 2 - 100, getScaledY(4), "MAP_X_ANCHOR", ClientConfig.MAP_X_ANCHOR.get(), 2, 0, anchorGetterX, 200, getScaledY(1) / 2);
         this.addRenderableWidget(mapXAnchor);
 
-        EditBox mapYAnchor = new EditBox(this.font, this.width / 2 - 100, getScaledY(5), 200, getScaledY(1) / 2, new TextComponent("MAP_Y_ANCHOR"));
-        mapYAnchor.setValue(ClientConfig.MAP_Y_ANCHOR.get().toString());
+        Function<Float, String> anchorGetterY = (value) -> {
+            switch ((int) value) {
+                case 0:
+                    return "Top";
+                case 1:
+                    return "Center";
+                case 2:
+                    return "Bottom";
+                default:
+                    return "Unknown";
+            }
+        };
+        Slider mapYAnchor = new Slider(this.width / 2 - 100, getScaledY(5), "MAP_Y_ANCHOR", ClientConfig.MAP_Y_ANCHOR.get(), 2, 0, anchorGetterY, 200, getScaledY(1) / 2);
         this.addRenderableWidget(mapYAnchor);
 
         EditBox pointerColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(6), 200, getScaledY(1) / 2, new TextComponent("POINTER_COLOR"));
@@ -62,8 +94,8 @@ public class VaultMapperConfigScreen extends Screen {
         Button saveButton = new Button(this.width / 2 - 100, getScaledY(11), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             ClientConfig.MAP_Y_OFFSET.set(Integer.parseInt(mapYOffset.getValue()));
-            ClientConfig.MAP_X_ANCHOR.set(Integer.parseInt(mapXAnchor.getValue()));
-            ClientConfig.MAP_Y_ANCHOR.set(Integer.parseInt(mapYAnchor.getValue()));
+            ClientConfig.MAP_X_ANCHOR.set((int) mapXAnchor.sliderValue);
+            ClientConfig.MAP_Y_ANCHOR.set((int) mapYAnchor.sliderValue);
             ClientConfig.POINTER_COLOR.set(pointerColor.getValue());
             ClientConfig.ROOM_COLOR.set(roomColor.getValue());
             ClientConfig.START_ROOM_COLOR.set(startRoomColor.getValue());
@@ -79,8 +111,8 @@ public class VaultMapperConfigScreen extends Screen {
         Button resetButton = new Button(this.width / 2 - 100, getScaledY(12), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
-            mapXAnchor.setValue("2");
-            mapYAnchor.setValue("2");
+            mapXAnchor.sliderValue = 2;
+            mapYAnchor.sliderValue = 2;
             pointerColor.setValue("#00FF00");
             roomColor.setValue("#0000FF");
             startRoomColor.setValue("#FF0000");
@@ -112,8 +144,8 @@ public class VaultMapperConfigScreen extends Screen {
         int offsetY = getScaledY(1) / 3;
         this.font.draw(pose, "Map X Offset", this.width / 2 - 100, getScaledY(2) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map Y Offset", this.width / 2 - 100, getScaledY(3) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map X Anchor (0-left, 1-center, 2-right)", this.width / 2 - 100, getScaledY(4) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map Y Anchor (0-top, 1-center, 2-bottom)", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map X Anchor", this.width / 2 - 100, getScaledY(4) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map Y Anchor", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Pointer Color", this.width / 2 - 100, getScaledY(6) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Room Color", this.width / 2 - 100, getScaledY(7) - offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Start Room Color", this.width / 2 - 100, getScaledY(8) - offsetY, 0xFFFFFFFF);
