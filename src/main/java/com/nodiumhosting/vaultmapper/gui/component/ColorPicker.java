@@ -5,14 +5,10 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class ColorPicker extends Button {
     private int selectedColor;
@@ -26,10 +22,12 @@ public class ColorPicker extends Button {
 
     private static Color getColor(int w, int h, int i, int j) {
         Color c;
-        if (j < h / 2) {
-            c = new Color(Color.HSBtoRGB((float) i / w, (float) j / (h / 2), 1.0F));
+        if (j < (h / 9) * 4) {
+            c = new Color(Color.HSBtoRGB((float) i / w, (float) j / ((h / 9) * 4), 1.0F));
+        } else  if (j < (h / 9) * 8) {
+            c = new Color(Color.HSBtoRGB((float) i / w, 1.0F, 1.0F - (float) (j - (h / 9) * 4) / ((h / 9) * 4)));
         } else {
-            c = new Color(Color.HSBtoRGB((float) i / w, 1.0F, 1.0F - (float) (j - h / 2) / (h / 2)));
+            c = new Color(Color.HSBtoRGB(0.0F, 0.0F, 1.0F - (float) i / w));
         }
         return c;
     }
