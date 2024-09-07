@@ -92,10 +92,20 @@ public class VaultMapperConfigScreen extends Screen {
         this.addRenderableWidget(inscriptionRoomColor);
 
         Button saveButton = new Button(this.width / 2 - 100, getScaledY(11), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
-            ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
-            ClientConfig.MAP_Y_OFFSET.set(Integer.parseInt(mapYOffset.getValue()));
-            ClientConfig.MAP_X_ANCHOR.set((int) mapXAnchor.sliderValue);
-            ClientConfig.MAP_Y_ANCHOR.set((int) mapYAnchor.sliderValue);
+            try {
+                ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
+            } catch (NumberFormatException e) {
+                mapXOffset.setValue("0");
+                ClientConfig.MAP_X_OFFSET.set(0);
+            }
+            try {
+                ClientConfig.MAP_Y_OFFSET.set(Integer.parseInt(mapYOffset.getValue()));
+            } catch (NumberFormatException e) {
+                mapYOffset.setValue("0");
+                ClientConfig.MAP_Y_OFFSET.set(0);
+            }
+            ClientConfig.MAP_X_ANCHOR.set(mapXAnchor.sliderValue);
+            ClientConfig.MAP_Y_ANCHOR.set(mapYAnchor.sliderValue);
             ClientConfig.POINTER_COLOR.set(pointerColor.getValue());
             ClientConfig.ROOM_COLOR.set(roomColor.getValue());
             ClientConfig.START_ROOM_COLOR.set(startRoomColor.getValue());
