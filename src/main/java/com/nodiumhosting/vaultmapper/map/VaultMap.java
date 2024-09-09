@@ -212,6 +212,8 @@ public class VaultMap {
         } else {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
+
+        sendMap();
     }
 
     public static void toggleRendering() {
