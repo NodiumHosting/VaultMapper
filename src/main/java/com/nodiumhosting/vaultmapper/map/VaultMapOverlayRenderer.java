@@ -52,15 +52,15 @@ public class VaultMapOverlayRenderer {
         // start room
         renderCell(bufferBuilder, VaultMap.startRoom, parseColor(ClientConfig.START_ROOM_COLOR.get()));
 
-        // marked rooms
-        VaultMap.markedRooms.forEach((cell -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()));
-        }));
-
         // inscription rooms
         VaultMap.inscriptionRooms.forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()));
         });
+
+        // marked rooms
+        VaultMap.markedRooms.forEach((cell -> {
+            renderCell(bufferBuilder, cell, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()));
+        }));
 
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
