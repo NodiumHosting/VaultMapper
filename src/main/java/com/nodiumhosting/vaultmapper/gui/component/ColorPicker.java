@@ -103,7 +103,7 @@ public class ColorPicker extends Button {
 
             return true;
         } else {
-            this.visible = false;
+//            this.visible = false;
             return false;
         }
     }
