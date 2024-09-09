@@ -110,10 +110,10 @@ public class VaultMap {
         currentRoom = newCell;
 
         if (isNewCell(newCell, cells)) {
-            if (currentRoom.x > currentCoordLimit || currentRoom.z > currentCoordLimit) { // resize map
+            if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
                 currentMapSize += 4;
                 currentCoordLimit += 2;
-                VaultMapOverlayRenderer.refreshCenter();
+                VaultMapOverlayRenderer.updateAnchor();
             }
 
             cells.add(newCell);
