@@ -66,15 +66,17 @@ public class VaultMapOverlayRenderer {
         BufferUploader.end(bufferBuilder); // render the map
 
         // player thingy
-        int mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-        int mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
-        var triag = getRotatedTriangle();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(triag.get(0) + mapX + 3, triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-        bufferBuilder.vertex(triag.get(2) + mapX + 3, triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-        bufferBuilder.vertex(triag.get(4) + mapX + 3, triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-        bufferBuilder.end();
-        BufferUploader.end(bufferBuilder);
+        if(VaultMap.currentRoom != null) {
+            int mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            int mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+            var triag = getRotatedTriangle();
+            bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+            bufferBuilder.vertex(triag.get(0) + mapX + 3, triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + 3, triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + 3, triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.end();
+            BufferUploader.end(bufferBuilder);
+        }
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

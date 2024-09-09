@@ -1,6 +1,8 @@
 package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +36,7 @@ public class VaultMap {
     static List<VaultCell> markedRooms = new ArrayList<>();
 
     static VaultCell startRoom = new VaultCell();
-    static VaultCell currentRoom = new VaultCell(); // might not be needed
+    static VaultCell currentRoom; // might not be needed
 
     static int defaultMapSize = 21; // map size in cells
     static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
@@ -49,15 +51,18 @@ public class VaultMap {
         inscriptionRooms = new ArrayList<>();
         markedRooms = new ArrayList<>();
         startRoom = new VaultCell(CellType.ROOM, 0, 0);
-        currentRoom = new VaultCell();
+        currentRoom = null;
         hologramChecked = false;
         hologramData = null;
 
         currentMapSize = defaultMapSize;
         currentCoordLimit = defaultCoordLimit;
+
+        VaultMapper.wsServer.sendReset();
     }
 
     private static boolean isCurrentRoom(int x, int z) {
+        if (currentRoom == null) return false;
         return currentRoom.x == x && currentRoom.z == z;
     }
 
@@ -122,25 +127,24 @@ public class VaultMap {
     }
 
     private static void sendMap() {
-        VaultMap.cells.forEach((cell) ->{
-            VaultMapper.wsServer.sendData(cell, "#0000FF");
+        VaultMap.cells.forEach((cell) -> {
+            VaultMapper.wsServer.sendData(cell, ClientConfig.ROOM_COLOR.get());
         });
 
         // start room
-        VaultMapper.wsServer.sendData(VaultMap.startRoom, "#FF0000");
+        VaultMapper.wsServer.sendData(VaultMap.startRoom, ClientConfig.START_ROOM_COLOR.get());
 
         // inscription rooms
         VaultMap.inscriptionRooms.forEach((cell) -> {
-            VaultMapper.wsServer.sendData(cell, "#FFFF00");
+            VaultMapper.wsServer.sendData(cell, ClientConfig.INSCRIPTION_ROOM_COLOR.get());
         });
 
         // marked rooms
         VaultMap.markedRooms.forEach((cell -> {
-            VaultMapper.wsServer.sendData(cell, "#FF00FF");
+            VaultMapper.wsServer.sendData(cell, ClientConfig.MARKED_ROOM_COLOR.get());
         }));
 
-        VaultMapper.wsServer.sendData(VaultMap.currentRoom, "#00FF00");
-
+        //VaultMapper.wsServer.sendData(VaultMap.currentRoom, "#00FF00");
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -161,6 +165,11 @@ public class VaultMap {
 
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
+
+        float yaw = player.getYHeadRot();
+        String username = player.getName().getString();
+
+        VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
         if (isWithinBounds(playerRoomX, playerRoomZ)) {
             if (debug)
@@ -270,6 +279,8 @@ public class VaultMap {
 
             inscriptionRooms.add(new VaultCell(CellType.ROOM, translationXInt * 2, translationYInt * -2));
         });
+
+        sendMap();
 
         return hologramNbt;
     }

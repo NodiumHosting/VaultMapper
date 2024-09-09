@@ -60,6 +60,9 @@ public class VaultMapper
 
         InetSocketAddress addr = new InetSocketAddress("localhost", 58008);
         wsServer = new SocketServer(addr);
-        wsServer.start();
+
+        if (ClientConfig.WEBMAP_ENABLED.get()) {
+            wsServer.start();
+        }
     }
 }

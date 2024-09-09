@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.webmap;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.CellType;
 import com.nodiumhosting.vaultmapper.map.TunnelType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
@@ -59,6 +60,12 @@ public class SocketServer extends WebSocketServer {
                     conn.send("tunnelZ:"+cell.x+":"+cell.z+":"+color);
                 }
             }
+        });
+    }
+
+    public void sendPlayerData(int x, int z, float yaw, String username, String color) {
+        wslist.forEach((conn) -> {
+            conn.send("player:"+x+":"+z+":"+yaw+":"+username+":"+color);
         });
     }
 

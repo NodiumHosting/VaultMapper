@@ -203,7 +203,7 @@ processResources {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
-    archiveClassifier = "slim"
+    archiveClassifier = "slim-dontuse"
     manifest {
         attributes([
                 "Specification-Title"     : "vaultmapper",
