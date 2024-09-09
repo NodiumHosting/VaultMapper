@@ -6,6 +6,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -16,6 +17,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+import java.net.InetSocketAddress;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("vaultmapper")
 public class VaultMapper
@@ -23,6 +26,8 @@ public class VaultMapper
     public static final String MODID = "vaultmapper";
 
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    public static SocketServer wsServer;
 
     public VaultMapper()
     {
@@ -51,8 +56,13 @@ public class VaultMapper
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
-        //Mixins.addConfiguration("vaultmapper.mixins.json");
         VaultMapOverlayRenderer.prep();
-        LOGGER.info("doin prep stuff");
+
+        InetSocketAddress addr = new InetSocketAddress("localhost", 58008);
+        wsServer = new SocketServer(addr);
+
+        if (ClientConfig.WEBMAP_ENABLED.get()) {
+            wsServer.start();
+        }
     }
 }

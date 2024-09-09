@@ -5,6 +5,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.component.ColorButton;
 import com.nodiumhosting.vaultmapper.gui.component.ColorPicker;
 import com.nodiumhosting.vaultmapper.gui.component.Slider;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import it.unimi.dsi.fastutil.Function;
 import net.minecraft.client.Minecraft;
@@ -180,6 +181,8 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SPEC.save();
 
             VaultMapOverlayRenderer.updateAnchor();
+
+            VaultMap.sendMap();
         });
         this.addRenderableWidget(saveButton);
 
@@ -207,6 +210,8 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SPEC.save();
 
             VaultMapOverlayRenderer.updateAnchor();
+
+            VaultMap.sendMap();
         });
         this.addRenderableWidget(resetButton);
     }
