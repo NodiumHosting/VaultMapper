@@ -17,7 +17,8 @@ public class Slider extends Button {
     public Function<Float, String> optionGetter;
 
     public Slider(int x, int y, String text, int startingValue, float maxValue, float minValue, Function<Float, String> optionGetter, int width, int height) {
-        super(x, y, width, height, new TextComponent(text), (button) -> {});
+        super(x, y, width, height, new TextComponent(text), (button) -> {
+        });
 
         this.text = text;
         this.sliderValue = startingValue;
@@ -27,17 +28,15 @@ public class Slider extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick)
-    {
-        if (this.visible)
-        {
+    public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        if (this.visible) {
             Font font = Minecraft.getInstance().font;
             this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
             GuiComponent.fill(pPoseStack, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, 0xFFA0A0A0);
             GuiComponent.fill(pPoseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFF000000);
             GuiComponent.fill(pPoseStack, this.x + 1, this.y + 1, this.x + (int) ((this.sliderValue - sliderMinValue) / (sliderMaxValue - sliderMinValue) * (this.width - 2)), this.y + this.height - 1, 0xFF00FF00);
             this.renderBg(pPoseStack, Minecraft.getInstance(), pMouseX, pMouseY);
-            TextComponent tc = new TextComponent(text + ": " + optionGetter.get(sliderValue) + " (" + sliderValue + ")");
+            TextComponent tc = new TextComponent(text + optionGetter.get(sliderValue) + " (" + sliderValue + ")");
             GuiComponent.drawCenteredString(pPoseStack, font, tc, this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xFFFFFFFF);
         }
     }

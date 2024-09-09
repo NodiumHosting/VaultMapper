@@ -24,7 +24,7 @@ public class ColorPicker extends Button {
         Color c;
         if (j < (h / 9) * 4) {
             c = new Color(Color.HSBtoRGB((float) i / w, (float) j / ((h / 9) * 4), 1.0F));
-        } else  if (j < (h / 9) * 8) {
+        } else if (j < (h / 9) * 8) {
             c = new Color(Color.HSBtoRGB((float) i / w, 1.0F, 1.0F - (float) (j - (h / 9) * 4) / ((h / 9) * 4)));
         } else {
             c = new Color(Color.HSBtoRGB(0.0F, 0.0F, 1.0F - (float) i / w));
@@ -33,10 +33,8 @@ public class ColorPicker extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick)
-    {
-        if (this.visible)
-        {
+    public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        if (this.visible) {
             GuiComponent.fill(pPoseStack, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, isFocused() ? 0xFFFFFFFF : 0xFFA0A0A0);
             GuiComponent.fill(pPoseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFF000000);
 
@@ -105,6 +103,7 @@ public class ColorPicker extends Button {
 
             return true;
         } else {
+            this.visible = false;
             return false;
         }
     }
