@@ -126,7 +126,7 @@ public class VaultMap {
         sendMap();
     }
 
-    private static void sendMap() {
+    public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
             VaultMapper.wsServer.sendData(cell, ClientConfig.ROOM_COLOR.get());
         });
