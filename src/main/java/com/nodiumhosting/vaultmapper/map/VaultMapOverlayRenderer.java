@@ -31,6 +31,7 @@ public class VaultMapOverlayRenderer {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
         if (!enabled) return;
+        if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
 
         int offsetX = ClientConfig.MAP_X_OFFSET.get();

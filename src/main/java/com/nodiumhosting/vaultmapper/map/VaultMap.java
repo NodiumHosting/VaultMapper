@@ -218,16 +218,21 @@ public class VaultMap {
 
     public static void toggleRendering() {
         Player player = Minecraft.getInstance().player;
-        if (VaultMapOverlayRenderer.enabled) {
-            VaultMapOverlayRenderer.enabled = false;
-            return;
-        }
 
         if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
             player.sendMessage(new TextComponent("You can't use this outside of Vaults"), player.getUUID());
             return;
         }
-        VaultMapOverlayRenderer.enabled = true;
+
+        if (ClientConfig.MAP_ENABLED.get()) {
+            ClientConfig.MAP_ENABLED.set(false);
+            player.sendMessage(new TextComponent("Vault Map rendering disabled"), player.getUUID());
+        } else {
+            ClientConfig.MAP_ENABLED.set(true);
+            player.sendMessage(new TextComponent("Vault Map rendering enabled"), player.getUUID());
+        }
+
+        ClientConfig.SPEC.save();
     }
 
 

@@ -15,14 +15,17 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
 
 public class VaultMapperConfigScreen extends Screen {
+    private static final boolean webMapEnabled = ClientConfig.WEBMAP_ENABLED.get();
+
     public VaultMapperConfigScreen() {
         super(new TextComponent("Vault Mapper Config"));
     }
 
-    private int getScaledY(int y) {
-        int height = Minecraft.getInstance().getWindow().getHeight() / 2;
-        int piece = height / 16;
-        return piece * y;
+    private int getScaledY(float y) {
+        float height = Minecraft.getInstance().getWindow().getHeight() / 2;
+        float piece = height / 16;
+        float scaledY = piece * y;
+        return (int) scaledY;
     }
 
     // copied block from overlay renderer, should move elsewhere
@@ -50,11 +53,25 @@ public class VaultMapperConfigScreen extends Screen {
         int elWidth = 200;
         int elWidthColor = elWidth - elHeight - 5;
 
-        EditBox mapXOffset = new EditBox(this.font, this.width / 2 - 100, getScaledY(2), elWidth, elHeight, new TextComponent("MAP_X_OFFSET"));
+        Button mapEnabledButton = new Button(this.width / 2 - 100, getScaledY(2), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Map Enabled: " + ClientConfig.MAP_ENABLED.get()), button -> {
+            ClientConfig.MAP_ENABLED.set(!ClientConfig.MAP_ENABLED.get());
+            ClientConfig.SPEC.save();
+            button.setMessage(new TextComponent("Map Enabled: " + ClientConfig.MAP_ENABLED.get()));
+        });
+        this.addRenderableWidget(mapEnabledButton);
+
+        Button webMapEnabledButton = new Button(this.width / 2 - 100, getScaledY(2.75f), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("WebMap Enabled: " + ClientConfig.WEBMAP_ENABLED.get()), button -> {
+            ClientConfig.WEBMAP_ENABLED.set(!ClientConfig.WEBMAP_ENABLED.get());
+            ClientConfig.SPEC.save();
+            button.setMessage(new TextComponent("WebMap Enabled: " + ClientConfig.WEBMAP_ENABLED.get()));
+        });
+        this.addRenderableWidget(webMapEnabledButton);
+
+        EditBox mapXOffset = new EditBox(this.font, this.width / 2 - 100, getScaledY(4), elWidth, elHeight, new TextComponent("MAP_X_OFFSET"));
         mapXOffset.setValue(ClientConfig.MAP_X_OFFSET.get().toString());
         this.addRenderableWidget(mapXOffset);
 
-        EditBox mapYOffset = new EditBox(this.font, this.width / 2 - 100, getScaledY(3), elWidth, elHeight, new TextComponent("MAP_Y_OFFSET"));
+        EditBox mapYOffset = new EditBox(this.font, this.width / 2 - 100, getScaledY(5), elWidth, elHeight, new TextComponent("MAP_Y_OFFSET"));
         mapYOffset.setValue(ClientConfig.MAP_Y_OFFSET.get().toString());
         this.addRenderableWidget(mapYOffset);
 
@@ -74,7 +91,7 @@ public class VaultMapperConfigScreen extends Screen {
                     return "Unknown";
             }
         };
-        Slider mapXAnchor = new Slider(this.width / 2 - 100, getScaledY(4), "MAP_X_ANCHOR", ClientConfig.MAP_X_ANCHOR.get(), 4, 0, anchorGetterX, 200, elHeight);
+        Slider mapXAnchor = new Slider(this.width / 2 - 100, getScaledY(6), "MAP_X_ANCHOR", ClientConfig.MAP_X_ANCHOR.get(), 4, 0, anchorGetterX, 200, elHeight);
         this.addRenderableWidget(mapXAnchor);
 
         Function<Float, String> anchorGetterY = (value) -> {
@@ -93,19 +110,19 @@ public class VaultMapperConfigScreen extends Screen {
                     return "Unknown";
             }
         };
-        Slider mapYAnchor = new Slider(this.width / 2 - 100, getScaledY(5), "MAP_Y_ANCHOR", ClientConfig.MAP_Y_ANCHOR.get(), 4, 0, anchorGetterY, 200, elHeight);
+        Slider mapYAnchor = new Slider(this.width / 2 - 100, getScaledY(7), "MAP_Y_ANCHOR", ClientConfig.MAP_Y_ANCHOR.get(), 4, 0, anchorGetterY, 200, elHeight);
         this.addRenderableWidget(mapYAnchor);
 
-        ColorPicker colorPicker = new ColorPicker(this.width / 2 + 200, getScaledY(2), 200, 200, parseColor("#000000"), button -> {
+        ColorPicker colorPicker = new ColorPicker(this.width / 2 + 200, getScaledY(7), 200, 200, parseColor("#000000"), button -> {
 
         });
         colorPicker.visible = false;
         this.addRenderableWidget(colorPicker);
 
-        EditBox pointerColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(6), elWidthColor, elHeight, new TextComponent("POINTER_COLOR"));
+        EditBox pointerColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(8), elWidthColor, elHeight, new TextComponent("POINTER_COLOR"));
         pointerColor.setValue(ClientConfig.POINTER_COLOR.get());
         this.addRenderableWidget(pointerColor);
-        ColorButton pointerColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(6), elHeight, elHeight, parseColor(ClientConfig.POINTER_COLOR.get()), button -> {
+        ColorButton pointerColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.POINTER_COLOR.get()), button -> {
 
         }, pointerColor, colorPicker);
         this.addRenderableWidget(pointerColorPicker);
@@ -113,10 +130,10 @@ public class VaultMapperConfigScreen extends Screen {
             pointerColorPicker.setColor(parseColor(value));
         });
 
-        EditBox roomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(7), elWidthColor, elHeight, new TextComponent("ROOM_COLOR"));
+        EditBox roomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(9), elWidthColor, elHeight, new TextComponent("ROOM_COLOR"));
         roomColor.setValue(ClientConfig.ROOM_COLOR.get());
         this.addRenderableWidget(roomColor);
-        ColorButton roomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(7), elHeight, elHeight, parseColor(ClientConfig.ROOM_COLOR.get()), button -> {
+        ColorButton roomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(9), elHeight, elHeight, parseColor(ClientConfig.ROOM_COLOR.get()), button -> {
 
         }, roomColor, colorPicker);
         this.addRenderableWidget(roomColorPicker);
@@ -124,10 +141,10 @@ public class VaultMapperConfigScreen extends Screen {
             roomColorPicker.setColor(parseColor(value));
         });
 
-        EditBox startRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(8), elWidthColor, elHeight, new TextComponent("START_ROOM_COLOR"));
+        EditBox startRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(10), elWidthColor, elHeight, new TextComponent("START_ROOM_COLOR"));
         startRoomColor.setValue(ClientConfig.START_ROOM_COLOR.get());
         this.addRenderableWidget(startRoomColor);
-        ColorButton startRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.START_ROOM_COLOR.get()), button -> {
+        ColorButton startRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(10), elHeight, elHeight, parseColor(ClientConfig.START_ROOM_COLOR.get()), button -> {
 
         }, startRoomColor, colorPicker);
         this.addRenderableWidget(startRoomColorPicker);
@@ -135,10 +152,10 @@ public class VaultMapperConfigScreen extends Screen {
             startRoomColorPicker.setColor(parseColor(value));
         });
 
-        EditBox markedRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(9), elWidthColor, elHeight, new TextComponent("MARKED_ROOM_COLOR"));
+        EditBox markedRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(11), elWidthColor, elHeight, new TextComponent("MARKED_ROOM_COLOR"));
         markedRoomColor.setValue(ClientConfig.MARKED_ROOM_COLOR.get());
         this.addRenderableWidget(markedRoomColor);
-        ColorButton markedRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(9), elHeight, elHeight, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()), button -> {
+        ColorButton markedRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(11), elHeight, elHeight, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()), button -> {
 
         }, markedRoomColor, colorPicker);
         this.addRenderableWidget(markedRoomColorPicker);
@@ -146,10 +163,10 @@ public class VaultMapperConfigScreen extends Screen {
             markedRoomColorPicker.setColor(parseColor(value));
         });
 
-        EditBox inscriptionRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(10), elWidthColor, elHeight, new TextComponent("INSCRIPTION_ROOM_COLOR"));
+        EditBox inscriptionRoomColor = new EditBox(this.font, this.width / 2 - 100, getScaledY(12), elWidthColor, elHeight, new TextComponent("INSCRIPTION_ROOM_COLOR"));
         inscriptionRoomColor.setValue(ClientConfig.INSCRIPTION_ROOM_COLOR.get());
         this.addRenderableWidget(inscriptionRoomColor);
-        ColorButton inscriptionRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(10), elHeight, elHeight, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()), button -> {
+        ColorButton inscriptionRoomColorPicker = new ColorButton(this.width / 2 - 100 + elWidthColor + 5, getScaledY(12), elHeight, elHeight, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()), button -> {
 
         }, inscriptionRoomColor, colorPicker);
         this.addRenderableWidget(inscriptionRoomColorPicker);
@@ -157,7 +174,7 @@ public class VaultMapperConfigScreen extends Screen {
             inscriptionRoomColorPicker.setColor(parseColor(value));
         });
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(11), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(13), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -186,7 +203,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(12), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(14), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
             mapXAnchor.sliderValue = 4;
@@ -222,17 +239,22 @@ public class VaultMapperConfigScreen extends Screen {
 
         this.font.draw(pose, "Vault Mapper Config", this.width / 2 - this.font.width("Vault Mapper Config") / 2, 20, 0xFFFFFFFF);
 
+        if (webMapEnabled != ClientConfig.WEBMAP_ENABLED.get()) {
+            // draw warning to restart the game
+            this.font.draw(pose, "Changes require a game restart", this.width / 2 - this.font.width("Changes require a game restart") / 2, 30, 0xFFFF0000);
+        }
+
         // labels
         int offsetY = getScaledY(1) / 3;
-        this.font.draw(pose, "Map X Offset", this.width / 2 - 100, getScaledY(2) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map Y Offset", this.width / 2 - 100, getScaledY(3) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map X Anchor", this.width / 2 - 100, getScaledY(4) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Map Y Anchor", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Pointer Color", this.width / 2 - 100, getScaledY(6) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Room Color", this.width / 2 - 100, getScaledY(7) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Start Room Color", this.width / 2 - 100, getScaledY(8) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Marked Room Color", this.width / 2 - 100, getScaledY(9) - offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Inscription Room Color", this.width / 2 - 100, getScaledY(10) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map X Offset", this.width / 2 - 100, getScaledY(4) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map Y Offset", this.width / 2 - 100, getScaledY(5) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map X Anchor", this.width / 2 - 100, getScaledY(6) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Map Y Anchor", this.width / 2 - 100, getScaledY(7) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Pointer Color", this.width / 2 - 100, getScaledY(8) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Room Color", this.width / 2 - 100, getScaledY(9) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Start Room Color", this.width / 2 - 100, getScaledY(10) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Marked Room Color", this.width / 2 - 100, getScaledY(11) - offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Inscription Room Color", this.width / 2 - 100, getScaledY(12) - offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 

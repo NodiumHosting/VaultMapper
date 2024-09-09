@@ -6,6 +6,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> MAP_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_X_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_Y_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_X_ANCHOR;
@@ -20,6 +21,8 @@ public class ClientConfig {
     static {
         BUILDER.push("VaultMapper Client Config");
 
+        MAP_ENABLED = BUILDER.comment("Enable rendering the map").define("MAP_ENABLED", true);
+        
         MAP_X_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the x-axis").define("MAP_X_OFFSET", 0);
         MAP_Y_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the y-axis").define("Map_Y_OFFSET", 0);
 
