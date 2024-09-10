@@ -2,7 +2,7 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.webmap.SocketServer;
+import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,21 +30,42 @@ import static java.lang.Math.abs;
 public class VaultMap {
     public static boolean enabled;
     public static boolean debug;
-
+    public static WSClient mapSyncClient;
+    static public HashMap<String, MapPlayer> players = new HashMap<>();
     static List<VaultCell> cells = new ArrayList<>();
     static List<VaultCell> inscriptionRooms = new ArrayList<>();
     static List<VaultCell> markedRooms = new ArrayList<>();
-
     static VaultCell startRoom = new VaultCell();
     static VaultCell currentRoom; // might not be needed
-
     static int defaultMapSize = 21; // map size in cells
     static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
-
     static int currentMapSize = defaultMapSize;
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
+
+    public static void updatePlayerMapData(String name, int x, int y, float yaw) {
+        if (!players.containsKey(name)) {
+            players.put(name, new MapPlayer());
+        }
+        var player = players.get(name);
+        player.x = x;
+        player.y = y;
+        player.yaw = yaw;
+        players.put(name, player);
+    }
+
+    public static void startSync(String playerName, String dimName) {
+        mapSyncClient = new WSClient(playerName, dimName);
+        mapSyncClient.connect();
+    }
+
+    public static void stopSync() {
+        if (mapSyncClient != null) {
+            mapSyncClient.closeGracefully();
+            mapSyncClient = null;
+        }
+    }
 
     public static void resetMap() {
         cells = new ArrayList<>();
@@ -121,9 +142,15 @@ public class VaultMap {
                 VaultMapOverlayRenderer.updateAnchor();
             }
 
+
             cells.add(newCell);
         }
         sendMap();
+    }
+
+    public static void addCell(VaultCell cell) {
+        if (!isNewCell(cell, cells)) return;
+        cells.add(cell);
     }
 
     public static void sendMap() {
@@ -170,6 +197,8 @@ public class VaultMap {
         String username = player.getName().getString();
 
         VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
+
+        if (mapSyncClient != null) mapSyncClient.sendPlayerData(username, playerRoomX, playerRoomZ, yaw);
 
         if (isWithinBounds(playerRoomX, playerRoomZ)) {
             if (debug)
@@ -234,7 +263,6 @@ public class VaultMap {
 
         ClientConfig.SPEC.save();
     }
-
 
     private static CompoundTag getHologramData() {
         HashMap<BlockPos, Direction> hologramBlocks = new HashMap<>();
@@ -313,5 +341,11 @@ public class VaultMap {
         if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
 
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
+    }
+
+    static public class MapPlayer {
+        int x;
+        int y;
+        float yaw;
     }
 }

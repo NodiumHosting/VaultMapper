@@ -17,7 +17,7 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
-    
+
     static int mapRoomWidth;
 
     static boolean prepped = false;
@@ -66,8 +66,25 @@ public class VaultMapOverlayRenderer {
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
 
+
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        // player thingies
+        //Logger.getAnonymousLogger().info(String.valueOf(VaultMap.players.size()));
+        VaultMap.players.forEach((name, data) -> {
+            int mapX = centerX + data.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            int mapZ = centerZ + data.y * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+            var triag = getRotatedTriangle(data.yaw);
+            bufferBuilder.vertex(triag.get(0) + mapX + 3, triag.get(1) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + 3, triag.get(3) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + 3, triag.get(5) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+
+        });
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder);
+
+
         // player thingy
-        if(VaultMap.currentRoom != null) {
+        if (VaultMap.currentRoom != null) {
             int mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
             int mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
             var triag = getRotatedTriangle();
@@ -81,6 +98,32 @@ public class VaultMapOverlayRenderer {
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    private static ArrayList<Float> getRotatedTriangle(float yaw) { // returns three points that make a rotated triangle when added with mapx,z
+        double x1 = -3;
+        double y1 = -2;
+        double x2 = -3;
+        double y2 = 2;
+        double x3 = 3;
+        double y3 = 0;
+
+        double cx = -3; // centers to rotate about
+        double cy = 0;
+        float radangle = (float) Math.toRadians(yaw + 90);
+
+        double[] rotatedVert1 = rotatePoint(x1, y1, cx, cy, radangle);
+        double[] rotatedVert2 = rotatePoint(x2, y2, cx, cy, radangle);
+        double[] rotatedVert3 = rotatePoint(x3, y3, cx, cy, radangle);
+
+        var retlist = new ArrayList<Float>();
+        retlist.add((float) rotatedVert1[0]);
+        retlist.add((float) rotatedVert1[1]);
+        retlist.add((float) rotatedVert2[0]);
+        retlist.add((float) rotatedVert2[1]);
+        retlist.add((float) rotatedVert3[0]);
+        retlist.add((float) rotatedVert3[1]);
+        return retlist;
     }
 
     private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z

@@ -19,10 +19,11 @@ public class DimensionChangeEvent {
         if (dimensionNamespace.equals("the_vault")) {
             VaultMap.enabled = true;
             VaultMapOverlayRenderer.enabled = true;
-        }
-        else {
+            VaultMap.startSync(event.getNewPlayer().getName().getString(), event.getNewPlayer().level.dimension().location().getPath());
+        } else {
             VaultMap.enabled = false;
             VaultMapOverlayRenderer.enabled = false;
+            VaultMap.stopSync();
         }
     }
 }

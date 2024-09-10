@@ -1,39 +1,98 @@
 package com.nodiumhosting.vaultmapper.network.wssync;
 
-
-import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Logger;
 
-// wss://MCUSERNAME@vmsync.boykiss.ing:25284/VAULTDIMENSIONID
 public class WSClient extends WebSocketClient {
+    private final int timerPeriod = 10000;
+    private final Timer keepConnectedTimer = new Timer();
+    private final WSClient self;
+    private boolean keepMeOn = false;
 
-    private static final String wsEndpoint = "vmsync.boykiss.ing:25284";
+    //private final String relayAddress = "wss://vmsync.boykiss.ing";
 
-    public WSClient(String playerName, String dimensionID) {
-        super(URI.create("wss://" + playerName + "@" + wsEndpoint + "/" + dimensionID));
+    public WSClient(String playerName, String vaultID) {
+        super(URI.create("wss://vmsync.boykiss.ing/" + playerName + "/" + vaultID));
+
+        self = this;
+
+        keepConnectedTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (keepMeOn) { // if connected
+                    if (self.isOpen()) { // if socket is open
+                        sendKeepalive();
+                    } else {
+                        self.reconnect(); // if socket closed, try to reconnect non-blocking
+                    }
+                }
+            }
+        }, timerPeriod, timerPeriod);
+    }
+
+
+    public void sendKeepalive() {
+        if (this.isClosing() || this.isClosing()) {
+            Logger.getAnonymousLogger().info("Can't send keep-alive, socket is closed.");
+        }
+        //this.send("keep_me_alive");
+        this.sendPing();
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        send("test");
+        Logger.getAnonymousLogger().info("CONNECTED!");
+        keepMeOn = true;
     }
 
     @Override
     public void onMessage(String message) {
-        VaultMapper.LOGGER.info(message);
+        Logger.getAnonymousLogger().info(message);
+        var split = message.split(":");
+        String arg1 = split[0]; //1-playername, 2-x, 3-y, 4-yaw
+        if (arg1.equals("player")) {
+            // update the players
+            Logger.getAnonymousLogger().info("updated player data:" + split[1] + Integer.parseInt(split[2]) + Integer.parseInt(split[3]) + Float.parseFloat(split[4]));
+            VaultMap.updatePlayerMapData(split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]));
+        }
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        VaultMapper.LOGGER.info("Sync WS closed with code: " + code + " reason: " + reason);
+        Logger.getAnonymousLogger().info("closed");
+        Logger.getAnonymousLogger().info(String.valueOf(code));
+        Logger.getAnonymousLogger().info(reason);
+        Logger.getAnonymousLogger().info(String.valueOf(remote));
+
     }
 
     @Override
     public void onError(Exception ex) {
-        VaultMapper.LOGGER.error("Something went horribly wrong with the sync websocket");
-        VaultMapper.LOGGER.error(ex.toString());
+        Logger.getAnonymousLogger().info(ex.toString());
     }
+
+    public void closeGracefully() {
+        keepMeOn = false;
+        keepConnectedTimer.cancel();
+        this.close();
+    }
+
+    public void sendMapData() {
+
+    }
+
+    public void sendMapPing() {
+
+    }
+
+    public void sendPlayerData(String name, int cellX, int cellY, float rotation) {
+        if (this.isOpen()) this.send("player:" + name + ":" + cellX + ":" + cellY + ":" + rotation);
+    }
+
 }
