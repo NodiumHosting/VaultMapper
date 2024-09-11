@@ -91,7 +91,7 @@ public class VaultMap {
         return x >= -24 && x <= 24 && z >= -24 && z <= 24;
     }
 
-    private static CellType getCellType(int x, int z) {
+    public static CellType getCellType(int x, int z) {
         if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
             return CellType.ROOM;
         } else if (abs(x) % 2 == 1 && abs(z) % 2 == 1) { //void
@@ -101,7 +101,7 @@ public class VaultMap {
         }
     }
 
-    private static TunnelType getTunnelType(int x, int z) {
+    public static TunnelType getTunnelType(int x, int z) {
         if (abs(x) % 2 == 1 && z % 2 == 0) {
             return TunnelType.X_FACING;
         } else {
@@ -148,6 +148,11 @@ public class VaultMap {
         sendMap();
     }
 
+    /**
+     * If new cell, adds a cell to the map
+     *
+     * @param cell
+     */
     public static void addCell(VaultCell cell) {
         if (!isNewCell(cell, cells)) return;
         cells.add(cell);
@@ -205,6 +210,7 @@ public class VaultMap {
                 Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size()), false);
             if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
                 updateMap();
+                if (mapSyncClient != null) mapSyncClient.sendCellData(playerRoomX, playerRoomZ);
             }
         }
     }
