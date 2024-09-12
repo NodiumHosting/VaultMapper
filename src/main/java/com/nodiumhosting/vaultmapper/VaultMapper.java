@@ -21,16 +21,14 @@ import java.net.InetSocketAddress;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("vaultmapper")
-public class VaultMapper
-{
+public class VaultMapper {
     public static final String MODID = "vaultmapper";
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static SocketServer wsServer;
 
-    public VaultMapper()
-    {
+    public VaultMapper() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(MarkRoomKeybind::register);
@@ -39,30 +37,29 @@ public class VaultMapper
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, MODID + "-client.toml");
     }
 
-    private void setup(final FMLCommonSetupEvent event)
-    {
+    private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("hallo! (VaultMapper)");
 
-    }
-
-    @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class ModEventListener {
-        @SubscribeEvent
-        public static void registerClientCommands(RegisterClientCommandsEvent event){
-            VaultMapperCommand.register(event.getDispatcher());
-            LOGGER.info("registered client commands");
-        }
     }
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         VaultMapOverlayRenderer.prep();
 
-        InetSocketAddress addr = new InetSocketAddress("localhost", 58008);
+        InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
         wsServer = new SocketServer(addr);
 
         if (ClientConfig.WEBMAP_ENABLED.get()) {
             wsServer.start();
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class ModEventListener {
+        @SubscribeEvent
+        public static void registerClientCommands(RegisterClientCommandsEvent event) {
+            VaultMapperCommand.register(event.getDispatcher());
+            LOGGER.info("registered client commands");
         }
     }
 }
