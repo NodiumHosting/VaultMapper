@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
+    public static boolean ignoreResearchRequirement = false;
     
     static int mapRoomWidth;
 
@@ -30,6 +32,7 @@ public class VaultMapOverlayRenderer {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
+        if(!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
