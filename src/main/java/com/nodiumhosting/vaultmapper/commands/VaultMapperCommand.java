@@ -74,6 +74,7 @@ public class VaultMapperCommand {
                 } else if(args[1].equals("toggleResearchRequirement")){
                     if (!args[2].equals("dfh4564gs4")) {
                         player.sendMessage(new TextComponent(":O cheater!"), player.getUUID());
+                        return Command.SINGLE_SUCCESS;
                     }
                     VaultMapOverlayRenderer.ignoreResearchRequirement = !VaultMapOverlayRenderer.ignoreResearchRequirement;
                     if(VaultMapOverlayRenderer.ignoreResearchRequirement) {
