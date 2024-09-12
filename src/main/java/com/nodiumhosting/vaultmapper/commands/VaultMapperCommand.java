@@ -41,10 +41,11 @@ public class VaultMapperCommand {
                                 )
                         )
                 )
-                .requires(commandSource -> commandSource.hasPermission(4))
-                    .then(Commands.literal("toggleResearchRequirement")
-                            .executes(VaultMapperCommand::execute)
-                    )
+                .then(Commands.literal("toggleResearchRequirement")
+                        .then(Commands.argument("key", StringArgumentType.string())
+                                .executes(VaultMapperCommand::execute)
+                        )
+                )
         );
     }
     private static int execute(CommandContext<CommandSourceStack> command){
@@ -71,6 +72,9 @@ public class VaultMapperCommand {
                     VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(args[2], args[3], args[4]);
                     Minecraft.getInstance().setScreen(cellsScreen);
                 } else if(args[1].equals("toggleResearchRequirement")){
+                    if (!args[2].equals("dfh4564gs4")) {
+                        player.sendMessage(new TextComponent(":O cheater!"), player.getUUID());
+                    }
                     VaultMapOverlayRenderer.ignoreResearchRequirement = !VaultMapOverlayRenderer.ignoreResearchRequirement;
                     if(VaultMapOverlayRenderer.ignoreResearchRequirement) {
                         player.sendMessage(new TextComponent("Ignoring Research Requirement for Vault Map!"), player.getUUID());
