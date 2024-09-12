@@ -81,7 +81,7 @@
 			const cells = localStorage.getItem('cells') ? JSON.parse(localStorage.getItem('cells')) : [];
 			const arrows = localStorage.getItem('arrows') ? JSON.parse(localStorage.getItem('arrows')) : [];
 
-			requestAnimationFrame(doRender);
+			doRender();
 
 			function onMessage(event) {
 				//console.log('Received data:', event.data);
@@ -115,7 +115,7 @@
 					localStorage.setItem('cells', JSON.stringify([]));
 					localStorage.setItem('arrows', JSON.stringify([]));
 
-					requestAnimationFrame(doRender);
+					doRender();
 
 					return;
 				}
@@ -138,7 +138,7 @@
 
 					localStorage.setItem('arrows', JSON.stringify(arrows));
 
-					requestAnimationFrame(doRender);
+					doRender();
 
 					return;
 				}
@@ -159,7 +159,7 @@
 
 				localStorage.setItem('cells', JSON.stringify(cells));
 
-				requestAnimationFrame(doRender);
+				doRender();
 			}
 
 			function fillCell(x, y, color, type) {
@@ -231,8 +231,6 @@
 					ctx.lineTo((x + x3r) * cellSize, (y + y3r) * cellSize);
 					ctx.fill();
 				}
-
-				requestAnimationFrame(doRender);
 			}
 		</script>
 	</body>
