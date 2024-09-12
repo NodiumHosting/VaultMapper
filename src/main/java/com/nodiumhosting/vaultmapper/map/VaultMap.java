@@ -36,6 +36,18 @@ public class VaultMap {
     static List<VaultCell> inscriptionRooms = new ArrayList<>();
     static List<VaultCell> markedRooms = new ArrayList<>();
 
+    public static List<VaultCell> getCells() {
+        return cells;
+    }
+
+    public static List<VaultCell> getInscriptionRooms() {
+        return inscriptionRooms;
+    }
+
+    public static List<VaultCell> getMarkedRooms() {
+        return markedRooms;
+    }
+
     static VaultCell startRoom = new VaultCell();
     static VaultCell currentRoom; // might not be needed
 

@@ -2,9 +2,12 @@ package com.nodiumhosting.vaultmapper.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.nodiumhosting.vaultmapper.gui.screen.VaultMapperEndVaultScreen;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
@@ -29,10 +32,19 @@ public class VaultMapperCommand {
                 .then(Commands.literal("disabledebug")
                         .executes(VaultMapperCommand::execute)
                 )
-                .requires(commandSource -> commandSource.hasPermission(4))
-                        .then(Commands.literal("toggleResearchRequirement")
-                                .executes(VaultMapperCommand::execute)
+                .then(Commands.literal("renderMap")
+                        .then(Commands.argument("cellsJsonBase64", StringArgumentType.string())
+                                .then(Commands.argument("inscriptionRoomsJsonBase64", StringArgumentType.string())
+                                        .then(Commands.argument("markedRoomsJsonBase64", StringArgumentType.string())
+                                                .executes(VaultMapperCommand::execute)
+                                        )
+                                )
                         )
+                )
+                .requires(commandSource -> commandSource.hasPermission(4))
+                    .then(Commands.literal("toggleResearchRequirement")
+                            .executes(VaultMapperCommand::execute)
+                    )
         );
     }
     private static int execute(CommandContext<CommandSourceStack> command){
@@ -55,6 +67,9 @@ public class VaultMapperCommand {
                     VaultMap.debug = true;
                 } else if(args[1].equals("disabledebug")){
                     VaultMap.debug = false;
+                } else if(args[1].equals("renderMap")){
+                    VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(args[2], args[3], args[4]);
+                    Minecraft.getInstance().setScreen(cellsScreen);
                 } else if(args[1].equals("toggleResearchRequirement")){
                     VaultMapOverlayRenderer.ignoreResearchRequirement = !VaultMapOverlayRenderer.ignoreResearchRequirement;
                     if(VaultMapOverlayRenderer.ignoreResearchRequirement) {
