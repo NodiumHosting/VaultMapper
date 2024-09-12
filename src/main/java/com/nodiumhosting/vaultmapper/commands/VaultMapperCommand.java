@@ -29,6 +29,10 @@ public class VaultMapperCommand {
                 .then(Commands.literal("disabledebug")
                         .executes(VaultMapperCommand::execute)
                 )
+                .requires(commandSource -> commandSource.hasPermission(4))
+                        .then(Commands.literal("toggleResearchRequirement")
+                                .executes(VaultMapperCommand::execute)
+                        )
         );
     }
     private static int execute(CommandContext<CommandSourceStack> command){
@@ -51,6 +55,13 @@ public class VaultMapperCommand {
                     VaultMap.debug = true;
                 } else if(args[1].equals("disabledebug")){
                     VaultMap.debug = false;
+                } else if(args[1].equals("toggleResearchRequirement")){
+                    VaultMapOverlayRenderer.ignoreResearchRequirement = !VaultMapOverlayRenderer.ignoreResearchRequirement;
+                    if(VaultMapOverlayRenderer.ignoreResearchRequirement) {
+                        player.sendMessage(new TextComponent("Ignoring Research Requirement for Vault Map!"), player.getUUID());
+                    } else {
+                        player.sendMessage(new TextComponent("No longer Ignoring Research Requirement for Vault Map"), player.getUUID());
+                    }
                 } else {
                     player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
                 }

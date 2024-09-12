@@ -2,6 +2,7 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -228,6 +229,10 @@ public class VaultMap {
             ClientConfig.MAP_ENABLED.set(false);
             player.sendMessage(new TextComponent("Vault Map rendering disabled"), player.getUUID());
         } else {
+            if(!ResearchUtil.hasResearch("Vault Compass") && !VaultMapOverlayRenderer.ignoreResearchRequirement) {
+                player.sendMessage(new TextComponent("Cannot enable. The Research \"Vault Compass\" is not unlocked."), player.getUUID());
+                return;
+            }
             ClientConfig.MAP_ENABLED.set(true);
             player.sendMessage(new TextComponent("Vault Map rendering enabled"), player.getUUID());
         }
