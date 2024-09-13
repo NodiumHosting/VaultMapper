@@ -48,9 +48,9 @@ public class MapSnapshot {
     }
 
     public static MapSnapshot takeSnapshot() {
-        List<VaultCell> cells = VaultMap.getCells();
-        List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
-        List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
+        ArrayList<VaultCell> cells = new ArrayList<>(VaultMap.getCells());
+        ArrayList<VaultCell> inscriptionRooms = new ArrayList<>(VaultMap.getInscriptionRooms());
+        ArrayList<VaultCell> markedRooms = new ArrayList<>(VaultMap.getMarkedRooms());
         return new MapSnapshot(cells,inscriptionRooms,markedRooms);
     }
 
