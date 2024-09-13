@@ -32,7 +32,6 @@ public class DimensionChangeEvent {
 
         }
         else {
-            if (VaultMap.enabled) {
                 //exiting vault
                 VaultMap.enabled = false;
                 VaultMapOverlayRenderer.enabled = false;
@@ -53,7 +52,5 @@ public class DimensionChangeEvent {
                 component.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vaultmapper renderMap " + base64Cells + " " + base64InscriptionRooms + " " + base64MarkedRooms)));
                 event.getNewPlayer().displayClientMessage(component, false);
             }
-
-        }
     }
 }
