@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.nodiumhosting.vaultmapper.Snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,18 +20,12 @@ public class VaultMapperEndVaultScreen extends Screen {
     private final List<VaultCell> inscriptionRooms;
     private final List<VaultCell> markedRooms;
 
-    public VaultMapperEndVaultScreen(String cellsJson, String inscriptionRoomsJson, String markedRoomsJson) {
+    public VaultMapperEndVaultScreen(MapSnapshot snapshot) {
         super(new TextComponent(""));
 
-        String newCellsJson = new String(java.util.Base64.getDecoder().decode(cellsJson.replaceAll("-", "=")));
-        String newInscriptionRoomsJson = new String(java.util.Base64.getDecoder().decode(inscriptionRoomsJson.replaceAll("-", "=")));
-        String newMarkedRoomsJson = new String(java.util.Base64.getDecoder().decode(markedRoomsJson.replaceAll("-", "=")));
-
-        Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<VaultCell>>(){}.getType();
-        cells = gson.fromJson(newCellsJson, listType);
-        inscriptionRooms = gson.fromJson(newInscriptionRoomsJson, listType);
-        markedRooms = gson.fromJson(newMarkedRoomsJson, listType);
+        cells = snapshot.cells;
+        inscriptionRooms = snapshot.inscriptionRooms;
+        markedRooms = snapshot.markedRooms;
     }
 
     protected void init() {
