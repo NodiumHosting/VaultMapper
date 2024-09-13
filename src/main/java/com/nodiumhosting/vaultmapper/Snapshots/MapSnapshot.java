@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapperEndVaultScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import net.minecraft.client.Minecraft;
 
 import java.io.*;
@@ -44,6 +45,13 @@ public class MapSnapshot {
         } catch (FileNotFoundException e) {
             VaultMapper.LOGGER.error("Couldn't read map save file");
         }
+    }
+
+    public static MapSnapshot takeSnapshot() {
+        List<VaultCell> cells = VaultMap.getCells();
+        List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
+        List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
+        return new MapSnapshot(cells,inscriptionRooms,markedRooms);
     }
 
     public static void writeToJsonFile() {

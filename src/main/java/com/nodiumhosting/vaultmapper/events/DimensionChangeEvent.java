@@ -22,10 +22,8 @@ public class DimensionChangeEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onDimChange(ClientPlayerNetworkEvent.RespawnEvent event) {
         String dimensionNamespace = event.getNewPlayer().level.dimension().location().getNamespace();
-        List<VaultCell> cells = VaultMap.getCells();
-        List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
-        List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
-        MapSnapshot.lastSnapshotCache = new MapSnapshot(cells,inscriptionRooms,markedRooms);
+
+        MapSnapshot.lastSnapshotCache = MapSnapshot.takeSnapshot();
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {
@@ -37,6 +35,11 @@ public class DimensionChangeEvent {
                 //exiting vault
                 VaultMap.enabled = false;
                 VaultMapOverlayRenderer.enabled = false;
+
+                //map chat message, keeping here for debugging
+                List<VaultCell> cells = VaultMap.getCells();
+                List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
+                List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
 
                 //serialize cells
                 Gson gson = new Gson();
