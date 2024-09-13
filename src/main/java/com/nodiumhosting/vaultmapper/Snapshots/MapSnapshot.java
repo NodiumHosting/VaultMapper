@@ -20,6 +20,15 @@ public class MapSnapshot {
 
     public static final int maxMaps = 50;
 
+    public static MapSnapshot lastSnapshotCache;
+
+    public static void onVaultExit(UUID vaultUUID) {
+        if (lastSnapshotCache == null) {
+            return;
+        }
+        MapSnapshot.addMap(vaultUUID,lastSnapshotCache);
+    }
+
     public static void readFromJsonFile() {
         File savedMapsFile = new File(mapSavePath);
         if (!savedMapsFile.exists()) {

@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.events;
 
 import com.google.gson.Gson;
+import com.nodiumhosting.vaultmapper.Snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -24,6 +25,7 @@ public class DimensionChangeEvent {
         List<VaultCell> cells = VaultMap.getCells();
         List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
         List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
+        MapSnapshot.lastSnapshotCache = new MapSnapshot(cells,inscriptionRooms,markedRooms);
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {
