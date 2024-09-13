@@ -40,7 +40,7 @@ public class MapSnapshot {
         Gson gson = new Gson();
         try {
             FileReader reader = new FileReader(mapSavePath);
-            savedMaps = gson.fromJson(reader, (Type) MapSnapshot.class);
+            savedMaps = gson.fromJson(reader, LinkedHashMap.class);
         } catch (FileNotFoundException e) {
             VaultMapper.LOGGER.error("Couldn't read map save file");
         }
