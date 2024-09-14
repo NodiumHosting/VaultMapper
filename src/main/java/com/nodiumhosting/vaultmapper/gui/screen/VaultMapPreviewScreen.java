@@ -39,7 +39,7 @@ public class VaultMapPreviewScreen extends Screen {
         this.fillGradient(pose, x + 1, y + 1, x + w - 1, y + h - 1, 0xFFC6C6C6, 0xFFC6C6C6);
 
         //draw string saying how many of the cell types there are
-        int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM).toArray().length;
+        int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).toArray().length;
         int inscriptionCount = cells.stream().filter(cell -> cell.inscripted).toArray().length;
         int markedCount = cells.stream().filter(cell -> cell.marked).toArray().length;
         this.font.drawShadow(pose, "Explored Rooms: " + cellCount, x + 5, y + 5, 0xFFFFFF);

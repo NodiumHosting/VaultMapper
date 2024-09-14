@@ -97,7 +97,11 @@ public class VaultMap {
     private static boolean isNewCell(VaultCell new_cell, List<VaultCell> cell_list) {
         AtomicBoolean isNew = new AtomicBoolean(true);
         cell_list.forEach((cell) -> {
-            if (cell.x == new_cell.x && cell.z == new_cell.z) isNew.set(false);
+            if (cell.x == new_cell.x && cell.z == new_cell.z) {
+                isNew.set(false);
+
+                cell.setExplored(true);
+            };
         });
         return isNew.get();
     }
@@ -120,6 +124,7 @@ public class VaultMap {
         }
         newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, roomType); // update current room
         currentRoom = newCell;
+        newCell.setExplored(true);
 
         if (isNewCell(newCell, cells)) {
             if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
@@ -128,7 +133,9 @@ public class VaultMap {
                 VaultMapOverlayRenderer.updateAnchor();
             }
 
-            cells.add(newCell);
+            if (cellType != CellType.NONE) {
+                cells.add(newCell);
+            }
         }
         sendMap();
     }
@@ -189,7 +196,6 @@ public class VaultMap {
             player.sendMessage(new TextComponent("You can't mark the start room"), player.getUUID());
             return;
         }
-        // RoomType.START
 
         if (getCellType(playerRoomX, playerRoomZ) == CellType.ROOM) {
             boolean marked = cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow().switchMarked();
@@ -198,7 +204,6 @@ public class VaultMap {
             } else {
                 player.sendMessage(new TextComponent("Room unmarked"), player.getUUID());
             }
-
         } else {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
