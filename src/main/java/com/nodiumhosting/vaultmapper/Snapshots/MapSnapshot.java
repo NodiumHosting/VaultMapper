@@ -38,10 +38,12 @@ public class MapSnapshot {
             VaultMapper.LOGGER.info("Map saves file created");
             return;
         }
+
         Gson gson = new Gson();
         try {
             FileReader reader = new FileReader(mapSavePath);
-            savedMaps = gson.fromJson(reader, LinkedHashMap.class);
+            Type saveType = new TypeToken<LinkedHashMap<UUID, MapSnapshot>>() {}.getType();
+            savedMaps = gson.fromJson(reader, saveType);
         } catch (FileNotFoundException e) {
             VaultMapper.LOGGER.error("Couldn't read map save file");
         }
