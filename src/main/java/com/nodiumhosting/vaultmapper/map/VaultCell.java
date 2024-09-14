@@ -14,4 +14,12 @@ public class VaultCell {
         this.cellType = cellType;
         this.roomType = roomType;
     }
+
+    /**
+     * @return Result of operation (true if switched from off to on)
+     */
+    public boolean switchMarked() {
+        this.marked = !this.marked;
+        return this.marked;
+    }
 }
