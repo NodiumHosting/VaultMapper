@@ -32,21 +32,18 @@ public class VaultMap {
     public static boolean debug;
 
     static List<VaultCell> cells = new ArrayList<>();
-
-    public static List<VaultCell> getCells() {
-        return cells;
-    }
-
     static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
     static VaultCell currentRoom; // might not be needed
-
     static int defaultMapSize = 21; // map size in cells
     static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
-
     static int currentMapSize = defaultMapSize;
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
+
+    public static List<VaultCell> getCells() {
+        return cells;
+    }
 
     public static void resetMap() {
         cells = new ArrayList<>();
@@ -105,6 +102,9 @@ public class VaultMap {
         return isNew.get();
     }
 
+    /**
+     * Updates the map data and sends it to connected web clients (like OBS)
+     */
     private static void updateMap() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -137,8 +137,6 @@ public class VaultMap {
         VaultMap.cells.forEach((cell) -> {
             VaultMapper.wsServer.sendData(cell, getCellColor(cell));
         });
-
-        //VaultMapper.wsServer.sendData(VaultMap.currentRoom, "#00FF00");
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -194,20 +192,13 @@ public class VaultMap {
         // RoomType.START
 
         if (getCellType(playerRoomX, playerRoomZ) == CellType.ROOM) {
-            for (VaultCell cell : cells) {
-                if (cell.cellType != CellType.ROOM) {
-                    player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
-                    return;
-                }
-                if (cell.x == playerRoomX && cell.z == playerRoomZ) {
-                    cell.marked = !cell.marked;
-                    if (cell.marked) {
-                        player.sendMessage(new TextComponent("Room marked"), player.getUUID());
-                    } else {
-                        player.sendMessage(new TextComponent("Room unmarked"), player.getUUID());
-                    }
-                }
+            boolean marked = cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow().switchMarked();
+            if (marked) {
+                player.sendMessage(new TextComponent("Room marked"), player.getUUID());
+            } else {
+                player.sendMessage(new TextComponent("Room unmarked"), player.getUUID());
             }
+
         } else {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
@@ -227,7 +218,7 @@ public class VaultMap {
             ClientConfig.MAP_ENABLED.set(false);
             player.sendMessage(new TextComponent("Vault Map rendering disabled"), player.getUUID());
         } else {
-            if(!ResearchUtil.hasResearch("Vault Compass") && !VaultMapOverlayRenderer.ignoreResearchRequirement) {
+            if (!ResearchUtil.hasResearch("Vault Compass") && !VaultMapOverlayRenderer.ignoreResearchRequirement) {
                 player.sendMessage(new TextComponent("Cannot enable. The Research \"Vault Compass\" is not unlocked."), player.getUUID());
                 return;
             }
