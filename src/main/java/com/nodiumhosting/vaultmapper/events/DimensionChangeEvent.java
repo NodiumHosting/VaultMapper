@@ -21,12 +21,11 @@ public class DimensionChangeEvent {
         if (dimensionNamespace.equals("the_vault")) {
             VaultMap.enabled = true;
             VaultMapOverlayRenderer.enabled = true;
-
         }
         else {
-                //exiting vault
-                VaultMap.enabled = false;
-                VaultMapOverlayRenderer.enabled = false;
-            }
+            //exiting vault
+            VaultMap.enabled = false;
+            VaultMapOverlayRenderer.enabled = false;
+        }
     }
 }

@@ -50,21 +50,8 @@ public class VaultMapOverlayRenderer {
 
         // cell map
         VaultMap.cells.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.ROOM_COLOR.get()));
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
-
-        // start room
-        renderCell(bufferBuilder, VaultMap.startRoom, parseColor(ClientConfig.START_ROOM_COLOR.get()));
-
-        // inscription rooms
-        VaultMap.inscriptionRooms.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()));
-        });
-
-        // marked rooms
-        VaultMap.markedRooms.forEach((cell -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()));
-        }));
 
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
@@ -133,15 +120,15 @@ public class VaultMapOverlayRenderer {
     }
 
     private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
-        if (cell.type != CellType.NONE) {
+        if (cell.cellType != CellType.NONE) {
             int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             int startX;
             int startZ;
             int endX;
             int endZ;
-            if (cell.type == CellType.TUNNEL) {
-                if (cell.tType == TunnelType.X_FACING) {
+            if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
+                if (cell.cellType == CellType.TUNNEL_X) { // X facing
                     startX = mapX - 2;
                     startZ = mapZ - 1;
                     endX = mapX + 2;

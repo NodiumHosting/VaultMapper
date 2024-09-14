@@ -14,8 +14,6 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class MapSnapshot {
-
-
     public static LinkedHashMap<UUID,MapSnapshot> savedMaps;
 
     public static final String mapSavePath = "config/vaultmaps.json";
@@ -52,9 +50,7 @@ public class MapSnapshot {
 
     public static MapSnapshot takeSnapshot() {
         ArrayList<VaultCell> cells = new ArrayList<>(VaultMap.getCells());
-        ArrayList<VaultCell> inscriptionRooms = new ArrayList<>(VaultMap.getInscriptionRooms());
-        ArrayList<VaultCell> markedRooms = new ArrayList<>(VaultMap.getMarkedRooms());
-        return new MapSnapshot(cells,inscriptionRooms,markedRooms);
+        return new MapSnapshot(cells);
     }
 
     public static void writeToJsonFile() {
@@ -100,29 +96,11 @@ public class MapSnapshot {
     }
 
     public List<VaultCell> cells;
-    public List<VaultCell> inscriptionRooms;
-    public List<VaultCell> markedRooms;
     public boolean isFavorite = false;
-    public MapSnapshot() {
-
-    }
-    public MapSnapshot(List<VaultCell> cells, List<VaultCell> inscriptionRooms, List<VaultCell> markedRooms) {
+    public MapSnapshot(List<VaultCell> cells) {
         this.cells = cells;
-        this.inscriptionRooms = inscriptionRooms;
-        this.markedRooms = markedRooms;
     }
 
-    public MapSnapshot(String cellsJson, String inscriptionRoomsJson, String markedRoomsJson) {
-        String newCellsJson = new String(java.util.Base64.getDecoder().decode(cellsJson.replaceAll("-", "=")));
-        String newInscriptionRoomsJson = new String(java.util.Base64.getDecoder().decode(inscriptionRoomsJson.replaceAll("-", "=")));
-        String newMarkedRoomsJson = new String(java.util.Base64.getDecoder().decode(markedRoomsJson.replaceAll("-", "=")));
-
-        Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<VaultCell>>(){}.getType();
-        cells = gson.fromJson(newCellsJson, listType);
-        inscriptionRooms = gson.fromJson(newInscriptionRoomsJson, listType);
-        markedRooms = gson.fromJson(newMarkedRoomsJson, listType);
-    }
     public void openScreen(Optional<Screen> previousScreen) {
         VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(this, previousScreen);
         Minecraft.getInstance().setScreen(cellsScreen);

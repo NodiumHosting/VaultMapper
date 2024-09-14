@@ -3,9 +3,7 @@ package com.nodiumhosting.vaultmapper.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
-import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.*;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
@@ -15,8 +13,6 @@ import java.util.Optional;
 
 public class VaultMapPreviewScreen extends Screen {
     private final List<VaultCell> cells;
-    private final List<VaultCell> inscriptionRooms;
-    private final List<VaultCell> markedRooms;
 
     private final Optional<Screen> lastScreen;
 
@@ -24,8 +20,6 @@ public class VaultMapPreviewScreen extends Screen {
         super(new TextComponent(""));
 
         cells = snapshot.cells;
-        inscriptionRooms = snapshot.inscriptionRooms;
-        markedRooms = snapshot.markedRooms;
 
         lastScreen = previousScreen;
     }
@@ -45,9 +39,9 @@ public class VaultMapPreviewScreen extends Screen {
         this.fillGradient(pose, x + 1, y + 1, x + w - 1, y + h - 1, 0xFFC6C6C6, 0xFFC6C6C6);
 
         //draw string saying how many of the cell types there are
-        int cellCount = cells.stream().filter(cell -> cell.tType == TunnelType.NONE).toArray().length;
-        int inscriptionCount = inscriptionRooms.size();
-        int markedCount = markedRooms.size();
+        int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM).toArray().length;
+        int inscriptionCount = cells.stream().filter(cell -> cell.inscripted).toArray().length;
+        int markedCount = cells.stream().filter(cell -> cell.marked).toArray().length;
         this.font.drawShadow(pose, "Explored Rooms: " + cellCount, x + 5, y + 5, 0xFFFFFF);
         this.font.drawShadow(pose, "Inscription Rooms: " + inscriptionCount, x + 5, y + 15, 0xFFFFFF);
         this.font.drawShadow(pose, "Marked Rooms: " + markedCount, x + 5, y + 25, 0xFFFFFF);
@@ -63,27 +57,8 @@ public class VaultMapPreviewScreen extends Screen {
 
         // cell map
         cells.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.ROOM_COLOR.get()));
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
-
-        // start room
-        renderCell(bufferBuilder, new VaultCell() {
-            {
-                x = 0;
-                z = 0;
-                type = CellType.ROOM;
-            }
-        }, parseColor(ClientConfig.START_ROOM_COLOR.get()));
-
-        // inscription rooms
-        inscriptionRooms.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()));
-        });
-
-        // marked rooms
-        markedRooms.forEach((cell -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()));
-        }));
 
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
@@ -97,7 +72,7 @@ public class VaultMapPreviewScreen extends Screen {
     }
 
     private void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
-        if (cell.type != CellType.NONE) {
+        if (cell.cellType != CellType.NONE) {
             int mapRoomWidth = 250 / 49;
             int centerX = this.width / 2;
             int centerZ = this.height / 2;
@@ -107,8 +82,8 @@ public class VaultMapPreviewScreen extends Screen {
             int startZ;
             int endX;
             int endZ;
-            if (cell.type == CellType.TUNNEL) {
-                if (cell.tType == TunnelType.X_FACING) {
+            if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
+                if (cell.cellType == CellType.TUNNEL_X) { // X facing
                     startX = mapX - (mapRoomWidth / 2);
                     startZ = mapZ - (mapRoomWidth / 4);
                     endX = mapX + (mapRoomWidth / 2);

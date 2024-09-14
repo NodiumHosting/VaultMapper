@@ -1,7 +1,8 @@
 package com.nodiumhosting.vaultmapper.map;
 
-public enum CellType{
+public enum CellType {
+    NONE,
     ROOM,
-    TUNNEL,
-    NONE
+    TUNNEL_X,
+    TUNNEL_Z
 }

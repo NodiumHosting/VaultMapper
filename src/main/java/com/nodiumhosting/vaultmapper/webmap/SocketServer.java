@@ -1,9 +1,7 @@
 package com.nodiumhosting.vaultmapper.webmap;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
-import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.CellType;
-import com.nodiumhosting.vaultmapper.map.TunnelType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -50,13 +48,12 @@ public class SocketServer extends WebSocketServer {
 
     public void sendData(VaultCell cell, String color) {
         wslist.forEach((conn) -> {
-            if (cell.type == CellType.ROOM) {
+            if (cell.cellType == CellType.ROOM) {
                 conn.send("room:" + cell.x + ":" + cell.z + ":" + color);
             } else {
-                if (cell.tType == TunnelType.X_FACING) {
+                if (cell.cellType == CellType.TUNNEL_X) {
                     conn.send("tunnelX:"+cell.x+":"+cell.z+":"+color);
-                }
-                else {
+                } else {
                     conn.send("tunnelZ:"+cell.x+":"+cell.z+":"+color);
                 }
             }
