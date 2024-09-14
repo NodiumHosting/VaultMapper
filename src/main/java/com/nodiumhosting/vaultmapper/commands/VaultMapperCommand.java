@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.nodiumhosting.vaultmapper.Snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapperEndVaultScreen;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -69,8 +70,9 @@ public class VaultMapperCommand {
                 } else if(args[1].equals("disabledebug")){
                     VaultMap.debug = false;
                 } else if(args[1].equals("renderMap")){
-                    VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(args[2], args[3], args[4]);
-                    Minecraft.getInstance().setScreen(cellsScreen);
+                    new MapSnapshot(args[2],args[3],args[4]).openScreen();
+                    //VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(new MapSnapshot(args[2], args[3], args[4]));
+                    //Minecraft.getInstance().setScreen(cellsScreen);
                 } else if(args[1].equals("toggleResearchRequirement")){
                     if (!args[2].equals("dfh4564gs4")) {
                         player.sendMessage(new TextComponent(":O cheater!"), player.getUUID());

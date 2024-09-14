@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.events;
 
 import com.google.gson.Gson;
+import com.nodiumhosting.vaultmapper.Snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -22,35 +23,39 @@ public class DimensionChangeEvent {
     public static void onDimChange(ClientPlayerNetworkEvent.RespawnEvent event) {
         String dimensionNamespace = event.getNewPlayer().level.dimension().location().getNamespace();
 
-        List<VaultCell> cells = VaultMap.getCells();
-        List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
-        List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
-
+        MapSnapshot.lastSnapshotCache = MapSnapshot.takeSnapshot();
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {
             VaultMap.enabled = true;
             VaultMapOverlayRenderer.enabled = true;
+
         }
         else {
-            VaultMap.enabled = false;
-            VaultMapOverlayRenderer.enabled = false;
+                //exiting vault
+                VaultMap.enabled = false;
+                VaultMapOverlayRenderer.enabled = false;
 
-            //serialize cells
-            Gson gson = new Gson();
-            String cellsJson = gson.toJson(cells);
-            String inscriptionRoomsJson = gson.toJson(inscriptionRooms);
-            String markedRoomsJson = gson.toJson(markedRooms);
+                //map chat message, keeping here for debugging
+                List<VaultCell> cells = VaultMap.getCells();
+                List<VaultCell> inscriptionRooms = VaultMap.getInscriptionRooms();
+                List<VaultCell> markedRooms = VaultMap.getMarkedRooms();
 
-            String base64Cells = java.util.Base64.getEncoder().encodeToString(cellsJson.getBytes()).replaceAll("=", "-");
-            String base64InscriptionRooms = java.util.Base64.getEncoder().encodeToString(inscriptionRoomsJson.getBytes()).replaceAll("=", "-");
-            String base64MarkedRooms = java.util.Base64.getEncoder().encodeToString(markedRoomsJson.getBytes()).replaceAll("=", "-");
+                //serialize cells
+                Gson gson = new Gson();
+                String cellsJson = gson.toJson(cells);
+                String inscriptionRoomsJson = gson.toJson(inscriptionRooms);
+                String markedRoomsJson = gson.toJson(markedRooms);
 
-            TextComponent component = new TextComponent("[Open Vault Map]");
-            component.withStyle(ChatFormatting.GRAY);
-            component.withStyle(ChatFormatting.UNDERLINE);
-            component.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vaultmapper renderMap " + base64Cells + " " + base64InscriptionRooms + " " + base64MarkedRooms)));
-            event.getNewPlayer().displayClientMessage(component, false);
-        }
+                String base64Cells = java.util.Base64.getEncoder().encodeToString(cellsJson.getBytes()).replaceAll("=", "-");
+                String base64InscriptionRooms = java.util.Base64.getEncoder().encodeToString(inscriptionRoomsJson.getBytes()).replaceAll("=", "-");
+                String base64MarkedRooms = java.util.Base64.getEncoder().encodeToString(markedRoomsJson.getBytes()).replaceAll("=", "-");
+
+                TextComponent component = new TextComponent("[Open Vault Map]");
+                component.withStyle(ChatFormatting.GRAY);
+                component.withStyle(ChatFormatting.UNDERLINE);
+                component.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vaultmapper renderMap " + base64Cells + " " + base64InscriptionRooms + " " + base64MarkedRooms)));
+                event.getNewPlayer().displayClientMessage(component, false);
+            }
     }
 }

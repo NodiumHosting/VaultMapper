@@ -8,7 +8,8 @@
   ],
   "client": [
     "OptionsScreenConfigButtonMixin",
-    "WindowMixin"
+    "WindowMixin",
+    "VaultEndScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
