@@ -171,8 +171,9 @@ public class VaultMap {
         VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
         if (isWithinBounds(playerRoomX, playerRoomZ)) {
-            if (debug)
-                Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size()), false);
+            if (debug) {
+                Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored) + " Explored Rooms)"), false);
+            }
             if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
                 updateMap();
             }
