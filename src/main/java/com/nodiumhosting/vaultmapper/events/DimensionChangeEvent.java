@@ -1,7 +1,7 @@
 package com.nodiumhosting.vaultmapper.events;
 
 import com.google.gson.Gson;
-import com.nodiumhosting.vaultmapper.Snapshots.MapSnapshot;
+import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
