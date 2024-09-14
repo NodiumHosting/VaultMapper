@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
     public static boolean ignoreResearchRequirement = false;
-    
+
     static int mapRoomWidth;
 
     static boolean prepped = false;
@@ -32,7 +32,7 @@ public class VaultMapOverlayRenderer {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
-        if(!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
+        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
@@ -47,9 +47,14 @@ public class VaultMapOverlayRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        
+        // Tunnel map
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z).forEach((cell) -> {
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
+        });
 
         // cell map
-        VaultMap.cells.forEach((cell) -> {
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
 
@@ -57,7 +62,7 @@ public class VaultMapOverlayRenderer {
         BufferUploader.end(bufferBuilder); // render the map
 
         // player thingy
-        if(VaultMap.currentRoom != null) {
+        if (VaultMap.currentRoom != null) {
             int mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
             int mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
             var triag = getRotatedTriangle();
