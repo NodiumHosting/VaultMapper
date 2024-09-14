@@ -5,23 +5,29 @@ import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.*;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
+import java.util.Optional;
 
-public class VaultMapperEndVaultScreen extends Screen {
+public class VaultMapPreviewScreen extends Screen {
     private final List<VaultCell> cells;
     private final List<VaultCell> inscriptionRooms;
     private final List<VaultCell> markedRooms;
 
-    public VaultMapperEndVaultScreen(MapSnapshot snapshot) {
+    private final Optional<Screen> lastScreen;
+
+    public VaultMapPreviewScreen(MapSnapshot snapshot, Optional<Screen> previousScreen) {
         super(new TextComponent(""));
 
         cells = snapshot.cells;
         inscriptionRooms = snapshot.inscriptionRooms;
         markedRooms = snapshot.markedRooms;
+
+        lastScreen = previousScreen;
     }
 
     protected void init() {
@@ -137,6 +143,10 @@ public class VaultMapperEndVaultScreen extends Screen {
 
         // Call last in case it interferes with the override
         super.onClose();
+
+        if (lastScreen.isPresent()) {
+            this.minecraft.setScreen(lastScreen.get());
+        }
     }
 
     @Override
@@ -145,7 +155,6 @@ public class VaultMapperEndVaultScreen extends Screen {
 
         // Call last in case it interferes with the override
         super.removed();
-
     }
 
     // copied block from overlay renderer, should move elsewhere

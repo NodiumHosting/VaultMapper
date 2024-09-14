@@ -3,10 +3,11 @@ package com.nodiumhosting.vaultmapper.snapshots;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
-import com.nodiumhosting.vaultmapper.gui.screen.VaultMapperEndVaultScreen;
+import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -122,10 +123,8 @@ public class MapSnapshot {
         inscriptionRooms = gson.fromJson(newInscriptionRoomsJson, listType);
         markedRooms = gson.fromJson(newMarkedRoomsJson, listType);
     }
-    public void openScreen() {
-        VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(this);
+    public void openScreen(Optional<Screen> previousScreen) {
+        VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(this, previousScreen);
         Minecraft.getInstance().setScreen(cellsScreen);
     }
-
-
 }

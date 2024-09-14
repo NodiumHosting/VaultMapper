@@ -12,6 +12,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.Optional;
+
 public class VaultMapperCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher){
         dispatcher.register(Commands.literal("vaultmapper")
@@ -30,15 +32,6 @@ public class VaultMapperCommand {
                 )
                 .then(Commands.literal("disabledebug")
                         .executes(VaultMapperCommand::execute)
-                )
-                .then(Commands.literal("renderMap")
-                        .then(Commands.argument("cellsJsonBase64", StringArgumentType.string())
-                                .then(Commands.argument("inscriptionRoomsJsonBase64", StringArgumentType.string())
-                                        .then(Commands.argument("markedRoomsJsonBase64", StringArgumentType.string())
-                                                .executes(VaultMapperCommand::execute)
-                                        )
-                                )
-                        )
                 )
                 .then(Commands.literal("toggleResearchRequirement")
                         .then(Commands.argument("key", StringArgumentType.string())
@@ -67,10 +60,6 @@ public class VaultMapperCommand {
                     VaultMap.debug = true;
                 } else if(args[1].equals("disabledebug")){
                     VaultMap.debug = false;
-                } else if(args[1].equals("renderMap")){
-                    new MapSnapshot(args[2],args[3],args[4]).openScreen();
-                    //VaultMapperEndVaultScreen cellsScreen = new VaultMapperEndVaultScreen(new MapSnapshot(args[2], args[3], args[4]));
-                    //Minecraft.getInstance().setScreen(cellsScreen);
                 } else if(args[1].equals("toggleResearchRequirement")){
                     if (!args[2].equals("dfh4564gs4")) {
                         player.sendMessage(new TextComponent(":O cheater!"), player.getUUID());

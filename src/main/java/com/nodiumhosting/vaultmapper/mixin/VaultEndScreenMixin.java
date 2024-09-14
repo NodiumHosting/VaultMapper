@@ -61,7 +61,7 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
         );
         this.openMapButton = this.addElement(
                 new ButtonElement<>(Spatials.zero(), ScreenTextures.BUTTON_CLOSE_TEXTURES, () -> {
-                    optMap.get().openScreen();
+                    optMap.get().openScreen(Optional.of(instance));
                 })
                         .layout(
                                 (screen, gui, parent, world) -> world.width(52)
