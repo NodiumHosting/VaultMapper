@@ -258,8 +258,9 @@ public class VaultMap {
             BlockEntity hologramBlock = Objects.requireNonNull(Objects.requireNonNull(Minecraft.getInstance().player).getLevel()).getBlockEntity(hologramBlockPos);
             CompoundTag hologramData = Objects.requireNonNull(hologramBlock).serializeNBT();
 
-            if (debug)
-                Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
+//            if (debug) {
+//                Minecraft.getInstance().player.sendMessage(new TextComponent("Hologram block: " + hologramData), UUID.randomUUID());
+//            }
 
             // vaultDirection = direction;
 
