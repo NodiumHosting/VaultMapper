@@ -1,7 +1,6 @@
 package com.nodiumhosting.vaultmapper.mixin;
 
 
-import com.nodiumhosting.vaultmapper.gui.component.VaultExitTabContainerMapElement;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ButtonElement;
@@ -15,6 +14,7 @@ import iskallia.vault.client.gui.framework.spatial.spi.IPosition;
 import iskallia.vault.client.gui.framework.text.LabelTextStyle;
 import iskallia.vault.client.gui.framework.text.TextBorder;
 import iskallia.vault.client.gui.screen.summary.VaultEndScreen;
+import iskallia.vault.client.gui.screen.summary.VaultExitContainerScreenData;
 import iskallia.vault.client.gui.screen.summary.element.*;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.stat.VaultSnapshot;
@@ -46,11 +46,13 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     @Final
     private VaultSnapshot snapshot;
 
+    @Shadow
+    @Final
+    private UUID asPlayer;
+
     public VaultEndScreenMixin(Component title, IElementRenderer elementRenderer, ITooltipRendererFactory<AbstractElementScreen> tooltipRendererFactory) {
         super(title, elementRenderer, tooltipRendererFactory);
     }
-
-    @Shadow
 
     @Inject(method = "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V", at=@At("TAIL"))
     private void addMaps(VaultSnapshot snapshot, Component title, UUID asPlayer, boolean isHistory, boolean fromLink, CallbackInfo ci) {
@@ -121,17 +123,37 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     private Consumer<Integer> addContainerElement(Consumer<Integer> original)
     {
         return index -> {
-            if((int) index == 1) {
-                UUID uuid = snapshot.getEnd().get(Vault.ID);
-                Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
-                if (optMap.isEmpty()) {
-                    return;
-                }
+            if(index == 5) {
                 VaultEndScreen instance = (VaultEndScreen) (Object) this;
-                optMap.get().openScreen(Optional.of(instance));
-                Minecraft.getInstance().getSoundManager().play(
-                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
-                );
+                VaultExitContainerScreenData screenData = new VaultExitContainerScreenData(snapshot, asPlayer);
+
+                CrystalStatsContainerElement crystalStatsContainerElement = (CrystalStatsContainerElement)this.addElement((CrystalStatsContainerElement)(new CrystalStatsContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getModifiers())).layout((screen, gui, parent, world) -> {
+                    world.translateX(gui.left() + 2 - 26 + 7).translateY(instance.getTabContentSpatial().bottom()).width(world.width() + gui.right() - world.x() + 7).height(world.height() + gui.height() - 22);
+                }));
+
+
+
+                LabelElement<?> overviewLabel = (LabelElement)this.addElement((LabelElement)(new LabelElement(Spatials.zero(), (new TextComponent("Vault Map")).withStyle(ChatFormatting.BLACK), LabelTextStyle.left())).layout((screen, gui, parent, world) -> {
+                    world.translateX(gui.left() - 8 - 26 + 13).translateY(48).translateZ(2);
+                }));
+                crystalStatsContainerElement.setEnabled(index == 5);
+                crystalStatsContainerElement.setVisible(index == 5);
+                overviewLabel.setEnabled(index == 5);
+                overviewLabel.setVisible(index == 5);
+
+
+
+
+//                UUID uuid = snapshot.getEnd().get(Vault.ID);
+//                Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
+//                if (optMap.isEmpty()) {
+//                    return;
+//                }
+//                VaultEndScreen instance = (VaultEndScreen) (Object) this;
+//                optMap.get().openScreen(Optional.of(instance));
+//                Minecraft.getInstance().getSoundManager().play(
+//                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+//                );
             }
             original.accept(index);
         };
