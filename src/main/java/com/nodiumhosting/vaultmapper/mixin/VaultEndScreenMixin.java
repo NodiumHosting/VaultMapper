@@ -2,6 +2,7 @@ package com.nodiumhosting.vaultmapper.mixin;
 
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.nodiumhosting.vaultmapper.gui.component.MapContainerElement;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ButtonElement;
@@ -44,7 +45,7 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     protected ButtonElement<?> openMapButton;
 
     @Unique
-    CrystalStatsContainerElement openMapContainerElement;
+    MapContainerElement openMapContainerElement;
 
     @Unique
     LabelElement<?> openMapLabel;
@@ -131,7 +132,7 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
         return index -> {
             if (openMapContainerElement == null || openMapLabel == null) {
                 VaultEndScreen instance = ((VaultEndScreen)(Object)this);
-                openMapContainerElement = (CrystalStatsContainerElement)this.addElement((CrystalStatsContainerElement)(new CrystalStatsContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getModifiers())).layout((screen, gui, parent, world) -> {
+                openMapContainerElement = (MapContainerElement)this.addElement((MapContainerElement)(new MapContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getSnapshot().getEnd().get(Vault.ID))).layout((screen, gui, parent, world) -> {
                     world.translateX(gui.left() + 2 - 26 + 7).translateY(instance.getTabContentSpatial().bottom()).width(world.width() + gui.right() - world.x() + 7).height(world.height() + gui.height() - 22);
                 }));
                 openMapLabel = (LabelElement)this.addElement((LabelElement)(new LabelElement(Spatials.zero(), (new TextComponent("Vault Map")).withStyle(ChatFormatting.BLACK), LabelTextStyle.left())).layout((screen, gui, parent, world) -> {
@@ -142,20 +143,6 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
                 openMapContainerElement.setVisible(index == 5);
                 openMapLabel.setEnabled(index == 5);
                 openMapLabel.setVisible(index == 5);
-
-
-
-
-//                UUID uuid = snapshot.getEnd().get(Vault.ID);
-//                Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
-//                if (optMap.isEmpty()) {
-//                    return;
-//                }
-//                VaultEndScreen instance = (VaultEndScreen) (Object) this;
-//                optMap.get().openScreen(Optional.of(instance));
-//                Minecraft.getInstance().getSoundManager().play(
-//                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
-//                );
             original.accept(index);
         };
     }
