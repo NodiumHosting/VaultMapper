@@ -62,6 +62,24 @@ public class MapSnapshot {
         }
     }
 
+    public static void toggleFavorite(UUID uuid) {
+        if (favoriteMaps == null) {
+            readFavFromJsonFile();
+        }
+        if (savedMaps == null) {
+            readSavesFromJsonFile();
+        }
+        if (favoriteMaps.containsKey(uuid)) {
+            favoriteMaps.remove(uuid);
+            writeFavToJsonFile();
+            return;
+        }
+        if (savedMaps.containsKey(uuid)) {
+            favoriteMaps.put(uuid,savedMaps.get(uuid));
+            writeFavToJsonFile();
+        }
+    }
+
     public static void setFavorite(UUID uuid, boolean favorite) {
         if (favoriteMaps == null) {
             readFavFromJsonFile();

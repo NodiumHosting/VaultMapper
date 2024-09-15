@@ -11,7 +11,8 @@
   "client": [
     "OptionsScreenConfigButtonMixin",
     "VaultEndScreenMixin",
-    "WindowMixin"
+    "WindowMixin",
+    "FavoriteDisplayElementMixin"
   ],
   "injectors": {
     "defaultRequire": 1
