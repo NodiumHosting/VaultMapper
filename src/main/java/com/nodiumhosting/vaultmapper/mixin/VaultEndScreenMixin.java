@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.mixin;
 
 
+import com.nodiumhosting.vaultmapper.gui.component.VaultExitTabContainerMapElement;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ButtonElement;
@@ -16,8 +17,11 @@ import iskallia.vault.client.gui.screen.summary.VaultEndScreen;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.stat.VaultSnapshot;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -44,7 +48,7 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
 
             MapSnapshot.onVaultExit(uuid);
         }
-        VaultEndScreen instance = (VaultEndScreen) (Object) this;
+        VaultEndScreen instance = ((VaultEndScreen)(Object)this);
         Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
         if (optMap.isEmpty()) {
             return;
@@ -87,5 +91,17 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
         ////                return; //or do whatever happens when theres no saved map
         ////            }
         ////            optMap.get().openScreen();
+
+        //If it works, dont fix it
+        this.addElement((VaultExitTabContainerMapElement)(new VaultExitTabContainerMapElement(Spatials.positionXY(-3, 3), (index) -> {
+            if((int) index == 1) {
+                optMap.get().openScreen(Optional.of(instance));
+                Minecraft.getInstance().getSoundManager().play(
+                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+                );
+            }
+        })).layout((screen, gui, parent, world) -> {
+            world.translateX(gui.left() - 43).translateY(instance.getTabContentSpatial().bottom());
+        }));
     }
 }
