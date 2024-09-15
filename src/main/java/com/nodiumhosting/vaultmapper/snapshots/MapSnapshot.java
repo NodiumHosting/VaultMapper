@@ -16,7 +16,11 @@ import java.util.*;
 public class MapSnapshot {
     public static LinkedHashMap<UUID,MapSnapshot> savedMaps;
 
+    public static LinkedHashMap<UUID,MapSnapshot> favoriteMaps;
+
     public static final String mapSavePath = "config/vaultmaps.json";
+
+    public static final String favoriteMapsPath = "config/vaultmapsfavs.json";
 
     public static final int maxMaps = 50;
 
@@ -29,11 +33,11 @@ public class MapSnapshot {
         MapSnapshot.addMap(vaultUUID,lastSnapshotCache);
     }
 
-    public static void readFromJsonFile() {
+    public static void readSavesFromJsonFile() {
         File savedMapsFile = new File(mapSavePath);
         if (!savedMapsFile.exists()) {
             savedMaps = new LinkedHashMap<>();
-            writeToJsonFile();
+            writeSavesToJsonFile();
             VaultMapper.LOGGER.info("Map saves file created");
             return;
         }
@@ -47,13 +51,7 @@ public class MapSnapshot {
             VaultMapper.LOGGER.error("Couldn't read map save file");
         }
     }
-
-    public static MapSnapshot takeSnapshot() {
-        ArrayList<VaultCell> cells = new ArrayList<>(VaultMap.getCells());
-        return new MapSnapshot(cells);
-    }
-
-    public static void writeToJsonFile() {
+    public static void writeSavesToJsonFile() {
         Gson gson = new Gson();
         try {
             FileWriter writer = new FileWriter(mapSavePath);
@@ -64,13 +62,70 @@ public class MapSnapshot {
         }
     }
 
+    public static void setFavorite(UUID uuid, boolean favorite) {
+        if (favoriteMaps == null) {
+            readFavFromJsonFile();
+        }
+        if (savedMaps == null) {
+            readSavesFromJsonFile();
+        }
+        if (favorite) {
+            if (savedMaps.containsKey(uuid) && !favoriteMaps.containsKey(uuid)) {
+                favoriteMaps.put(uuid,savedMaps.get(uuid));
+                writeFavToJsonFile();
+            }
+        } else {
+            favoriteMaps.remove(uuid);
+            writeFavToJsonFile();
+        }
+    }
+
+
+    public static void readFavFromJsonFile() {
+        File favMapsFile = new File(favoriteMapsPath);
+        if (!favMapsFile.exists()) {
+            favoriteMaps = new LinkedHashMap<>();
+            writeFavToJsonFile();
+            VaultMapper.LOGGER.info("Map favorites file created");
+            return;
+        }
+
+        Gson gson = new Gson();
+        try {
+            FileReader reader = new FileReader(favoriteMapsPath);
+            Type saveType = new TypeToken<LinkedHashMap<UUID, MapSnapshot>>() {}.getType();
+            favoriteMaps = gson.fromJson(reader, saveType);
+        } catch (FileNotFoundException e) {
+            VaultMapper.LOGGER.error("Couldn't read map favorites save file");
+        }
+    }
+
+    public static void writeFavToJsonFile() {
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter(favoriteMapsPath);
+            gson.toJson(favoriteMaps, writer);
+            writer.close();
+        } catch (IOException e) {
+            VaultMapper.LOGGER.error("Couldn't update map fav save file");
+        }
+    }
+
+
+    public static MapSnapshot takeSnapshot() {
+        ArrayList<VaultCell> cells = new ArrayList<>(VaultMap.getCells());
+        return new MapSnapshot(cells);
+    }
+
     public static void addMap(UUID uuid, MapSnapshot snapshot) {
         if (savedMaps == null) {
-            readFromJsonFile();
+            readSavesFromJsonFile();
         }
-        savedMaps.put(uuid,snapshot);
+        if (!savedMaps.containsKey(uuid)) {
+            savedMaps.put(uuid,snapshot);
+        }
         removeExcessMaps();
-        writeToJsonFile();
+        writeSavesToJsonFile();
     }
 
     public static void removeExcessMaps() {
@@ -78,25 +133,31 @@ public class MapSnapshot {
             return;
         }
         for (Map.Entry<UUID,MapSnapshot> map : savedMaps.entrySet()) {
-            if (!map.getValue().isFavorite) {
                 savedMaps.remove(map.getKey());
-                break;
-            }
+                if ((savedMaps.size() <= maxMaps)) {
+                    break;
+                }
         }
     }
 
     public static Optional<MapSnapshot> from(UUID uuid) {
         if (savedMaps == null) {
-            readFromJsonFile();
+            readSavesFromJsonFile();
         }
-        if (!savedMaps.containsKey(uuid)) {
-            return Optional.empty();
+        if (savedMaps.containsKey(uuid)) {
+            return Optional.of(savedMaps.get(uuid));
         }
-        return Optional.of(savedMaps.get(uuid));
+        if (favoriteMaps == null) {
+            readFavFromJsonFile();
+        }
+
+        if (favoriteMaps.containsKey(uuid)) {
+            return Optional.of(favoriteMaps.get(uuid));
+        }
+        return Optional.empty();
     }
 
     public List<VaultCell> cells;
-    public boolean isFavorite = false;
     public MapSnapshot(List<VaultCell> cells) {
         this.cells = cells;
     }
