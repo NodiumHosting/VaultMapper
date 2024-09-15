@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.mixin;
 
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ButtonElement;
@@ -42,9 +43,15 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     @Unique
     protected ButtonElement<?> openMapButton;
 
-    @Shadow
-    @Final
-    private VaultSnapshot snapshot;
+    @Unique
+    CrystalStatsContainerElement openMapContainerElement;
+
+    @Unique
+    LabelElement<?> openMapLabel;
+
+    @Unique
+    Optional<MapSnapshot> optMap;
+
 
     @Shadow
     @Final
@@ -62,7 +69,7 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
             MapSnapshot.onVaultExit(uuid);
         }
         VaultEndScreen instance = ((VaultEndScreen)(Object)this);
-        Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
+        optMap = MapSnapshot.from(uuid);
         if (optMap.isEmpty()) {
             return;
         }
@@ -96,7 +103,6 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
                                 }
                         )
         );
-
        //Put button adding here
         //Button should:
         //  Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
@@ -120,26 +126,22 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
 
     @ModifyArg(method= "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V",
     at = @At(value = "INVOKE", target = "Liskallia/vault/client/gui/screen/summary/element/VaultExitTabContainerElement;<init>(Liskallia/vault/client/gui/framework/spatial/spi/IPosition;Ljava/util/function/Consumer;Z)V") )
-    private Consumer<Integer> addContainerElement(Consumer<Integer> original)
+    private Consumer<Integer> addContainerElement(Consumer<Integer> original, @Local VaultExitContainerScreenData screenData)
     {
         return index -> {
-            if(index == 5) {
-                VaultEndScreen instance = (VaultEndScreen) (Object) this;
-                VaultExitContainerScreenData screenData = new VaultExitContainerScreenData(snapshot, asPlayer);
-
-                CrystalStatsContainerElement crystalStatsContainerElement = (CrystalStatsContainerElement)this.addElement((CrystalStatsContainerElement)(new CrystalStatsContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getModifiers())).layout((screen, gui, parent, world) -> {
+            if (openMapContainerElement == null || openMapLabel == null) {
+                VaultEndScreen instance = ((VaultEndScreen)(Object)this);
+                openMapContainerElement = (CrystalStatsContainerElement)this.addElement((CrystalStatsContainerElement)(new CrystalStatsContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getModifiers())).layout((screen, gui, parent, world) -> {
                     world.translateX(gui.left() + 2 - 26 + 7).translateY(instance.getTabContentSpatial().bottom()).width(world.width() + gui.right() - world.x() + 7).height(world.height() + gui.height() - 22);
                 }));
-
-
-
-                LabelElement<?> overviewLabel = (LabelElement)this.addElement((LabelElement)(new LabelElement(Spatials.zero(), (new TextComponent("Vault Map")).withStyle(ChatFormatting.BLACK), LabelTextStyle.left())).layout((screen, gui, parent, world) -> {
+                openMapLabel = (LabelElement)this.addElement((LabelElement)(new LabelElement(Spatials.zero(), (new TextComponent("Vault Map")).withStyle(ChatFormatting.BLACK), LabelTextStyle.left())).layout((screen, gui, parent, world) -> {
                     world.translateX(gui.left() - 8 - 26 + 13).translateY(48).translateZ(2);
                 }));
-                crystalStatsContainerElement.setEnabled(index == 5);
-                crystalStatsContainerElement.setVisible(index == 5);
-                overviewLabel.setEnabled(index == 5);
-                overviewLabel.setVisible(index == 5);
+            }
+                openMapContainerElement.setEnabled(index == 5);
+                openMapContainerElement.setVisible(index == 5);
+                openMapLabel.setEnabled(index == 5);
+                openMapLabel.setVisible(index == 5);
 
 
 
@@ -154,7 +156,6 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
 //                Minecraft.getInstance().getSoundManager().play(
 //                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
 //                );
-            }
             original.accept(index);
         };
     }
