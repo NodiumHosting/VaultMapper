@@ -176,10 +176,7 @@ dependencies {
 
     runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4074294")
 
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
-        jarJar.ranged(it, "[0.3.6,)")
-    }
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
@@ -243,10 +240,12 @@ shadowJar {
     dependencies {
         include(dependency('org.java-websocket:Java-WebSocket:.*'))
         include(dependency('org.spongepowered:mixin:0.8.4:processor'))
+        include(dependency("io.github.llamalad7:mixinextras-common:.*"))
     }
 
     // Relocate fluent-hc to prevent conflicts with other mods that include it
     relocate 'org.java_websocket', "${project.group}.relocated.org.java_websocket"
+    relocate 'com.llamalad7.mixinextras', "${project.group}.relocated.mixinextras"
 
     classifier '' // Replace the default JAR
 }
