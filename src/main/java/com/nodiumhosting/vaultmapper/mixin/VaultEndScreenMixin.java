@@ -14,6 +14,7 @@ import iskallia.vault.client.gui.framework.spatial.Spatials;
 import iskallia.vault.client.gui.framework.text.LabelTextStyle;
 import iskallia.vault.client.gui.framework.text.TextBorder;
 import iskallia.vault.client.gui.screen.summary.VaultEndScreen;
+import iskallia.vault.client.gui.screen.summary.element.*;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.stat.VaultSnapshot;
 import net.minecraft.ChatFormatting;
@@ -103,5 +104,14 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
         })).layout((screen, gui, parent, world) -> {
             world.translateX(gui.left() - 43).translateY(instance.getTabContentSpatial().bottom());
         }));
+    }
+
+    // lambda$new$14 -> L139
+    @Inject(method = "lambda$new$14", at = @At(value = "HEAD"))
+    private static void d(OverviewContainerElement overviewContainerElement, LabelElement overviewLabel, CrystalStatsContainerElement crystalStatsContainerElement,
+                          LabelElement crystalLabel, LootStatsContainerElement lootStatsContainerElement, LabelElement lootLabel,
+                          CombatStatsContainerElement combatStatsContainerElement, LabelElement mobsLabel, CoopStatsElement coopStatsElement,
+                          LabelElement coopLabel, Integer index, CallbackInfo ci) {
+
     }
 }
