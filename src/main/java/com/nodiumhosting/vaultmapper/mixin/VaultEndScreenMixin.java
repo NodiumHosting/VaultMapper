@@ -11,6 +11,7 @@ import iskallia.vault.client.gui.framework.render.spi.IElementRenderer;
 import iskallia.vault.client.gui.framework.render.spi.ITooltipRendererFactory;
 import iskallia.vault.client.gui.framework.screen.AbstractElementScreen;
 import iskallia.vault.client.gui.framework.spatial.Spatials;
+import iskallia.vault.client.gui.framework.spatial.spi.IPosition;
 import iskallia.vault.client.gui.framework.text.LabelTextStyle;
 import iskallia.vault.client.gui.framework.text.TextBorder;
 import iskallia.vault.client.gui.screen.summary.VaultEndScreen;
@@ -24,23 +25,32 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Mixin(VaultEndScreen.class)
 public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     @Unique
     protected ButtonElement<?> openMapButton;
 
+    @Shadow
+    @Final
+    private VaultSnapshot snapshot;
+
     public VaultEndScreenMixin(Component title, IElementRenderer elementRenderer, ITooltipRendererFactory<AbstractElementScreen> tooltipRendererFactory) {
         super(title, elementRenderer, tooltipRendererFactory);
     }
 
+    @Shadow
 
     @Inject(method = "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V", at=@At("TAIL"))
     private void addMaps(VaultSnapshot snapshot, Component title, UUID asPlayer, boolean isHistory, boolean fromLink, CallbackInfo ci) {
@@ -94,24 +104,37 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
         ////            optMap.get().openScreen();
 
         //If it works, dont fix it
-        this.addElement((VaultExitTabContainerMapElement)(new VaultExitTabContainerMapElement(Spatials.positionXY(-3, 3), (index) -> {
+//        this.addElement((VaultExitTabContainerMapElement)(new VaultExitTabContainerMapElement(Spatials.positionXY(-3, 3), (index) -> {
+//            if((int) index == 1) {
+//                optMap.get().openScreen(Optional.of(instance));
+//                Minecraft.getInstance().getSoundManager().play(
+//                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+//                );
+//            }
+//        })).layout((screen, gui, parent, world) -> {
+//            world.translateX(gui.left() - 43).translateY(instance.getTabContentSpatial().bottom());
+//        }));
+    }
+
+    @ModifyArg(method= "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V",
+    at = @At(value = "INVOKE", target = "Liskallia/vault/client/gui/screen/summary/element/VaultExitTabContainerElement;<init>(Liskallia/vault/client/gui/framework/spatial/spi/IPosition;Ljava/util/function/Consumer;Z)V") )
+    private Consumer<Integer> addContainerElement(Consumer<Integer> original)
+    {
+        return index -> {
             if((int) index == 1) {
+                UUID uuid = snapshot.getEnd().get(Vault.ID);
+                Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
+                if (optMap.isEmpty()) {
+                    return;
+                }
+                VaultEndScreen instance = (VaultEndScreen) (Object) this;
                 optMap.get().openScreen(Optional.of(instance));
                 Minecraft.getInstance().getSoundManager().play(
                         SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
                 );
             }
-        })).layout((screen, gui, parent, world) -> {
-            world.translateX(gui.left() - 43).translateY(instance.getTabContentSpatial().bottom());
-        }));
+            original.accept(index);
+        };
     }
 
-    // lambda$new$14 -> L139
-    @Inject(method = "lambda$new$14", at = @At(value = "HEAD"))
-    private static void d(OverviewContainerElement overviewContainerElement, LabelElement overviewLabel, CrystalStatsContainerElement crystalStatsContainerElement,
-                          LabelElement crystalLabel, LootStatsContainerElement lootStatsContainerElement, LabelElement lootLabel,
-                          CombatStatsContainerElement combatStatsContainerElement, LabelElement mobsLabel, CoopStatsElement coopStatsElement,
-                          LabelElement coopLabel, Integer index, CallbackInfo ci) {
-
-    }
 }
