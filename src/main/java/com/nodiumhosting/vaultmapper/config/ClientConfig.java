@@ -16,6 +16,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> START_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> MARKED_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> INSCRIPTION_ROOM_COLOR;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_INSCRIPTIONS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
 
     static {
@@ -34,6 +35,7 @@ public class ClientConfig {
         START_ROOM_COLOR = BUILDER.comment("Color for the Start room of a Vault").define("START_ROOM_COLOR", "#FF0000");
         MARKED_ROOM_COLOR = BUILDER.comment("Color for a Marked Vault Room").define("MARKED_ROOM_COLOR", "#FF00FF");
         INSCRIPTION_ROOM_COLOR = BUILDER.comment("Color for a Inscripted Vault Room").define("INSCRIPTION_ROOM_COLOR", "#FFFF00");
+        SHOW_INSCRIPTIONS = BUILDER.comment("Show Inscripted Rooms on the Map").define("SHOW_INSCRIPTIONS", true);
 
         WEBMAP_ENABLED = BUILDER.comment("Enable the WebMap Server").define("WEBMAP_ENABLED", false);
 
