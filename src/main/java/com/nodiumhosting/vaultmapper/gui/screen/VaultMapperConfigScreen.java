@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.component.ColorButton;
 import com.nodiumhosting.vaultmapper.gui.component.ColorPicker;
@@ -11,6 +12,7 @@ import com.nodiumhosting.vaultmapper.util.Clamp;
 import it.unimi.dsi.fastutil.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
@@ -174,6 +176,8 @@ public class VaultMapperConfigScreen extends Screen {
         inscriptionRoomColor.setResponder((value) -> {
             inscriptionRoomColorPicker.setColor(parseColor(value));
         });
+        Checkbox showInscription = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(12) - 2, 20, 20, new TextComponent(""), ClientConfig.SHOW_INSCRIPTIONS.get());
+        this.addRenderableWidget(showInscription);
 
         Button saveButton = new Button(this.width / 2 - 100, getScaledY(13), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
@@ -195,6 +199,14 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.START_ROOM_COLOR.set(startRoomColor.getValue());
             ClientConfig.MARKED_ROOM_COLOR.set(markedRoomColor.getValue());
             ClientConfig.INSCRIPTION_ROOM_COLOR.set(inscriptionRoomColor.getValue());
+            ClientConfig.SHOW_INSCRIPTIONS.set(showInscription.selected());
+            if (!showInscription.selected()) {
+                VaultMap.getCells().forEach(cell -> {
+                    if (cell.inscripted && !cell.explored) {
+                        VaultMapper.wsServer.sendData(cell, "#00000000");
+                    }
+                });
+            }
 
             ClientConfig.SPEC.save();
 
@@ -214,6 +226,9 @@ public class VaultMapperConfigScreen extends Screen {
             startRoomColor.setValue("#FF0000");
             markedRoomColor.setValue("#FF00FF");
             inscriptionRoomColor.setValue("#FFFF00");
+            if (!showInscription.selected()) {
+                showInscription.onPress();
+            }
 
             ClientConfig.MAP_X_OFFSET.set(0);
             ClientConfig.MAP_Y_OFFSET.set(0);
@@ -224,6 +239,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.START_ROOM_COLOR.set("#FF0000");
             ClientConfig.MARKED_ROOM_COLOR.set("#FF00FF");
             ClientConfig.INSCRIPTION_ROOM_COLOR.set("#FFFF00");
+            ClientConfig.SHOW_INSCRIPTIONS.set(true);
 
             ClientConfig.SPEC.save();
 

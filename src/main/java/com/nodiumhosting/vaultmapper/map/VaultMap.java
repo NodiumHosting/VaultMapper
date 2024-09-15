@@ -142,7 +142,9 @@ public class VaultMap {
 
     public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
-            VaultMapper.wsServer.sendData(cell, getCellColor(cell));
+            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
+                VaultMapper.wsServer.sendData(cell, getCellColor(cell));
+            }
         });
     }
 

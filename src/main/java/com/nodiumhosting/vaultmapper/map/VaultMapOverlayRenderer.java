@@ -126,6 +126,7 @@ public class VaultMapOverlayRenderer {
 
     private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.cellType != CellType.NONE) {
+            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             int startX;
