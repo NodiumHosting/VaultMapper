@@ -236,7 +236,10 @@ jar.finalizedBy('reobfJar')
 // publish.dependsOn('reobfJar')
 
 shadowJar {
-    // Only shadow fluent-hc
+    // Relocate service files to not clash with other mods
+    mergeServiceFiles()
+
+    // Add only the stuff that's actually needed
     dependencies {
         include(dependency('org.java-websocket:Java-WebSocket:.*'))
         include(dependency('org.spongepowered:mixin:0.8.4:processor'))
