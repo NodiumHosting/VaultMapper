@@ -1,6 +1,5 @@
 package com.nodiumhosting.vaultmapper;
 
-import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.mojang.logging.LogUtils;
 import com.nodiumhosting.vaultmapper.commands.VaultMapperCommand;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
@@ -36,8 +35,6 @@ public class VaultMapper {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ToggleVaultMapKeybind::register);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, MODID + "-client.toml");
-
-        MixinExtrasBootstrap.init(); // spin up mixin extras
     }
 
     private void setup(final FMLCommonSetupEvent event) {
