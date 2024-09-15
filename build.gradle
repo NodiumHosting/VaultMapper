@@ -16,7 +16,6 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -176,7 +175,13 @@ dependencies {
 
     runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4074294")
 
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
+        jarJar.ranged(it, "[0.3.6,)")
+    }
+    implementation(jarJar('org.java-websocket:Java-WebSocket:1.5.7')) {
+        jarJar.ranged(it, "[1.5.7,)")
+    }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
@@ -234,28 +239,6 @@ jar {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
-
-shadowJar {
-    // Relocate service files to not clash with other mods
-    mergeServiceFiles()
-
-    // Add only the stuff that's actually needed
-    dependencies {
-        include(dependency('org.java-websocket:Java-WebSocket:.*'))
-        include(dependency('org.spongepowered:mixin:0.8.4:processor'))
-        include(dependency("io.github.llamalad7:mixinextras-common:.*"))
-    }
-
-    // Relocate fluent-hc to prevent conflicts with other mods that include it
-    relocate 'org.java_websocket', "${project.group}.relocated.org.java_websocket"
-    relocate 'com.llamalad7.mixinextras', "${project.group}.relocated.mixinextras"
-
-    classifier '' // Replace the default JAR
-}
-
-reobf {
-    shadowJar {} // Reobfuscate the shadowed JAR
-}
 
 publishing {
     publications {
