@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.gui.component;
 
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.map.CellType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
@@ -48,9 +49,19 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             this.addElement(new LabelElement(spatial.positionX(-35).positionY(15), new TextComponent("Inscription Rooms: " + inscriptionCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-35).positionY(25), new TextComponent("Marked Rooms: " + markedCount), new LabelTextStyle.Builder()));
 
-            List.of(-40, -50, -55, -60).forEach(e -> {
-                this.addElement(new LabelElement(spatial.positionX(e).positionY(Math.abs(e)), new TextComponent(e.toString()), new LabelTextStyle.Builder()));
-            });
+            int top = spatial.top();
+            int left = spatial.left();
+            int right = spatial.right();
+            int bottom = spatial.bottom();
+            int width = spatial.width();
+            int height = spatial.height();
+
+            VaultMapper.LOGGER.info("top: " + top);
+            VaultMapper.LOGGER.info("left: " + left);
+            VaultMapper.LOGGER.info("right: " + right);
+            VaultMapper.LOGGER.info("bottom: " + bottom);
+            VaultMapper.LOGGER.info("width: " + width);
+            VaultMapper.LOGGER.info("height: " + height);
         }
     }
 }
