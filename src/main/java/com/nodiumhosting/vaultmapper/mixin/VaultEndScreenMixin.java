@@ -41,8 +41,6 @@ import java.util.function.Consumer;
 
 @Mixin(VaultEndScreen.class)
 public abstract class VaultEndScreenMixin extends AbstractElementScreen {
-    @Unique
-    protected ButtonElement<?> openMapButton;
 
     @Unique
     MapContainerElement openMapContainerElement;
@@ -50,32 +48,32 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
     @Unique
     LabelElement<?> openMapLabel;
 
-    @Unique
-    Optional<MapSnapshot> optMap;
+
 
 
     @Shadow
     @Final
-    private UUID asPlayer;
+    private VaultSnapshot snapshot;
+
+    @Shadow @Final private boolean isHistory;
 
     public VaultEndScreenMixin(Component title, IElementRenderer elementRenderer, ITooltipRendererFactory<AbstractElementScreen> tooltipRendererFactory) {
         super(title, elementRenderer, tooltipRendererFactory);
     }
 
-    @Inject(method = "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V", at=@At("TAIL"))
-    private void addMaps(VaultSnapshot snapshot, Component title, UUID asPlayer, boolean isHistory, boolean fromLink, CallbackInfo ci) {
-        UUID uuid = snapshot.getEnd().get(Vault.ID);
-        if (!isHistory) {
-
-            MapSnapshot.onVaultExit(uuid);
-        }
-    }
+    @Unique
+    boolean registeredAlready = false;
 
     @ModifyArg(method= "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V",
     at = @At(value = "INVOKE", target = "Liskallia/vault/client/gui/screen/summary/element/VaultExitTabContainerElement;<init>(Liskallia/vault/client/gui/framework/spatial/spi/IPosition;Ljava/util/function/Consumer;Z)V") )
     private Consumer<Integer> addContainerElement(Consumer<Integer> original, @Local VaultExitContainerScreenData screenData)
     {
         return index -> {
+            if (!isHistory && !registeredAlready) {
+                UUID uuid = snapshot.getEnd().get(Vault.ID);
+                MapSnapshot.onVaultExit(uuid);
+                registeredAlready = true;
+            }
             if (openMapContainerElement == null || openMapLabel == null) {
                 VaultEndScreen instance = ((VaultEndScreen)(Object)this);
                 openMapContainerElement = (MapContainerElement)this.addElement((MapContainerElement)(new MapContainerElement(Spatials.positionX(4).width(-7).height(-16), screenData.getSnapshot().getEnd().get(Vault.ID))).layout((screen, gui, parent, world) -> {
