@@ -12,16 +12,14 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class MapSnapshot {
-    public static LinkedHashMap<UUID,MapSnapshot> savedMaps;
+    public static final String mapSaveFolder= "vaultmaps/standard/";
 
-    public static LinkedHashMap<UUID,MapSnapshot> favoriteMaps;
-
-    public static final String mapSavePath = "config/vaultmaps.json";
-
-    public static final String favoriteMapsPath = "config/vaultmapsfavs.json";
+    public static final String favoriteMapsFolder = "vaultmaps/favorite/";
 
 
     public static MapSnapshot lastSnapshotCache;
@@ -33,99 +31,24 @@ public class MapSnapshot {
         MapSnapshot.addMap(vaultUUID,lastSnapshotCache);
     }
 
-    public static void readSavesFromJsonFile() {
-        File savedMapsFile = new File(mapSavePath);
-        if (!savedMapsFile.exists()) {
-            savedMaps = new LinkedHashMap<>();
-            writeSavesToJsonFile();
-            VaultMapper.LOGGER.info("Map saves file created");
-            return;
-        }
-
-        Gson gson = new Gson();
-        try {
-            FileReader reader = new FileReader(mapSavePath);
-            Type saveType = new TypeToken<LinkedHashMap<UUID, MapSnapshot>>() {}.getType();
-            savedMaps = gson.fromJson(reader, saveType);
-        } catch (FileNotFoundException e) {
-            VaultMapper.LOGGER.error("Couldn't read map save file");
-        }
-    }
-    public static void writeSavesToJsonFile() {
-        Gson gson = new Gson();
-        try {
-            FileWriter writer = new FileWriter(mapSavePath);
-            gson.toJson(savedMaps, writer);
-            writer.close();
-        } catch (IOException e) {
-            VaultMapper.LOGGER.error("Couldn't update map save file");
-        }
-    }
-
     public static void toggleFavorite(UUID uuid) {
-        if (favoriteMaps == null) {
-            readFavFromJsonFile();
-        }
-        if (savedMaps == null) {
-            readSavesFromJsonFile();
-        }
-        if (favoriteMaps.containsKey(uuid)) {
-            favoriteMaps.remove(uuid);
-            writeFavToJsonFile();
+        makeSureFoldersExist();
+        String mapPath = mapSaveFolder + uuid.toString() + ".json";
+        String favPath = favoriteMapsFolder + uuid.toString() + ".json";
+        File favorite = new File(favPath);
+        if (favorite.exists()) {
+            favorite.delete();
             return;
         }
-        if (savedMaps.containsKey(uuid)) {
-            favoriteMaps.put(uuid,savedMaps.get(uuid));
-            writeFavToJsonFile();
-        }
-    }
-
-    public static void setFavorite(UUID uuid, boolean favorite) {
-        if (favoriteMaps == null) {
-            readFavFromJsonFile();
-        }
-        if (savedMaps == null) {
-            readSavesFromJsonFile();
-        }
-        if (favorite) {
-            if (savedMaps.containsKey(uuid) && !favoriteMaps.containsKey(uuid)) {
-                favoriteMaps.put(uuid,savedMaps.get(uuid));
-                writeFavToJsonFile();
-            }
-        } else {
-            favoriteMaps.remove(uuid);
-            writeFavToJsonFile();
-        }
-    }
-
-
-    public static void readFavFromJsonFile() {
-        File favMapsFile = new File(favoriteMapsPath);
-        if (!favMapsFile.exists()) {
-            favoriteMaps = new LinkedHashMap<>();
-            writeFavToJsonFile();
-            VaultMapper.LOGGER.info("Map favorites file created");
+        File map = new File(mapPath);
+        if (!map.exists()) {
             return;
         }
-
-        Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader(favoriteMapsPath);
-            Type saveType = new TypeToken<LinkedHashMap<UUID, MapSnapshot>>() {}.getType();
-            favoriteMaps = gson.fromJson(reader, saveType);
-        } catch (FileNotFoundException e) {
-            VaultMapper.LOGGER.error("Couldn't read map favorites save file");
+            Files.copy(map.toPath(), favorite.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-    }
-
-    public static void writeFavToJsonFile() {
-        Gson gson = new Gson();
-        try {
-            FileWriter writer = new FileWriter(favoriteMapsPath);
-            gson.toJson(favoriteMaps, writer);
-            writer.close();
-        } catch (IOException e) {
-            VaultMapper.LOGGER.error("Couldn't update map fav save file");
+        catch (IOException e) {
+            VaultMapper.LOGGER.error("Couldn't copy map to favorite");
         }
     }
 
@@ -136,46 +59,71 @@ public class MapSnapshot {
     }
 
     public static void addMap(UUID uuid, MapSnapshot snapshot) {
-        if (savedMaps == null) {
-            readSavesFromJsonFile();
-        }
-        if (!savedMaps.containsKey(uuid)) {
-            savedMaps.put(uuid,snapshot);
+        makeSureFoldersExist();
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter(mapSaveFolder + uuid.toString() + ".json");
+            gson.toJson(snapshot, writer);
+            writer.close();
+        } catch (IOException e) {
+            VaultMapper.LOGGER.error("Couldn't create map save file");
         }
         removeExcessMaps();
-        writeSavesToJsonFile();
     }
+
+    public static void makeSureFoldersExist() {
+        File favs = new File(favoriteMapsFolder);
+        File maps = new File(mapSaveFolder);
+        if (!favs.exists()) {
+            favs.mkdirs();
+        }
+        if (!maps.exists()) {
+            maps.mkdirs();
+        }
+    }
+
 
     public static void removeExcessMaps() {
         int maxMaps = ClientConfig.MAX_MAPS_SAVED.get();
         if (maxMaps < 0) {
             return;
         }
-
-        if (!(savedMaps.size() > maxMaps)) {
+        File folder = new File(mapSaveFolder);
+        File[] files = folder.listFiles();
+        if (files == null || files.length <= maxMaps) {
             return;
         }
-        for (Map.Entry<UUID,MapSnapshot> map : savedMaps.entrySet()) {
-                savedMaps.remove(map.getKey());
-                if ((savedMaps.size() <= maxMaps)) {
-                    break;
-                }
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+        int filesToDelete = files.length - maxMaps;
+        for (int i =0; i < filesToDelete; i++) {
+            files[i].delete();
         }
     }
 
     public static Optional<MapSnapshot> from(UUID uuid) {
-        if (savedMaps == null) {
-            readSavesFromJsonFile();
-        }
-        if (savedMaps.containsKey(uuid)) {
-            return Optional.of(savedMaps.get(uuid));
-        }
-        if (favoriteMaps == null) {
-            readFavFromJsonFile();
+        makeSureFoldersExist();
+        String mapPath = mapSaveFolder + uuid.toString() + ".json";
+        String favPath = favoriteMapsFolder + uuid.toString() + ".json";
+
+        Optional<MapSnapshot> normalMap = readMapFromPath(mapPath);
+        if (normalMap.isPresent()) {
+            return normalMap;
         }
 
-        if (favoriteMaps.containsKey(uuid)) {
-            return Optional.of(favoriteMaps.get(uuid));
+        return readMapFromPath(favPath);
+    }
+    public static Optional<MapSnapshot> readMapFromPath(String path) {
+        File mapFile = new File(path);
+        if (!mapFile.exists()) {
+            return Optional.empty();
+        }
+        Gson gson = new Gson();
+        try {
+            FileReader reader = new FileReader(path);
+            Type saveType = new TypeToken<MapSnapshot>() {}.getType();
+            return Optional.of(gson.fromJson(reader, saveType));
+        } catch (FileNotFoundException e) {
+            VaultMapper.LOGGER.error("Couldn't read map save file");
         }
         return Optional.empty();
     }
