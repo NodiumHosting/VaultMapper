@@ -21,6 +21,7 @@ public class MapSnapshot {
 
     public static final String favoriteMapsFolder = "vaultmaps/favorite/";
 
+    public static boolean checkedDirs = false;
 
     public static MapSnapshot lastSnapshotCache;
 
@@ -72,6 +73,9 @@ public class MapSnapshot {
     }
 
     public static void makeSureFoldersExist() {
+        if (checkedDirs) {
+            return;
+        }
         File favs = new File(favoriteMapsFolder);
         File maps = new File(mapSaveFolder);
         if (!favs.exists()) {
@@ -80,6 +84,7 @@ public class MapSnapshot {
         if (!maps.exists()) {
             maps.mkdirs();
         }
+        checkedDirs = true;
     }
 
 
