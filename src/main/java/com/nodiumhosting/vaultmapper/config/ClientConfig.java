@@ -18,6 +18,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> INSCRIPTION_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_INSCRIPTIONS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
 
     static {
         BUILDER.push("VaultMapper Client Config");
@@ -38,6 +39,11 @@ public class ClientConfig {
         SHOW_INSCRIPTIONS = BUILDER.comment("Show Inscripted Rooms on the Map").define("SHOW_INSCRIPTIONS", true);
 
         WEBMAP_ENABLED = BUILDER.comment("Enable the WebMap Server").define("WEBMAP_ENABLED", false);
+
+        MAX_MAPS_SAVED = BUILDER.comment("The maximum amount of map history snapshots that can be saved on file.\n" +
+                "Favorites will be saved forever regardless of this number.\n" +
+                "This number is a global number, not per world/server.\n" +
+                "Inputting a negative number disables the cap").define("MAX_MAPS_SAVED",-1);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

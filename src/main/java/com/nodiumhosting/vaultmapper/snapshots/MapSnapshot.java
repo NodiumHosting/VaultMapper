@@ -3,6 +3,7 @@ package com.nodiumhosting.vaultmapper.snapshots;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
@@ -22,7 +23,6 @@ public class MapSnapshot {
 
     public static final String favoriteMapsPath = "config/vaultmapsfavs.json";
 
-    public static final int maxMaps = 50;
 
     public static MapSnapshot lastSnapshotCache;
 
@@ -147,6 +147,11 @@ public class MapSnapshot {
     }
 
     public static void removeExcessMaps() {
+        int maxMaps = ClientConfig.MAX_MAPS_SAVED.get();
+        if (maxMaps < 0) {
+            return;
+        }
+
         if (!(savedMaps.size() > maxMaps)) {
             return;
         }
