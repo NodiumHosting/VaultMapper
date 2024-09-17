@@ -69,60 +69,6 @@ public abstract class VaultEndScreenMixin extends AbstractElementScreen {
 
             MapSnapshot.onVaultExit(uuid);
         }
-        VaultEndScreen instance = ((VaultEndScreen)(Object)this);
-        optMap = MapSnapshot.from(uuid);
-        if (optMap.isEmpty()) {
-            return;
-        }
-        Component mapButtonText = new TextComponent("View Map").withStyle(ChatFormatting.WHITE);
-        Component finalComponent = mapButtonText;
-        this.addElement(
-                (LabelElement)new LabelElement(Spatials.zero(), finalComponent, LabelTextStyle.border4(ChatFormatting.BLACK).center())
-                        .layout(
-                                (screen, gui, parent, world) -> world.translateZ(2)
-                                        .translateX(gui.right() - gui.left() + gui.left() - 26 -79- 1 - TextBorder.DEFAULT_FONT.get().width(finalComponent) / 2)
-                                        .translateY(instance.getTabContentSpatial().bottom() + gui.height() - 31)
-                        )
-        );
-        this.openMapButton = this.addElement(
-                new ButtonElement<>(Spatials.zero(), ScreenTextures.BUTTON_CLOSE_TEXTURES, () -> {
-                    optMap.get().openScreen(Optional.of(instance));
-                })
-                        .layout(
-                                (screen, gui, parent, world) -> world.width(52)
-                                        .height(19)
-                                        .translateX(gui.right() - gui.left() + gui.left() - 131)
-                                        .translateY(instance.getTabContentSpatial().bottom() + gui.height() - 37)
-                        )
-                        .tooltip(
-                                (tooltipRenderer, poseStack, mouseX, mouseY, tooltipFlag) -> {
-                                    tooltipRenderer.renderTooltip(
-                                            poseStack, List.of(new TextComponent("View Vault Mapper room history")), mouseX, mouseY, ItemStack.EMPTY, TooltipDirection.RIGHT
-                                    );
-
-                                    return false;
-                                }
-                        )
-        );
-       //Put button adding here
-        //Button should:
-        //  Optional<MapSnapshot> optMap = MapSnapshot.from(uuid);
-        ////            if (optMap.isEmpty()) {
-        ////                return; //or do whatever happens when theres no saved map
-        ////            }
-        ////            optMap.get().openScreen();
-
-        //If it works, dont fix it
-//        this.addElement((VaultExitTabContainerMapElement)(new VaultExitTabContainerMapElement(Spatials.positionXY(-3, 3), (index) -> {
-//            if((int) index == 1) {
-//                optMap.get().openScreen(Optional.of(instance));
-//                Minecraft.getInstance().getSoundManager().play(
-//                        SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
-//                );
-//            }
-//        })).layout((screen, gui, parent, world) -> {
-//            world.translateX(gui.left() - 43).translateY(instance.getTabContentSpatial().bottom());
-//        }));
     }
 
     @ModifyArg(method= "<init>(Liskallia/vault/core/vault/stat/VaultSnapshot;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;ZZ)V",
