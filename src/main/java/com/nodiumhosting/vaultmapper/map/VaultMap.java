@@ -63,10 +63,6 @@ public class VaultMap {
         return currentRoom.x == x && currentRoom.z == z;
     }
 
-    private static boolean isWithinBounds(int x, int z) {
-        return x >= -24 && x <= 24 && z >= -24 && z <= 24;
-    }
-
     private static CellType getCellType(int x, int z) {
         if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
             return CellType.ROOM;
@@ -101,7 +97,7 @@ public class VaultMap {
                 isNew.set(false);
 
                 cell.setExplored(true);
-            };
+            }
         });
         return isNew.get();
     }
@@ -172,13 +168,12 @@ public class VaultMap {
 
         VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
-        if (isWithinBounds(playerRoomX, playerRoomZ)) {
-            if (debug) {
-                Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
-            }
-            if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
-                updateMap();
-            }
+
+        if (debug) {
+            Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
+        }
+        if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
+            updateMap();
         }
     }
 
