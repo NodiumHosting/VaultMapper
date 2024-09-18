@@ -35,6 +35,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
     double mapCenterZ;
     double prevMouseX;
     double prevMouseZ;
+    double zoomVal = 1;
 
     public MapContainerElement(ISpatial spatial, UUID vaultUuid) {
         super(spatial, Padding.of(2, 0));
@@ -82,6 +83,20 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
             bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
         }
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) { // delta is +-1
+        if (delta > 0) { // zoom in
+            this.zoomVal += 0.1;
+        } else if (delta < 0) { // zoom out
+            this.zoomVal -= 0.1;
+        }
+        if (this.zoomVal <= 0.3) {
+            this.zoomVal = 0.3;
+        }
+
+        return super.onMouseScrolled(mouseX, mouseY, delta);
     }
 
     @Override
@@ -153,7 +168,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
 
             float windowWidth = this.width();
 
-            float mapRoomWidth = (windowWidth / 49) * 2;
+            float mapRoomWidth = (windowWidth / 49) * 2 * (float) window.zoomVal;
 
             // Tunnel map
             cells.stream().filter((cell) -> cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z).forEach((cell) -> {
