@@ -114,8 +114,11 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
         private MapElement(IPosition position, UUID vaultUuid, MapContainerElement window) {
             super(Spatials.positionXYZ(position));
             this.window = window;
+            IMutableSpatial spatial = Spatials.positionXYZ(position);
+            spatial.positionZ(10); // TRY JUST ONE
             Optional<MapSnapshot> optMap = MapSnapshot.from(vaultUuid);
             if (optMap.isEmpty()) {
+                this.addElement(new LabelElement(spatial.positionX(0).positionY(5), new TextComponent("No map save available for this vault"), new LabelTextStyle.Builder()));
                 return;
             }
             MapSnapshot map = optMap.get();
@@ -124,9 +127,6 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).toArray().length;
             int inscriptionCount = cells.stream().filter(cell -> cell.inscripted).toArray().length;
             int markedCount = cells.stream().filter(cell -> cell.marked).toArray().length;
-
-            IMutableSpatial spatial = Spatials.positionXYZ(position);
-            spatial.positionZ(10); // TRY JUST ONE
 
             // x was -35
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(5), new TextComponent("Explored Rooms: " + cellCount), new LabelTextStyle.Builder()));
