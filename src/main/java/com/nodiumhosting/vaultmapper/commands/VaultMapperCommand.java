@@ -30,11 +30,6 @@ public class VaultMapperCommand {
                 .then(Commands.literal("disabledebug")
                         .executes(VaultMapperCommand::execute)
                 )
-                .then(Commands.literal("toggleResearchRequirement")
-                        .then(Commands.argument("key", StringArgumentType.string())
-                                .executes(VaultMapperCommand::execute)
-                        )
-                )
         );
     }
 

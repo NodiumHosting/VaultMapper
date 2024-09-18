@@ -132,20 +132,6 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(5), new TextComponent("Explored Rooms: " + cellCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(15), new TextComponent("Inscription Rooms: " + inscriptionCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(25), new TextComponent("Marked Rooms: " + markedCount), new LabelTextStyle.Builder()));
-
-            int top = spatial.top();
-            int left = spatial.left();
-            int right = spatial.right();
-            int bottom = spatial.bottom();
-            int width = spatial.width();
-            int height = spatial.height();
-
-            VaultMapper.LOGGER.info("top: " + top);
-            VaultMapper.LOGGER.info("left: " + left);
-            VaultMapper.LOGGER.info("right: " + right);
-            VaultMapper.LOGGER.info("bottom: " + bottom);
-            VaultMapper.LOGGER.info("width: " + width);
-            VaultMapper.LOGGER.info("height: " + height);
         }
 
 
