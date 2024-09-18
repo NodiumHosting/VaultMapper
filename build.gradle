@@ -219,7 +219,7 @@ processResources {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
-    archiveClassifier = "slim-dontuse"
+    archiveClassifier = ""
     manifest {
         attributes([
                 "Specification-Title"     : "vaultmapper",
@@ -261,3 +261,28 @@ mixin {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
+tasks.register('renameJar', Copy) {
+    def jarTask = tasks.jarJar // Reference to the 'jar' task
+    def jarFile = jarTask.archiveFile.get().asFile // Get the generated JAR file dynamically
+
+    // Define the new name for the JAR file (you can modify this as needed)
+    def newJarName = "${jarFile.name.replace("-all.jar", ".jar")}"
+
+    // Copy the original JAR to the new file with the renamed JAR
+    from jarFile
+    into jarFile.parentFile // Use the directory where the JAR is located
+    rename { String fileName ->
+        newJarName // Rename the jar
+    }
+
+    // Optionally delete the original JAR file after renaming
+    doLast {
+        if (jarFile.exists()) {
+            jarFile.delete()
+        }
+    }
+}
+
+// Ensure the renameJar task runs after the build task is completed
+build.finalizedBy(renameJar)
