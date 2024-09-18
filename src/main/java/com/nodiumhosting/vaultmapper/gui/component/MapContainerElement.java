@@ -152,6 +152,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
         @Override
         public void render(IElementRenderer renderer, @Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
             super.render(renderer, poseStack, mouseX, mouseY, partialTick);
+            if (cells == null) return;
 
             BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
             RenderSystem.enableBlend();
