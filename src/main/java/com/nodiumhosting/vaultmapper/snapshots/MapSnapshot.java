@@ -1,12 +1,15 @@
 package com.nodiumhosting.vaultmapper.snapshots;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
+import com.nodiumhosting.vaultmapper.util.BooleanSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -61,7 +64,12 @@ public class MapSnapshot {
 
     public static void addMap(UUID uuid, MapSnapshot snapshot) {
         makeSureFoldersExist();
-        Gson gson = new Gson();
+//        Gson gson = new Gson();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        BooleanSerializer serializer = new BooleanSerializer();
+        gsonBuilder.registerTypeAdapter(Boolean.class, serializer);
+        gsonBuilder.registerTypeAdapter(boolean.class, serializer);
+        Gson gson = gsonBuilder.create();
         try {
             FileWriter writer = new FileWriter(mapSaveFolder + uuid.toString() + ".json");
             gson.toJson(snapshot, writer);
@@ -122,7 +130,12 @@ public class MapSnapshot {
         if (!mapFile.exists()) {
             return Optional.empty();
         }
-        Gson gson = new Gson();
+//        Gson gson = new Gson();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        BooleanSerializer serializer = new BooleanSerializer();
+        gsonBuilder.registerTypeAdapter(Boolean.class, serializer);
+        gsonBuilder.registerTypeAdapter(boolean.class, serializer);
+        Gson gson = gsonBuilder.create();
         try {
             FileReader reader = new FileReader(path);
             Type saveType = new TypeToken<MapSnapshot>() {}.getType();
@@ -133,8 +146,11 @@ public class MapSnapshot {
         return Optional.empty();
     }
 
-    public List<VaultCell> cells;
+    @SerializedName("v")
     public int version = 1;
+
+    @SerializedName("cl")
+    public List<VaultCell> cells;
 
     public MapSnapshot(List<VaultCell> cells) {
         this.cells = cells;
