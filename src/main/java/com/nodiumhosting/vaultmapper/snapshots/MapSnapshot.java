@@ -134,6 +134,8 @@ public class MapSnapshot {
     }
 
     public List<VaultCell> cells;
+    public int version = 1;
+
     public MapSnapshot(List<VaultCell> cells) {
         this.cells = cells;
     }
