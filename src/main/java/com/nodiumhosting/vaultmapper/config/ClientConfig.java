@@ -19,12 +19,13 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_INSCRIPTIONS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
 
     static {
         BUILDER.push("VaultMapper Client Config");
 
         MAP_ENABLED = BUILDER.comment("Enable rendering the map").define("MAP_ENABLED", true);
-        
+
         MAP_X_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the x-axis").define("MAP_X_OFFSET", 0);
         MAP_Y_OFFSET = BUILDER.comment("Offset the Map from the default position (bottom right) on the y-axis").define("Map_Y_OFFSET", 0);
 
@@ -43,7 +44,11 @@ public class ClientConfig {
         MAX_MAPS_SAVED = BUILDER.comment("The maximum amount of map history snapshots that can be saved on file.\n" +
                 "Favorites will be saved forever regardless of this number.\n" +
                 "This number is a global number, not per world/server.\n" +
-                "Inputting a negative number disables the cap").define("MAX_MAPS_SAVED",-1);
+                "Inputting a negative number disables the cap").define("MAX_MAPS_SAVED", -1);
+
+        IGNORE_RESEARCH_REQUIREMENT = BUILDER.comment("Option to ignore the Vault Compass research requirement for Vault Map.\n" +
+                        "Please don't abuse this option on servers where you don't have permission to do so.")
+                .define("IGNORE_RESEARCH_REQUIREMENT", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

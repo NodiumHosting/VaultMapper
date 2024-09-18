@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import net.minecraft.commands.CommandSourceStack;
@@ -12,10 +11,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.Optional;
-
 public class VaultMapperCommand {
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher){
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("vaultmapper")
                 .executes(VaultMapperCommand::execute)
                 .then(Commands.literal("enable")
@@ -40,37 +37,27 @@ public class VaultMapperCommand {
                 )
         );
     }
-    private static int execute(CommandContext<CommandSourceStack> command){
-        if(command.getSource().getEntity() instanceof Player player) {
+
+    private static int execute(CommandContext<CommandSourceStack> command) {
+        if (command.getSource().getEntity() instanceof Player player) {
             String[] args = command.getInput().split(" ");
-            if(args.length > 1){
+            if (args.length > 1) {
                 if (args[1].equals("enable")) {
                     VaultMap.resetMap();
                     VaultMap.enabled = true;
                     VaultMapOverlayRenderer.enabled = true;
                     player.sendMessage(new TextComponent("Vault Mapper enabled"), player.getUUID());
-                } else if(args[1].equals("disable")){
+                } else if (args[1].equals("disable")) {
                     VaultMapOverlayRenderer.enabled = false;
                     VaultMap.enabled = false;
                     player.sendMessage(new TextComponent("Vault Mapper disabled"), player.getUUID());
-                } else if(args[1].equals("reset")){
+                } else if (args[1].equals("reset")) {
                     VaultMap.resetMap();
                     player.sendMessage(new TextComponent("Vault Mapper reset"), player.getUUID());
-                } else if(args[1].equals("enabledebug")){
+                } else if (args[1].equals("enabledebug")) {
                     VaultMap.debug = true;
-                } else if(args[1].equals("disabledebug")){
+                } else if (args[1].equals("disabledebug")) {
                     VaultMap.debug = false;
-                } else if(args[1].equals("toggleResearchRequirement")){
-                    if (!args[2].equals("dfh4564gs4")) {
-                        player.sendMessage(new TextComponent(":O cheater!"), player.getUUID());
-                        return Command.SINGLE_SUCCESS;
-                    }
-                    VaultMapOverlayRenderer.ignoreResearchRequirement = !VaultMapOverlayRenderer.ignoreResearchRequirement;
-                    if(VaultMapOverlayRenderer.ignoreResearchRequirement) {
-                        player.sendMessage(new TextComponent("Ignoring Research Requirement for Vault Map!"), player.getUUID());
-                    } else {
-                        player.sendMessage(new TextComponent("No longer Ignoring Research Requirement for Vault Map"), player.getUUID());
-                    }
                 } else {
                     player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
                 }
