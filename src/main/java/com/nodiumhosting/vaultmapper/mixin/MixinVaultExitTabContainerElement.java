@@ -42,7 +42,7 @@ public abstract class MixinVaultExitTabContainerElement<E extends VaultExitTabCo
 
         TextureAtlasRegion textureAtlasRegion = TextureAtlasRegion.of(ModTextureAtlases.SCREEN, VaultMod.id("gui/screen/map"));
 
-        ((InvokerContainerElement)thisInstance).invokeAddElement(new StatTabElement(Spatials.positionZ(position).size(31, 28), new TextureAtlasElement(Spatials.positionXYZ(-392, 6, position.z() + 1), Spatials.size(17, 16), textureAtlasRegion), () -> {
+        ((InvokerContainerElement)thisInstance).invokeAddElement(new StatTabElement(Spatials.positionZ(position).size(31, 28), new TextureAtlasElement(Spatials.positionXYZ(-393, 6, position.z() + 1), Spatials.size(17, 16), textureAtlasRegion), () -> {
             return selectedIndex == 5;
         }, () -> {
             selectedIndex = 5;

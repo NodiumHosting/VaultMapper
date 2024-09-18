@@ -18,6 +18,8 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class MapSnapshot {
     public static final String mapSaveFolder= "vaultmaps/standard/";
@@ -37,8 +39,8 @@ public class MapSnapshot {
 
     public static void toggleFavorite(UUID uuid) {
         makeSureFoldersExist();
-        String mapPath = mapSaveFolder + uuid.toString() + ".json";
-        String favPath = favoriteMapsFolder + uuid.toString() + ".json";
+        String mapPath = mapSaveFolder + uuid.toString() + ".vaultmap";
+        String favPath = favoriteMapsFolder + uuid.toString() + ".vaultmap";
         File favorite = new File(favPath);
         if (favorite.exists()) {
             favorite.delete();
@@ -71,7 +73,13 @@ public class MapSnapshot {
         gsonBuilder.registerTypeAdapter(boolean.class, serializer);
         Gson gson = gsonBuilder.create();
         try {
-            FileWriter writer = new FileWriter(mapSaveFolder + uuid.toString() + ".json");
+//            FileWriter writer = new FileWriter(mapSaveFolder + uuid.toString() + ".vaultmap");
+//            gson.toJson(snapshot, writer);
+//            writer.close();
+
+            FileOutputStream fos = new FileOutputStream(mapSaveFolder + uuid.toString() + ".vaultmap");
+            GZIPOutputStream gzos = new GZIPOutputStream(fos);
+            OutputStreamWriter writer = new OutputStreamWriter(gzos);
             gson.toJson(snapshot, writer);
             writer.close();
         } catch (IOException e) {
@@ -115,8 +123,8 @@ public class MapSnapshot {
 
     public static Optional<MapSnapshot> from(UUID uuid) {
         makeSureFoldersExist();
-        String mapPath = mapSaveFolder + uuid.toString() + ".json";
-        String favPath = favoriteMapsFolder + uuid.toString() + ".json";
+        String mapPath = mapSaveFolder + uuid.toString() + ".vaultmap";
+        String favPath = favoriteMapsFolder + uuid.toString() + ".vaultmap";
 
         Optional<MapSnapshot> normalMap = readMapFromPath(mapPath);
         if (normalMap.isPresent()) {
@@ -137,10 +145,16 @@ public class MapSnapshot {
         gsonBuilder.registerTypeAdapter(boolean.class, serializer);
         Gson gson = gsonBuilder.create();
         try {
-            FileReader reader = new FileReader(path);
+//            FileReader reader = new FileReader(path);
+//            Type saveType = new TypeToken<MapSnapshot>() {}.getType();
+//            return Optional.of(gson.fromJson(reader, saveType));
+
+            FileInputStream fis = new FileInputStream(path);
+            GZIPInputStream gzis = new GZIPInputStream(fis);
+            InputStreamReader reader = new InputStreamReader(gzis);
             Type saveType = new TypeToken<MapSnapshot>() {}.getType();
             return Optional.of(gson.fromJson(reader, saveType));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             VaultMapper.LOGGER.error("Couldn't read map save file");
         }
         return Optional.empty();
