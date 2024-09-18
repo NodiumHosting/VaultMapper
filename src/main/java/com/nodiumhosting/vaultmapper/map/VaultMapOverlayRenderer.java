@@ -47,7 +47,6 @@ public class VaultMapOverlayRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        
         // Tunnel map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
@@ -124,7 +123,7 @@ public class VaultMapOverlayRenderer {
         return new double[]{finalX, finalY};
     }
 
-    private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
+    public static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.cellType != CellType.NONE) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
@@ -220,7 +219,7 @@ public class VaultMapOverlayRenderer {
         centerZ = mapAnchorZ;
     }
 
-    private static int parseColor(String hexColor) {
+    public static int parseColor(String hexColor) {
         try {
             if (hexColor.startsWith("#")) {
                 hexColor = hexColor.substring(1);
