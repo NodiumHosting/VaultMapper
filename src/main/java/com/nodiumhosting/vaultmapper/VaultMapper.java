@@ -45,7 +45,7 @@ public class VaultMapper {
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         VaultMapOverlayRenderer.prep();
-
+        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
         InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
         wsServer = new SocketServer(addr);
 

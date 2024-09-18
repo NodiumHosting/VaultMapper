@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
-    public static boolean ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
+    public static boolean ignoreResearchRequirement = false;
 
     static int mapRoomWidth;
 
