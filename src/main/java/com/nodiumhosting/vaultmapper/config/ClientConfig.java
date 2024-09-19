@@ -20,6 +20,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MAP_SCALE;
 
     static {
         BUILDER.push("VaultMapper Client Config");
@@ -31,6 +32,8 @@ public class ClientConfig {
 
         MAP_X_ANCHOR = BUILDER.comment("Anchor the Map on the x-axis (0-left, 2-center, 4-right)").define("MAP_X_ANCHOR", 4);
         MAP_Y_ANCHOR = BUILDER.comment("Anchor the Map on the y-axis (0-top, 2-center, 4-bottom)").define("MAP_Y_ANCHOR", 4);
+
+        MAP_SCALE = BUILDER.comment("Scale of the map, 3 to 30").define("MAP_SCALE",10);
 
         POINTER_COLOR = BUILDER.comment("Color for the current player position").define("POINTER_COLOR", "#00FF00");
         ROOM_COLOR = BUILDER.comment("Color for normal Rooms & Hallways").define("ROOM_COLOR", "#0000FF");

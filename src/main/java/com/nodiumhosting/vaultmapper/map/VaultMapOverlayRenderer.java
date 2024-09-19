@@ -167,8 +167,7 @@ public class VaultMapOverlayRenderer {
         int h = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
         int mapSize = (int) (w * 0.25f);
-
-        mapRoomWidth = mapSize / 49;
+        mapRoomWidth = (mapSize / 49) * (ClientConfig.MAP_SCALE.get()/10);
 
         updateAnchor();
     }

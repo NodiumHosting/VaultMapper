@@ -114,6 +114,13 @@ public class VaultMapperConfigScreen extends Screen {
                     return "Unknown";
             }
         };
+        Function<Float, String> valueGetter = (value) -> {
+            return value.toString();
+        };
+
+        Slider mapScale = new Slider(this.width/2+10,getScaledY(3), " ", ClientConfig.MAP_SCALE.get(),30,3, valueGetter,width,elHeight);
+        this.addRenderableWidget(mapScale);
+
         Slider mapYAnchor = new Slider(this.width / 2 + 10, getScaledY(7), "", ClientConfig.MAP_Y_ANCHOR.get(), 4, 0, anchorGetterY, width, elHeight);
         this.addRenderableWidget(mapYAnchor);
 
@@ -192,6 +199,7 @@ public class VaultMapperConfigScreen extends Screen {
                 mapYOffset.setValue("0");
                 ClientConfig.MAP_Y_OFFSET.set(0);
             }
+            ClientConfig.MAP_SCALE.set(mapScale.sliderValue);
             ClientConfig.MAP_X_ANCHOR.set(mapXAnchor.sliderValue);
             ClientConfig.MAP_Y_ANCHOR.set(mapYAnchor.sliderValue);
             ClientConfig.POINTER_COLOR.set(pointerColor.getValue());
@@ -210,7 +218,7 @@ public class VaultMapperConfigScreen extends Screen {
 
             ClientConfig.SPEC.save();
 
-            VaultMapOverlayRenderer.updateAnchor();
+            VaultMapOverlayRenderer.onWindowResize();
 
             VaultMap.sendMap();
         });
@@ -264,6 +272,7 @@ public class VaultMapperConfigScreen extends Screen {
         // labels
         int offsetY = getScaledY(1) / 2;
         offsetY = getScaledY(1) / 4;
+        this.font.draw(pose,"Map Scale",this.width/2-110,getScaledY(3)+offsetY,0xFFFFFFFF);
         this.font.draw(pose, "Map X Offset", this.width / 2 - 110, getScaledY(4) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map Y Offset", this.width / 2 - 110, getScaledY(5) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map X Anchor", this.width / 2 - 110, getScaledY(6) + offsetY, 0xFFFFFFFF);
