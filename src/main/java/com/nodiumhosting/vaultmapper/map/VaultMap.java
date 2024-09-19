@@ -106,14 +106,6 @@ public class VaultMap {
         }
     }
 
-    public static TunnelType getTunnelType(int x, int z) {
-        if (abs(x) % 2 == 1 && z % 2 == 0) {
-            return TunnelType.X_FACING;
-        } else {
-            return TunnelType.Z_FACING;
-        }
-    }
-
     public static String getCellColor(VaultCell cell) {
         if (cell.roomType == RoomType.START) {
             return ClientConfig.START_ROOM_COLOR.get();

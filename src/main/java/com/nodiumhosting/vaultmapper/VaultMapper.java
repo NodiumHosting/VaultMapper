@@ -66,13 +66,4 @@ public class VaultMapper {
             LOGGER.info("registered client commands");
         }
     }
-
-    @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class ModEventListener {
-        @SubscribeEvent
-        public static void registerClientCommands(RegisterClientCommandsEvent event) {
-            VaultMapperCommand.register(event.getDispatcher());
-            LOGGER.info("registered client commands");
-        }
-    }
 }

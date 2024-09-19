@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.network.wssync;
 
 import com.nodiumhosting.vaultmapper.map.CellType;
+import com.nodiumhosting.vaultmapper.map.RoomType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import org.java_websocket.client.WebSocketClient;
@@ -67,10 +68,8 @@ public class WSClient extends WebSocketClient {
             int cell_x = Integer.parseInt(split[1]);
             int cell_y = Integer.parseInt(split[2]);
             CellType type = VaultMap.getCellType(cell_x, cell_y);
-            if (type.equals(CellType.ROOM)) {
-                VaultMap.addCell(new VaultCell(type, cell_x, cell_y));
-            } else if (type.equals(CellType.TUNNEL)) {
-                VaultMap.addCell(new VaultCell(type, VaultMap.getTunnelType(cell_x, cell_y), cell_x, cell_y));
+            if (!type.equals(CellType.NONE)) {
+                VaultMap.addCell(new VaultCell(cell_x, cell_y, type, RoomType.BASIC));
             }
         }
     }
