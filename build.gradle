@@ -16,13 +16,12 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 
-version = '1.3'
+version = '1.4.1'
 group = 'com.nodiumhosting.vaultmapper' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'vaultmapper'
 
@@ -57,7 +56,7 @@ minecraft {
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
             workingDirectory project.file('run')
-            arg "-mixin.config="+archivesBaseName+".mixins.json"
+            arg "-mixin.config=" + archivesBaseName + ".mixins.json"
 
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
@@ -85,7 +84,7 @@ minecraft {
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
             workingDirectory project.file('run')
-            arg "-mixin.config="+archivesBaseName+".mixins.json"
+            arg "-mixin.config=" + archivesBaseName + ".mixins.json"
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -152,20 +151,37 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    maven {
+        url "https://www.cursemaven.com"
+    }
 }
+
 
 dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.18.2-40.2.9'
+    implementation fg.deobf("curse.maven:vault-hunters-official-mod-458203:5621637")
+
+    implementation fg.deobf("curse.maven:curios-309927:4418032")
+    implementation fg.deobf("curse.maven:quark-243121:3840125")
+    implementation fg.deobf("curse.maven:autoreglib-250363:3642382")
+    implementation fg.deobf("curse.maven:geckolib-388172:4181370")
+    implementation fg.deobf("curse.maven:jei-238222:4593548")
+    implementation fg.deobf("curse.maven:sophisticated-backpacks-vault-hunters-edition-696425:4287544")
+    implementation fg.deobf("curse.maven:sophisticated-core-618298:4665730")
+    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:4637292")
+
+    runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4074294")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
+        jarJar.ranged(it, "[0.3.6,)")
+    }
+    implementation(jarJar('org.java-websocket:Java-WebSocket:1.5.7')) {
+        jarJar.ranged(it, "[1.5.7,)")
+    }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
@@ -203,7 +219,7 @@ processResources {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
-    archiveClassifier = "slim-dontuse"
+    archiveClassifier = ""
     manifest {
         attributes([
                 "Specification-Title"     : "vaultmapper",
@@ -213,7 +229,7 @@ jar {
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "vaultmappernodium",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "${modid}.mixins.json"
+                "MixinConfigs"            : "${modid}.mixins.json"
         ])
     }
 }
@@ -223,23 +239,6 @@ jar {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
-
-shadowJar {
-    // Only shadow fluent-hc
-    dependencies {
-        include(dependency('org.java-websocket:Java-WebSocket:.*'))
-        include(dependency('org.spongepowered:mixin:0.8.4:processor'))
-    }
-
-    // Relocate fluent-hc to prevent conflicts with other mods that include it
-    relocate 'org.java_websocket', "${project.group}.relocated.org.java_websocket"
-
-    classifier '' // Replace the default JAR
-}
-
-reobf {
-    shadowJar {} // Reobfuscate the shadowed JAR
-}
 
 publishing {
     publications {
@@ -262,3 +261,28 @@ mixin {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
+tasks.register('renameJar', Copy) {
+    def jarTask = tasks.jarJar // Reference to the 'jar' task
+    def jarFile = jarTask.archiveFile.get().asFile // Get the generated JAR file dynamically
+
+    // Define the new name for the JAR file (you can modify this as needed)
+    def newJarName = "${jarFile.name.replace("-all.jar", ".jar")}"
+
+    // Copy the original JAR to the new file with the renamed JAR
+    from jarFile
+    into jarFile.parentFile // Use the directory where the JAR is located
+    rename { String fileName ->
+        newJarName // Rename the jar
+    }
+
+    // Optionally delete the original JAR file after renaming
+    doLast {
+        if (jarFile.exists()) {
+            jarFile.delete()
+        }
+    }
+}
+
+// Ensure the renameJar task runs after the build task is completed
+build.finalizedBy(renameJar)

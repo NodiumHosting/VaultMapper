@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
+    public static boolean ignoreResearchRequirement = false;
 
     static int mapRoomWidth;
 
@@ -30,6 +32,7 @@ public class VaultMapOverlayRenderer {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
+        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
@@ -44,24 +47,15 @@ public class VaultMapOverlayRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        // Tunnel map
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z).forEach((cell) -> {
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
+        });
 
         // cell map
-        VaultMap.cells.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.ROOM_COLOR.get()));
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
-
-        // start room
-        renderCell(bufferBuilder, VaultMap.startRoom, parseColor(ClientConfig.START_ROOM_COLOR.get()));
-
-        // inscription rooms
-        VaultMap.inscriptionRooms.forEach((cell) -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.INSCRIPTION_ROOM_COLOR.get()));
-        });
-
-        // marked rooms
-        VaultMap.markedRooms.forEach((cell -> {
-            renderCell(bufferBuilder, cell, parseColor(ClientConfig.MARKED_ROOM_COLOR.get()));
-        }));
 
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
@@ -172,16 +166,17 @@ public class VaultMapOverlayRenderer {
         return new double[]{finalX, finalY};
     }
 
-    private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
-        if (cell.type != CellType.NONE) {
+    public static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
+        if (cell.cellType != CellType.NONE) {
+            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             int startX;
             int startZ;
             int endX;
             int endZ;
-            if (cell.type == CellType.TUNNEL) {
-                if (cell.tType == TunnelType.X_FACING) {
+            if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
+                if (cell.cellType == CellType.TUNNEL_X) { // X facing
                     startX = mapX - 2;
                     startZ = mapZ - 1;
                     endX = mapX + 2;
@@ -267,7 +262,7 @@ public class VaultMapOverlayRenderer {
         centerZ = mapAnchorZ;
     }
 
-    private static int parseColor(String hexColor) {
+    public static int parseColor(String hexColor) {
         try {
             if (hexColor.startsWith("#")) {
                 hexColor = hexColor.substring(1);

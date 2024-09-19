@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.events;
 
+import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,6 +15,7 @@ public class DimensionChangeEvent {
     public static void onDimChange(ClientPlayerNetworkEvent.RespawnEvent event) {
         String dimensionNamespace = event.getNewPlayer().level.dimension().location().getNamespace();
 
+        MapSnapshot.lastSnapshotCache = MapSnapshot.takeSnapshot();
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault")) {

@@ -46,8 +46,8 @@ public class VaultMapper {
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         VaultMapOverlayRenderer.prep();
-
-        InetSocketAddress addr = new InetSocketAddress("localhost", 58008);
+        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
+        InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
         wsServer = new SocketServer(addr);
 
         if (ClientConfig.WEBMAP_ENABLED.get()) {
@@ -56,6 +56,15 @@ public class VaultMapper {
 
         WSClient test = new WSClient("tester1", "vault_12f4c1ad-05b1-405d-ef34-3153d77cbf31");
         //test.connect();
+    }
+
+    @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class ModEventListener {
+        @SubscribeEvent
+        public static void registerClientCommands(RegisterClientCommandsEvent event) {
+            VaultMapperCommand.register(event.getDispatcher());
+            LOGGER.info("registered client commands");
+        }
     }
 
     @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)

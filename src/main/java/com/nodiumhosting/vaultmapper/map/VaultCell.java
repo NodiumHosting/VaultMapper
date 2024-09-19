@@ -1,27 +1,42 @@
 package com.nodiumhosting.vaultmapper.map;
 
+import com.google.gson.annotations.SerializedName;
+
 public class VaultCell {
-    public CellType type;
-    public TunnelType tType;
     public int x;
     public int z;
 
-    public VaultCell() {
-        type = CellType.NONE;
-        tType = TunnelType.NONE;
-        x = 0;
-        z = 0;
+    @SerializedName("e")
+    public boolean explored = false;
+
+    @SerializedName("m")
+    public boolean marked = false;
+
+    @SerializedName("i")
+    public boolean inscripted = false;
+
+    @SerializedName("c")
+    public CellType cellType;
+
+    @SerializedName("r")
+    public RoomType roomType;
+
+    public VaultCell(int x, int z, CellType cellType, RoomType roomType) {
+        this.x = x;
+        this.z = z;
+        this.cellType = cellType;
+        this.roomType = roomType;
     }
-    public VaultCell(CellType cellType, int room_x, int room_z) {
-        type = cellType;
-        x = room_x;
-        z = room_z;
+
+    /**
+     * @return Result of operation (true if switched from off to on)
+     */
+    public boolean switchMarked() {
+        this.marked = !this.marked;
+        return this.marked;
     }
-    public VaultCell(CellType cellType, TunnelType tunnelType, int room_x, int room_z) {
-        type = cellType;
-        tType = tunnelType;
-        x = room_x;
-        z = room_z;
+
+    public void setExplored(boolean explored) {
+        this.explored = explored;
     }
 }
-

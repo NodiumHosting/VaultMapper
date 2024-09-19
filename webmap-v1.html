@@ -81,10 +81,10 @@
 			const cells = localStorage.getItem('cells') ? JSON.parse(localStorage.getItem('cells')) : [];
 			const arrows = localStorage.getItem('arrows') ? JSON.parse(localStorage.getItem('arrows')) : [];
 
-			requestAnimationFrame(doRender);
+			doRender();
 
 			function onMessage(event) {
-				console.log('Received data:', event.data);
+				//console.log('Received data:', event.data);
 
 				const data = event.data.split(':');
 				const type = data[0]; // room, tunnelX, tunnelZ
@@ -115,7 +115,7 @@
 					localStorage.setItem('cells', JSON.stringify([]));
 					localStorage.setItem('arrows', JSON.stringify([]));
 
-					requestAnimationFrame(doRender);
+					doRender();
 
 					return;
 				}
@@ -138,7 +138,7 @@
 
 					localStorage.setItem('arrows', JSON.stringify(arrows));
 
-					requestAnimationFrame(doRender);
+					doRender();
 
 					return;
 				}
@@ -159,7 +159,7 @@
 
 				localStorage.setItem('cells', JSON.stringify(cells));
 
-				requestAnimationFrame(doRender);
+				doRender();
 			}
 
 			function fillCell(x, y, color, type) {
@@ -216,7 +216,7 @@
 					const cx = -1;
 					const cy = 0;
 					const radangle = (yaw + 90) * (Math.PI / 180);
-					
+
 					const x1r = cx + (x1 - cx) * Math.cos(radangle) - (y1 - cy) * Math.sin(radangle);
 					const y1r = cy + (x1 - cx) * Math.sin(radangle) + (y1 - cy) * Math.cos(radangle);
 					const x2r = cx + (x2 - cx) * Math.cos(radangle) - (y2 - cy) * Math.sin(radangle);
@@ -231,8 +231,6 @@
 					ctx.lineTo((x + x3r) * cellSize, (y + y3r) * cellSize);
 					ctx.fill();
 				}
-
-				requestAnimationFrame(doRender);
 			}
 		</script>
 	</body>
