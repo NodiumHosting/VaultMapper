@@ -23,6 +23,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
@@ -32,8 +34,8 @@ public class VaultMap {
     public static boolean enabled;
     public static boolean debug;
     public static WSClient mapSyncClient;
-    static public HashMap<String, MapPlayer> players = new HashMap<>();
-    static List<VaultCell> cells = new ArrayList<>();
+    static public ConcurrentHashMap<String, MapPlayer> players = new ConcurrentHashMap<>();
+    static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
     static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
     static VaultCell currentRoom; // might not be needed
     static int defaultMapSize = 21; // map size in cells
@@ -51,7 +53,6 @@ public class VaultMap {
         player.x = x;
         player.y = y;
         player.yaw = yaw;
-        players.put(name, player);
     }
 
     public static void startSync(String playerName, String dimName) {
@@ -71,7 +72,7 @@ public class VaultMap {
     }
 
     public static void resetMap() {
-        cells = new ArrayList<>();
+        cells = new CopyOnWriteArrayList<>();
         startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
         currentRoom = null;
         hologramChecked = false;
