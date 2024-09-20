@@ -49,7 +49,7 @@ public class VaultMap {
         if (!players.containsKey(name)) {
             players.put(name, new MapPlayer());
         }
-        var player = players.get(name);
+        MapPlayer player = players.get(name);
         player.x = x;
         player.y = y;
         player.yaw = yaw;
