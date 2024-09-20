@@ -2,8 +2,8 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
+import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -152,14 +152,8 @@ public class VaultMap {
         newCell.setExplored(true);
 
         if (isNewCell(newCell, cells)) {
-            if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
-                currentMapSize += 4;
-                currentCoordLimit += 2;
-                VaultMapOverlayRenderer.updateAnchor();
-            }
-
             if (cellType != CellType.NONE) {
-                cells.add(newCell);
+                VaultMap.addCell(newCell);
             }
         }
         sendMap();
@@ -172,6 +166,13 @@ public class VaultMap {
      */
     public static void addCell(VaultCell cell) {
         if (!isNewCell(cell, cells)) return;
+
+        if (abs(cell.x) > currentCoordLimit || abs(cell.z) > currentCoordLimit) { // resize map
+            currentMapSize += 4;
+            currentCoordLimit += 2;
+            VaultMapOverlayRenderer.updateAnchor();
+        }
+
         cells.add(cell);
     }
 
