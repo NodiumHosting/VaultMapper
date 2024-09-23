@@ -23,7 +23,7 @@ public class AuthNetworkingHandler {
     public static void register() {
         int id = 0;
 
-        CHANNEL.messageBuilder(AuthPacket.class, id++)
+        CHANNEL.messageBuilder(AuthPacket.class, ++id)
                 .encoder(AuthPacket::encode)
                 .decoder(AuthPacket::decode)
                 .consumer(AuthPacket::handle)
