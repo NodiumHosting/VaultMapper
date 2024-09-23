@@ -6,6 +6,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import com.nodiumhosting.vaultmapper.network.handlers.AuthNetworkingHandler;
 import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -47,6 +48,9 @@ public class VaultMapper {
     public void onClientSetup(FMLClientSetupEvent event) {
         VaultMapOverlayRenderer.prep();
         VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
+
+        AuthNetworkingHandler.register();
+
         InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
         wsServer = new SocketServer(addr);
 
@@ -55,7 +59,7 @@ public class VaultMapper {
         }
 
         WSClient test = new WSClient("tester1", "vault_12f4c1ad-05b1-405d-ef34-3153d77cbf31");
-        //test.connect();
+
     }
 
     @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
