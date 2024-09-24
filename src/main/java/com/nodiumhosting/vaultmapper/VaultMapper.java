@@ -7,7 +7,6 @@ import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.network.handlers.AuthNetworkingHandler;
-import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -57,9 +56,6 @@ public class VaultMapper {
         if (ClientConfig.WEBMAP_ENABLED.get()) {
             wsServer.start();
         }
-
-        WSClient test = new WSClient("tester1", "vault_12f4c1ad-05b1-405d-ef34-3153d77cbf31");
-
     }
 
     @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
