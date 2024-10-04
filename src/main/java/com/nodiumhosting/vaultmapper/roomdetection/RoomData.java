@@ -78,7 +78,7 @@ public class RoomData {
                     return true;
                 }
                 TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
-                VaultMapper.LOGGER.info("Omega Room Batch name: " + roomBatch.getPath());
+                VaultMapper.LOGGER.info("Omega Room Batch name: " + roomBatchRef.getReferenceId());
                 roomBatch.iterate((inner) -> {
                     if (inner instanceof DirectTemplateEntry roomFileRef) {
                         if (!roomFileRef.getTemplate().supports(Version.latest())) {
