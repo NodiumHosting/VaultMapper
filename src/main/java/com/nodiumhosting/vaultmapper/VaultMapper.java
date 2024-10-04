@@ -6,6 +6,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -51,6 +52,9 @@ public class VaultMapper {
 
         if (ClientConfig.WEBMAP_ENABLED.get()) {
             wsServer.start();
+        }
+        if (RoomData.omegaRooms == null || RoomData.challengeRooms == null) {
+            RoomData.initRooms();
         }
     }
 
