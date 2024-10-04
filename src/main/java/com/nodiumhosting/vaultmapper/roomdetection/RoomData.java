@@ -25,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
@@ -114,10 +115,10 @@ public class RoomData {
     public String name;
     public String simpleName;
     public Template room;
-    public List<String> northeastColumn = new ArrayList<>();
-    public List<String> northwestColumn = new ArrayList<>();
-    public List<String> southeastColumn = new ArrayList<>();
-    public List<String> southwestColumn = new ArrayList<>();
+    public Map<Integer, Block> northeastColumn = new HashMap<>();
+    public Map<Integer,Block> northwestColumn = new HashMap<>();
+    public Map<Integer,Block> southeastColumn = new HashMap<>();
+    public Map<Integer,Block> southwestColumn = new HashMap<>();
 
     public RoomData(String type, String simpleName, String name, Template room) {
         this.type = type;
@@ -128,21 +129,26 @@ public class RoomData {
         while (tiles.hasNext()) {
             PartialTile tile = tiles.next();
             BlockPos pos = tile.getPos();
-            String block = tile.getState().getBlock().toString();
+            Optional<Block> optBlock = tile.getState().getBlock().asWhole();
+            if (optBlock.isEmpty()) {
+                continue;
+            }
+            Block block = optBlock.get();
             if (pos.getX() == 0 && pos.getZ() == 0) {
-                northwestColumn.add(block);
+                northwestColumn.put(pos.getY(),block);
             }
             if (pos.getX() == 46 && pos.getZ() == 0) {
-                northeastColumn.add(block);
+                northeastColumn.put(pos.getY(),block);
             }
             if (pos.getX() == 0 && pos.getZ() == 46) {
-                southwestColumn.add(block);
+                southwestColumn.put(pos.getY(),block);
             }
             if (pos.getX() == 46 && pos.getZ() == 46) {
-                southeastColumn.add(block);
+                southeastColumn.put(pos.getY(),block);
             }
         }
     }
+
 
 
 }
