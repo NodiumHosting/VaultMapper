@@ -2,6 +2,7 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -120,6 +122,10 @@ public class VaultMap {
         }
         newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, roomType); // update current room
         currentRoom = newCell;
+        if (cellType == CellType.ROOM) {
+            Tuple<String, String> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+            VaultMapper.LOGGER.info(detectedRoom.getB());
+        }
         newCell.setExplored(true);
 
         if (isNewCell(newCell, cells)) {
