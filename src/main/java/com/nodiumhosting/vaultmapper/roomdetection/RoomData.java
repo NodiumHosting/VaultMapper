@@ -174,9 +174,9 @@ public class RoomData {
             currentRoom.southeastColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,46,i,46));
         }
         currentRoom.columnList.add(currentRoom.northwestColumn);
-        currentRoom.columnList.add(currentRoom.northwestColumn);
-        currentRoom.columnList.add(currentRoom.northwestColumn);
-        currentRoom.columnList.add(currentRoom.northwestColumn);
+        currentRoom.columnList.add(currentRoom.northeastColumn);
+        currentRoom.columnList.add(currentRoom.southwestColumn);
+        currentRoom.columnList.add(currentRoom.southeastColumn);
         return currentRoom;
     }
 
