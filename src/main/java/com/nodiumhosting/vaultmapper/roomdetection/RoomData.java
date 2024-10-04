@@ -139,6 +139,11 @@ public class RoomData {
         if (block1 == ModBlocks.PLACEHOLDER) {
             return  block2 == Blocks.STONE || block2 == Blocks.COBBLESTONE || block2 == Blocks.ANDESITE || block2 instanceof VaultOreBlock;
         }
+        if (block1 == null || block2 == null) {
+            VaultMapper.LOGGER.info("Failed test on null");
+            return false;
+        }
+        VaultMapper.LOGGER.info("Failed on " +  block1.getDescriptionId() +" "+block2.getDescriptionId() );
         return false;
     }
     public static boolean compareColumn(Map<Integer,Block> map1, Map<Integer,Block> map2) {
@@ -162,16 +167,37 @@ public class RoomData {
     public static RoomData captureRoom(int cellX, int cellZ) {
         RoomData currentRoom = new RoomData();
         for (int i = 0; i < 47; i++) {
-            currentRoom.northwestColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,0,i,0));
+            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i,0);
+            currentRoom.northwestColumn.put(i,block);
+            VaultMapper.LOGGER.info("1");
+            if (block!=null) {
+                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+            }
         }
         for (int i = 0; i < 47; i++) {
-            currentRoom.northeastColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,46,i,0));
+            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i,0);
+            currentRoom.northeastColumn.put(i,block);
+            VaultMapper.LOGGER.info("2");
+            if (block!=null) {
+                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+            }
         }
         for (int i = 0; i < 47; i++) {
-            currentRoom.southwestColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,0,i,46));
+            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i,46);
+            currentRoom.southwestColumn.put(i,block);
+            VaultMapper.LOGGER.info("3");
+            if (block!=null) {
+                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+            }
         }
         for (int i = 0; i < 47; i++) {
-            currentRoom.southeastColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,46,i,46));
+            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i,46);
+            currentRoom.southeastColumn.put(i,block);
+            VaultMapper.LOGGER.info("4");
+            if (block!=null) {
+                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+            }
+
         }
         currentRoom.columnList.add(currentRoom.northwestColumn);
         currentRoom.columnList.add(currentRoom.northeastColumn);
