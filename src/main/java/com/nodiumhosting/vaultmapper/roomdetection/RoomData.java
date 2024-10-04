@@ -1,6 +1,9 @@
 package com.nodiumhosting.vaultmapper.roomdetection;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import iskallia.vault.block.CoinPileBlock;
+import iskallia.vault.block.VaultChestBlock;
+import iskallia.vault.block.VaultOreBlock;
 import iskallia.vault.core.Version;
 import iskallia.vault.core.data.adapter.vault.RegistryKeyAdapter;
 import iskallia.vault.core.data.key.TemplateKey;
@@ -21,11 +24,13 @@ import iskallia.vault.core.world.template.Template;
 import iskallia.vault.core.world.template.data.DirectTemplateEntry;
 import iskallia.vault.core.world.template.data.IndirectTemplateEntry;
 import iskallia.vault.core.world.template.data.TemplatePool;
+import iskallia.vault.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.*;
 
@@ -121,6 +126,44 @@ public class RoomData {
     public Map<Integer,Block> northwestColumn = new HashMap<>();
     public Map<Integer,Block> southeastColumn = new HashMap<>();
     public Map<Integer,Block> southwestColumn = new HashMap<>();
+    public List<Map<Integer,Block>> columnList = new ArrayList<>();
+
+    public static boolean compareBlock(Block block1, Block block2) {
+        if (block1 == Blocks.AIR || block1 instanceof VaultChestBlock || block1 instanceof CoinPileBlock) {
+            block1 = null;
+        }
+        if (block2 == Blocks.AIR || block2 instanceof VaultChestBlock || block2 instanceof CoinPileBlock) {
+            block2 = null;
+        }
+        if (block1 == block2) {
+            return true;
+        }
+        if (block2 == ModBlocks.PLACEHOLDER) {
+            return  block1 == Blocks.STONE || block1 == Blocks.COBBLESTONE || block1 == Blocks.ANDESITE || block1 instanceof VaultOreBlock;
+        }
+        if (block1 == ModBlocks.PLACEHOLDER) {
+            return  block2 == Blocks.STONE || block2 == Blocks.COBBLESTONE || block2 == Blocks.ANDESITE || block2 instanceof VaultOreBlock;
+        }
+        return false;
+    }
+    public static boolean compareColumn(Map<Integer,Block> map1, Map<Integer,Block> map2) {
+        Set<Integer> combinedKeySet = new HashSet<>(map1.keySet());
+        combinedKeySet.addAll(map2.keySet());
+        for (Integer key : combinedKeySet) {
+            Block block1 = null;
+            if (map1.containsKey(key)) {
+                block1 = map1.get(key);
+            }
+            Block block2 = null;
+            if (map2.containsKey(key)) {
+                block2 = map2.get(key);
+            }
+            if (!compareBlock(block1,block2)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public RoomData(String type, String simpleName, String name, Template room) {
         this.type = type;
@@ -149,6 +192,24 @@ public class RoomData {
                 southeastColumn.put(pos.getY(),block);
             }
         }
+        columnList.add(northeastColumn);
+        columnList.add(northwestColumn);
+        columnList.add(southeastColumn);
+        columnList.add(southwestColumn);
+    }
+    public boolean compareRoom(RoomData roomData) {
+        for (Map<Integer,Block> column1 : columnList) {
+            boolean flag = false;
+            for (Map<Integer,Block> column2 : roomData.columnList) {
+                if (compareColumn(column1,column2)) {
+                    flag = true;
+                }
+            }
+            if (!flag) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
