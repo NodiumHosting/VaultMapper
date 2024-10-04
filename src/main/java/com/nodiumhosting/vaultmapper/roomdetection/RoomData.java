@@ -55,15 +55,17 @@ public class RoomData {
                     return true;
                 }
                 TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
-                VaultMapper.LOGGER.info("Challenge Room Batch name: " + roomBatchRef.getReference().getName());
+                String simpleName = roomBatchRef.getReference().getName();
+                VaultMapper.LOGGER.info("Challenge Room Batch name: " + simpleName);
                 roomBatch.iterate((inner) -> {
                     if (inner instanceof DirectTemplateEntry roomFileRef) {
                         if (!roomFileRef.getTemplate().supports(Version.latest())) {
                             return true;
                         }
                         Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-
-                        VaultMapper.LOGGER.info("Room File name: " + roomFileRef.getTemplate().getName());
+                        String name = roomFileRef.getTemplate().getName();
+                        VaultMapper.LOGGER.info("Room File name: " + name);
+                        challengeRooms.add(new RoomData("challenge", name,simpleName,roomFile));
                     }
                     return true;
                 });
@@ -78,15 +80,17 @@ public class RoomData {
                     return true;
                 }
                 TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
-                VaultMapper.LOGGER.info("Omega Room Batch name: " + roomBatchRef.getReference().getName());
+                String simpleName = roomBatchRef.getReference().getName();
+                VaultMapper.LOGGER.info("Omega Room Batch name: " + simpleName);
                 roomBatch.iterate((inner) -> {
                     if (inner instanceof DirectTemplateEntry roomFileRef) {
                         if (!roomFileRef.getTemplate().supports(Version.latest())) {
                             return true;
                         }
                         Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-
-                        VaultMapper.LOGGER.info("Room File name: " + roomFileRef.getTemplate().getName());
+                        String name = roomFileRef.getTemplate().getName();
+                        VaultMapper.LOGGER.info("Room File name: " + name);
+                        omegaRooms.add(new RoomData("omega", name,simpleName,roomFile));
                     }
                     return true;
                 });
@@ -99,13 +103,14 @@ public class RoomData {
 
     public String type;
     public String name;
+    public String simpleName;
     public Template room;
     public List<String> northeastColumn;
     public List<String> northwestColumn;
     public List<String> southeastColumn;
     public List<String> southwestColumn;
 
-    public RoomData(String type, String name, Template room) {
+    public RoomData(String type, String simpleName, String name, Template room) {
         this.type = type;
         this.name = name;
         this.room = room;
