@@ -1,6 +1,8 @@
 package com.nodiumhosting.vaultmapper.roomdetection;
 
+import com.ibm.icu.impl.Pair;
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import iskallia.vault.block.CoinPileBlock;
 import iskallia.vault.block.VaultChestBlock;
 import iskallia.vault.block.VaultOreBlock;
@@ -28,6 +30,7 @@ import iskallia.vault.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -118,15 +121,7 @@ public class RoomData {
     }
 
 
-    public String type;
-    public String name;
-    public String simpleName;
-    public Template room;
-    public Map<Integer, Block> northeastColumn = new HashMap<>();
-    public Map<Integer,Block> northwestColumn = new HashMap<>();
-    public Map<Integer,Block> southeastColumn = new HashMap<>();
-    public Map<Integer,Block> southwestColumn = new HashMap<>();
-    public List<Map<Integer,Block>> columnList = new ArrayList<>();
+
 
     public static boolean compareBlock(Block block1, Block block2) {
         if (block1 == Blocks.AIR || block1 instanceof VaultChestBlock || block1 instanceof CoinPileBlock) {
@@ -163,6 +158,43 @@ public class RoomData {
             }
         }
         return true;
+    }
+    public static RoomData captureRoom(int cellX, int cellZ) {
+        RoomData currentRoom = new RoomData();
+        for (int i = 0; i < 47; i++) {
+            currentRoom.northwestColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,0,i,0));
+        }
+        for (int i = 0; i < 47; i++) {
+            currentRoom.northeastColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,46,i,0));
+        }
+        for (int i = 0; i < 47; i++) {
+            currentRoom.southwestColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,0,i,46));
+        }
+        for (int i = 0; i < 47; i++) {
+            currentRoom.southeastColumn.put(i,VaultMap.getCellBlock(cellX,cellZ,46,i,46));
+        }
+        currentRoom.columnList.add(currentRoom.northwestColumn);
+        currentRoom.columnList.add(currentRoom.northwestColumn);
+        currentRoom.columnList.add(currentRoom.northwestColumn);
+        currentRoom.columnList.add(currentRoom.northwestColumn);
+        return currentRoom;
+    }
+
+    public String type;
+    public String name;
+    public String simpleName;
+    public Template room;
+    public Map<Integer, Block> northeastColumn = new HashMap<>();
+    public Map<Integer,Block> northwestColumn = new HashMap<>();
+    public Map<Integer,Block> southeastColumn = new HashMap<>();
+    public Map<Integer,Block> southwestColumn = new HashMap<>();
+    public List<Map<Integer,Block>> columnList = new ArrayList<>();
+
+    public RoomData() {
+        this.type = "current";
+        this.simpleName = "current";
+        this.name = "current";
+        this.room = null;
     }
 
     public RoomData(String type, String simpleName, String name, Template room) {
@@ -210,6 +242,20 @@ public class RoomData {
             }
         }
         return true;
+    }
+
+    public Tuple<String,String> findRoom() {
+        for (RoomData omegaRoom : omegaRooms) {
+            if (this.compareRoom(omegaRoom)) {
+                return new Tuple<String,String>("omega",omegaRoom.simpleName);
+            }
+        }
+        for (RoomData challengeRoom : challengeRooms) {
+            if (this.compareRoom(challengeRoom)) {
+                return new Tuple<String,String>("challenge",challengeRoom.simpleName);
+            }
+        }
+        return new Tuple<>("common", "none");
     }
 
 
