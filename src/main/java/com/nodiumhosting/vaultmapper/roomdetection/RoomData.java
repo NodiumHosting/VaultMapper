@@ -128,18 +128,18 @@ public class RoomData {
         while (tiles.hasNext()) {
             PartialTile tile = tiles.next();
             BlockPos pos = tile.getPos();
+            String block = tile.getState().getBlock().toString();
             if (pos.getX() == 0 && pos.getZ() == 0) {
-                northwestColumn.add(tile.getState().getBlock().toString());
+                northwestColumn.add(block);
             }
             if (pos.getX() == 46 && pos.getZ() == 0) {
-                northeastColumn.add(tile.getState().getBlock().toString());
+                northeastColumn.add(block);
             }
             if (pos.getX() == 0 && pos.getZ() == 46) {
-                southwestColumn.add(tile.getState().getBlock().toString());
+                southwestColumn.add(block);
             }
             if (pos.getX() == 46 && pos.getZ() == 46) {
-                southeastColumn.add(tile.getState().getBlock().toString());
-                VaultMapper.LOGGER.info(tile.getState().getBlock().toString());
+                southeastColumn.add(block);
             }
         }
     }
