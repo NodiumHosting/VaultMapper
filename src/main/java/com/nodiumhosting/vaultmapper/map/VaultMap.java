@@ -313,8 +313,9 @@ public class VaultMap {
         if (player == null) return null;
         if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return null;
 
-        int xCoord = cellX * 49 + blockX;
-        int zCoord = cellZ * 49 + blockZ;
+        int xCoord = cellX * 47 + blockX;
+        int zCoord = cellZ * 47 + blockZ;
+        VaultMapper.LOGGER.info("X " + xCoord + " Z " + zCoord);
 
         if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
 
