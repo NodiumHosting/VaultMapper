@@ -31,9 +31,11 @@ import java.util.*;
 
 public class RoomData {
 
-    public static List<RoomData> omegaRooms = new ArrayList<>();
-    public static List<RoomData> challengeRooms = new ArrayList<>();
+    public static List<RoomData> omegaRooms;
+    public static List<RoomData> challengeRooms;
     public static void initRooms() {
+        omegaRooms = new ArrayList<>();
+        challengeRooms = new ArrayList<>();
         TemplatePoolKey challengeRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/challenge_rooms");
         TemplatePoolKey omegaRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/omega_rooms");
         if (challengeRef == null) {
