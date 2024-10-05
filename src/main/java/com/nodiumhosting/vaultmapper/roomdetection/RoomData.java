@@ -85,7 +85,7 @@ public class RoomData {
                         Template roomFile = roomFileRef.getTemplate().get(Version.latest());
                         String name = roomFileRef.getTemplate().getName();
                         //VaultMapper.LOGGER.info("Room File name: " + name);
-                        challengeRooms.add(new RoomData("challenge", name,simpleName,roomFile));
+                        challengeRooms.add(new RoomData("challenge", simpleName,name,roomFile));
                     }
                     return true;
                 });
@@ -143,7 +143,7 @@ public class RoomData {
             VaultMapper.LOGGER.info("Failed test on null");
             return false;
         }
-        VaultMapper.LOGGER.info("Failed on " +  block1.getDescriptionId() +" "+block2.getDescriptionId() );
+        //VaultMapper.LOGGER.info("Failed on " +  block1.getDescriptionId() +" "+block2.getDescriptionId() );
         return false;
     }
     public static boolean compareColumn(Map<Integer,Block> map1, Map<Integer,Block> map2) {
