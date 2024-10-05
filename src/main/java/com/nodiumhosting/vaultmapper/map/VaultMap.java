@@ -315,7 +315,7 @@ public class VaultMap {
 
         int xCoord = cellX * 47 + blockX;
         int zCoord = cellZ * 47 + blockZ;
-        VaultMapper.LOGGER.info("X " + xCoord + " Z " + zCoord);
+        //VaultMapper.LOGGER.info("X " + xCoord + " Z " + zCoord);
 
         if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
 

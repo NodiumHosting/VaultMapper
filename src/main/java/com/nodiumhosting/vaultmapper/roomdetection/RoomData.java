@@ -76,7 +76,7 @@ public class RoomData {
                 }
                 TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
                 String simpleName = roomBatchRef.getReference().getName();
-                VaultMapper.LOGGER.info("Challenge Room Batch name: " + simpleName);
+                //VaultMapper.LOGGER.info("Challenge Room Batch name: " + simpleName);
                 roomBatch.iterate((inner) -> {
                     if (inner instanceof DirectTemplateEntry roomFileRef) {
                         if (!roomFileRef.getTemplate().supports(Version.latest())) {
@@ -84,7 +84,7 @@ public class RoomData {
                         }
                         Template roomFile = roomFileRef.getTemplate().get(Version.latest());
                         String name = roomFileRef.getTemplate().getName();
-                        VaultMapper.LOGGER.info("Room File name: " + name);
+                        //VaultMapper.LOGGER.info("Room File name: " + name);
                         challengeRooms.add(new RoomData("challenge", name,simpleName,roomFile));
                     }
                     return true;
@@ -101,7 +101,7 @@ public class RoomData {
                 }
                 TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
                 String simpleName = roomBatchRef.getReference().getName();
-                VaultMapper.LOGGER.info("Omega Room Batch name: " + simpleName);
+                //VaultMapper.LOGGER.info("Omega Room Batch name: " + simpleName);
                 roomBatch.iterate((inner) -> {
                     if (inner instanceof DirectTemplateEntry roomFileRef) {
                         if (!roomFileRef.getTemplate().supports(Version.latest())) {
@@ -109,8 +109,8 @@ public class RoomData {
                         }
                         Template roomFile = roomFileRef.getTemplate().get(Version.latest());
                         String name = roomFileRef.getTemplate().getName();
-                        VaultMapper.LOGGER.info("Room File name: " + name);
-                        omegaRooms.add(new RoomData("omega", name,simpleName,roomFile));
+                        //VaultMapper.LOGGER.info("Room File name: " + name);
+                        omegaRooms.add(new RoomData("omega", simpleName,name,roomFile));
                     }
                     return true;
                 });
@@ -170,33 +170,33 @@ public class RoomData {
         for (int i = 0; i < 47; i++) {
             Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,0);
             currentRoom.northwestColumn.put(i,block);
-            VaultMapper.LOGGER.info("1");
+            //VaultMapper.LOGGER.info("1");
             if (block!=null) {
-                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
             }
         }
         for (int i = 0; i < 47; i++) {
             Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,0);
             currentRoom.northeastColumn.put(i,block);
-            VaultMapper.LOGGER.info("2");
+            //VaultMapper.LOGGER.info("2");
             if (block!=null) {
-                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
             }
         }
         for (int i = 0; i < 47; i++) {
             Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,46);
             currentRoom.southwestColumn.put(i,block);
-            VaultMapper.LOGGER.info("3");
+            //VaultMapper.LOGGER.info("3");
             if (block!=null) {
-                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
             }
         }
         for (int i = 0; i < 47; i++) {
             Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,46);
             currentRoom.southeastColumn.put(i,block);
-            VaultMapper.LOGGER.info("4");
+            //VaultMapper.LOGGER.info("4");
             if (block!=null) {
-                VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
+                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
             }
 
         }
