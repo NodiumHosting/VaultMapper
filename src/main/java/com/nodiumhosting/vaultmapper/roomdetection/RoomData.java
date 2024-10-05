@@ -166,8 +166,9 @@ public class RoomData {
     }
     public static RoomData captureRoom(int cellX, int cellZ) {
         RoomData currentRoom = new RoomData();
+        int offsetY = 9;
         for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i,0);
+            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,0);
             currentRoom.northwestColumn.put(i,block);
             VaultMapper.LOGGER.info("1");
             if (block!=null) {
@@ -175,7 +176,7 @@ public class RoomData {
             }
         }
         for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i,0);
+            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,0);
             currentRoom.northeastColumn.put(i,block);
             VaultMapper.LOGGER.info("2");
             if (block!=null) {
@@ -183,7 +184,7 @@ public class RoomData {
             }
         }
         for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i,46);
+            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,46);
             currentRoom.southwestColumn.put(i,block);
             VaultMapper.LOGGER.info("3");
             if (block!=null) {
@@ -191,7 +192,7 @@ public class RoomData {
             }
         }
         for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i,46);
+            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,46);
             currentRoom.southeastColumn.put(i,block);
             VaultMapper.LOGGER.info("4");
             if (block!=null) {
