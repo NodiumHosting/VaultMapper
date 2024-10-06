@@ -146,11 +146,14 @@ public class RoomData {
         //VaultMapper.LOGGER.info("Failed on " +  block1.getDescriptionId() +" "+block2.getDescriptionId() );
         return false;
     }
-    public static boolean compareColumn(Map<Integer,Block> map1, Map<Integer,Block> map2) {
+    public static boolean compareColumn(Map<Integer,Block> map1, Map<Integer,Block> map2,int minYLevel) {
         Set<Integer> combinedKeySet = new HashSet<>(map1.keySet());
         combinedKeySet.addAll(map2.keySet());
         for (Integer key : combinedKeySet) {
             Block block1 = null;
+            if (key < minYLevel) {
+                continue;
+            }
             if (map1.containsKey(key)) {
                 block1 = map1.get(key);
             }
@@ -164,58 +167,62 @@ public class RoomData {
         }
         return true;
     }
+    public static boolean compareColumnPercentageRequired(Map<Integer,Block> map1, Map<Integer,Block> map2,int minYLevel, float percentage) {
+        Set<Integer> combinedKeySet = new HashSet<>(map1.keySet());
+        combinedKeySet.addAll(map2.keySet());
+        int blockCount = combinedKeySet.size();
+        int allowedMistakes = (int) Math.floor((1.0f-percentage)*blockCount);
+        int currentMistakes=0;
+        for (Integer key : combinedKeySet) {
+            Block block1 = null;
+            if (key < minYLevel) {
+                continue;
+            }
+            if (map1.containsKey(key)) {
+                block1 = map1.get(key);
+            }
+            Block block2 = null;
+            if (map2.containsKey(key)) {
+                block2 = map2.get(key);
+            }
+            if (!compareBlock(block1,block2)) {
+                currentMistakes++;
+            }
+            if (currentMistakes > allowedMistakes) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static RoomData captureRoom(int cellX, int cellZ) {
         RoomData currentRoom = new RoomData();
-        int offsetY = 9;
-        for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,0);
-            currentRoom.northwestColumn.put(i,block);
-            //VaultMapper.LOGGER.info("1");
-            if (block!=null) {
-                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
-            }
-        }
-        for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,0);
-            currentRoom.northeastColumn.put(i,block);
-            //VaultMapper.LOGGER.info("2");
-            if (block!=null) {
-                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
-            }
-        }
-        for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,0,i+offsetY,46);
-            currentRoom.southwestColumn.put(i,block);
-            //VaultMapper.LOGGER.info("3");
-            if (block!=null) {
-                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
-            }
-        }
-        for (int i = 0; i < 47; i++) {
-            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+offsetY,46);
-            currentRoom.southeastColumn.put(i,block);
-            //VaultMapper.LOGGER.info("4");
-            if (block!=null) {
-                //VaultMapper.LOGGER.info(block.getDescriptionId() + " " + i);
-            }
-
-        }
-        currentRoom.columnList.add(currentRoom.northwestColumn);
-        currentRoom.columnList.add(currentRoom.northeastColumn);
-        currentRoom.columnList.add(currentRoom.southwestColumn);
-        currentRoom.columnList.add(currentRoom.southeastColumn);
+        currentRoom.columnList.add(captureColumn(cellX,cellZ,0,0));
+        currentRoom.columnList.add(captureColumn(cellX,cellZ,0,46));
+        currentRoom.columnList.add(captureColumn(cellX,cellZ,46,0));
+        currentRoom.columnList.add(captureColumn(cellX,cellZ,46,46));
+        currentRoom.mineOption1 = VaultMap.getCellBlock(cellX,cellZ,23,32+9,23);
+        currentRoom.mineOption2 = VaultMap.getCellBlock(cellX,cellZ,23,31+9,23);
+        //currentRoom.centerColumn = captureColumn(cellX,cellZ,23,23);
         return currentRoom;
+    }
+    public static Map<Integer,Block> captureColumn(int cellX, int cellZ, int x, int z) {
+        Map<Integer,Block> column = new HashMap<>();
+        for (int i = 0; i <= 46; i++) {
+            Block block = VaultMap.getCellBlock(cellX,cellZ,46,i+9,46);
+            column.put(i,block);
+        }
+        return column;
     }
 
     public String type;
     public String name;
     public String simpleName;
     public Template room;
-    public Map<Integer, Block> northeastColumn = new HashMap<>();
-    public Map<Integer,Block> northwestColumn = new HashMap<>();
-    public Map<Integer,Block> southeastColumn = new HashMap<>();
-    public Map<Integer,Block> southwestColumn = new HashMap<>();
     public List<Map<Integer,Block>> columnList = new ArrayList<>();
+    public Block mineOption1;
+    public Block mineOption2;
+    //public Map<Integer,Block> centerColumn = new HashMap<>();
 
     public RoomData() {
         this.type = "current";
@@ -230,6 +237,16 @@ public class RoomData {
         this.name = name;
         this.room = room;
         Iterator<PartialTile> tiles = room.getTiles(Template.ALL_TILES);
+        Map<Integer, Block> northeastColumn = new HashMap<>();
+        Map<Integer,Block> northwestColumn = new HashMap<>();
+        Map<Integer,Block> southeastColumn = new HashMap<>();
+        Map<Integer,Block> southwestColumn = new HashMap<>();
+        columnList.add(northeastColumn);
+        columnList.add(northwestColumn);
+        columnList.add(southeastColumn);
+        columnList.add(southwestColumn);
+
+
         while (tiles.hasNext()) {
             PartialTile tile = tiles.next();
             BlockPos pos = tile.getPos();
@@ -238,30 +255,56 @@ public class RoomData {
                 continue;
             }
             Block block = optBlock.get();
-            if (pos.getX() == 0 && pos.getZ() == 0) {
-                northwestColumn.put(pos.getY(),block);
+            int x = pos.getX();
+            int z = pos.getZ();
+            int y = pos.getY();
+            if (x == 0 && z == 0) {
+                northwestColumn.put(y,block);
             }
-            if (pos.getX() == 46 && pos.getZ() == 0) {
-                northeastColumn.put(pos.getY(),block);
+            if (x == 46 && z == 0) {
+                northeastColumn.put(y,block);
             }
-            if (pos.getX() == 0 && pos.getZ() == 46) {
-                southwestColumn.put(pos.getY(),block);
+            if (x == 0 && z == 46) {
+                southwestColumn.put(y,block);
             }
-            if (pos.getX() == 46 && pos.getZ() == 46) {
-                southeastColumn.put(pos.getY(),block);
+            if (x == 46 && z == 46) {
+                southeastColumn.put(y,block);
             }
+            if (x==23 && y==32 && z==23) {
+                mineOption1 = block;
+            }
+            if (x==23 && y==31 && z==23) {
+                mineOption2 = block;
+            }
+            //if (x==23 && z == 23) {
+                //centerColumn.put(pos.getY(),block);
+            //}
         }
-        columnList.add(northeastColumn);
-        columnList.add(northwestColumn);
-        columnList.add(southeastColumn);
-        columnList.add(southwestColumn);
     }
     public boolean compareRoom(RoomData roomData) {
+        //roomData is omega/challenge
+        //this is current
+        int yLevel = 0;
+        if (roomData.simpleName.equals("Village")) {
+            yLevel = 19;
+        }
+        if (roomData.simpleName.equals("Mine")) {
+            //if (!compareColumnPercentageRequired(centerColumn, roomData.centerColumn,yLevel,0.15f)) {
+                //return false;
+            //}
+            if (!(mineOption1 == Blocks.LANTERN || mineOption2 == Blocks.LANTERN)) {
+                return false;
+            }
+        }
+
         for (Map<Integer,Block> column1 : columnList) {
             boolean flag = false;
             for (Map<Integer,Block> column2 : roomData.columnList) {
-                if (compareColumn(column1,column2)) {
+
+                if (compareColumn(column1,column2,yLevel)) {
+                    //columnList.remove(column2);
                     flag = true;
+                    break;
                 }
             }
             if (!flag) {
