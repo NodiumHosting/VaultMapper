@@ -216,7 +216,7 @@ public class VaultMapperConfigScreen extends Screen {
             }
 
             ClientConfig.SPEC.save();
-            
+
             VaultMapOverlayRenderer.onWindowResize();
 
             VaultMap.sendMap();
