@@ -114,18 +114,17 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
+        Tuple<RoomType, String> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+
         VaultCell newCell;
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
-        RoomType roomType = RoomType.BASIC; // TODO change this later when we do detection of room types
+        RoomType roomType = detectedRoom.getA();
         if (playerRoomX == 0 && playerRoomZ == 0) {
+            //i dont like having this here but whatever (TODO: change if i rewrite RoomData)
             roomType = RoomType.START;
         }
         newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, roomType); // update current room
         currentRoom = newCell;
-        if (cellType == CellType.ROOM) {
-            Tuple<String, String> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
-            VaultMapper.LOGGER.info(detectedRoom.getB());
-        }
         newCell.setExplored(true);
 
         if (isNewCell(newCell, cells)) {

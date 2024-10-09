@@ -1,37 +1,22 @@
 package com.nodiumhosting.vaultmapper.roomdetection;
 
-import com.ibm.icu.impl.Pair;
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.map.RoomType;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import iskallia.vault.block.CoinPileBlock;
 import iskallia.vault.block.VaultChestBlock;
 import iskallia.vault.block.VaultOreBlock;
 import iskallia.vault.core.Version;
-import iskallia.vault.core.data.adapter.vault.RegistryKeyAdapter;
-import iskallia.vault.core.data.key.TemplateKey;
 import iskallia.vault.core.data.key.TemplatePoolKey;
-import iskallia.vault.core.data.key.registry.KeyRegistry;
-import iskallia.vault.core.util.WeightedList;
-import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.VaultRegistry;
-import iskallia.vault.core.world.data.entity.PartialCompoundNbt;
-import iskallia.vault.core.world.data.tile.PartialBlockState;
 import iskallia.vault.core.world.data.tile.PartialTile;
-import iskallia.vault.core.world.data.tile.TilePredicate;
-import iskallia.vault.core.world.generator.GridGenerator;
-import iskallia.vault.core.world.generator.layout.ClassicVaultLayout;
-import iskallia.vault.core.world.processor.ProcessorContext;
-import iskallia.vault.core.world.template.PlacementSettings;
 import iskallia.vault.core.world.template.Template;
 import iskallia.vault.core.world.template.data.DirectTemplateEntry;
 import iskallia.vault.core.world.template.data.IndirectTemplateEntry;
 import iskallia.vault.core.world.template.data.TemplatePool;
 import iskallia.vault.init.ModBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -140,7 +125,7 @@ public class RoomData {
             return  block2 == Blocks.STONE || block2 == Blocks.COBBLESTONE || block2 == Blocks.ANDESITE || block2 instanceof VaultOreBlock;
         }
         if (block1 == null || block2 == null) {
-            VaultMapper.LOGGER.info("Failed test on null");
+//            VaultMapper.LOGGER.info("Failed test on null");
             return false;
         }
         //VaultMapper.LOGGER.info("Failed on " +  block1.getDescriptionId() +" "+block2.getDescriptionId() );
@@ -314,20 +299,19 @@ public class RoomData {
         return true;
     }
 
-    public Tuple<String,String> findRoom() {
+    public Tuple<RoomType,String> findRoom() {
         for (RoomData omegaRoom : omegaRooms) {
             if (this.compareRoom(omegaRoom)) {
-                return new Tuple<String,String>("omega",omegaRoom.simpleName);
+                return new Tuple<RoomType,String>(RoomType.OMEGA,omegaRoom.simpleName);
             }
         }
         for (RoomData challengeRoom : challengeRooms) {
             if (this.compareRoom(challengeRoom)) {
-                return new Tuple<String,String>("challenge",challengeRoom.simpleName);
+                return new Tuple<RoomType,String>(RoomType.CHALLENGE,challengeRoom.simpleName);
             }
         }
-        return new Tuple<>("common", "none");
+        // TODO: need to add support for vendor rooms
+
+        return new Tuple<RoomType,String>(RoomType.BASIC, "none");
     }
-
-
-
 }

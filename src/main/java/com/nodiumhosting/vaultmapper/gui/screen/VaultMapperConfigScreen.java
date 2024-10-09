@@ -57,19 +57,32 @@ public class VaultMapperConfigScreen extends Screen {
         int width = 100;
         int elWidthColor = width - elHeight - 5;
 
-        Button mapEnabledButton = new Button(this.width / 2 - 100, getScaledY(2), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Map Enabled: " + ClientConfig.MAP_ENABLED.get()), button -> {
+        Button mapEnabledButton = new Button(this.width / 2 - 100, getScaledY(1.25f), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Map Enabled: " + ClientConfig.MAP_ENABLED.get()), button -> {
             ClientConfig.MAP_ENABLED.set(!ClientConfig.MAP_ENABLED.get());
             ClientConfig.SPEC.save();
             button.setMessage(new TextComponent("Map Enabled: " + ClientConfig.MAP_ENABLED.get()));
         });
         this.addRenderableWidget(mapEnabledButton);
 
-        Button webMapEnabledButton = new Button(this.width / 2 - 100, getScaledY(2.75f), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("WebMap Enabled: " + ClientConfig.WEBMAP_ENABLED.get()), button -> {
+        Button webMapEnabledButton = new Button(this.width / 2 - 100, getScaledY(2), elWidth, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("WebMap Enabled: " + ClientConfig.WEBMAP_ENABLED.get()), button -> {
             ClientConfig.WEBMAP_ENABLED.set(!ClientConfig.WEBMAP_ENABLED.get());
             ClientConfig.SPEC.save();
             button.setMessage(new TextComponent("WebMap Enabled: " + ClientConfig.WEBMAP_ENABLED.get()));
         });
         this.addRenderableWidget(webMapEnabledButton);
+
+        Function<Float, String> mapScaleGetter = (value) -> {
+            int valueInt = (int) value;
+            float floatValue = (float) valueInt / 10;
+            String stringValue = floatValue + "x";
+//            if (valueInt == 10) {
+//                stringValue += " (Default)";
+//            }
+            return stringValue;
+        };
+
+        Slider mapScale = new Slider(this.width / 2 + 10, getScaledY(3), "", ClientConfig.MAP_SCALE.get(),30,3, mapScaleGetter, width, elHeight);
+        this.addRenderableWidget(mapScale);
 
         EditBox mapXOffset = new EditBox(this.font, this.width / 2 + 10, getScaledY(4), width, elHeight, new TextComponent("MAP_X_OFFSET"));
         mapXOffset.setValue(ClientConfig.MAP_X_OFFSET.get().toString());
@@ -114,12 +127,6 @@ public class VaultMapperConfigScreen extends Screen {
                     return "Unknown";
             }
         };
-        Function<Float, String> valueGetter = (value) -> {
-            return value.toString();
-        };
-
-        Slider mapScale = new Slider(this.width/2+10,getScaledY(3), " ", ClientConfig.MAP_SCALE.get(),30,3, valueGetter,width,elHeight);
-        this.addRenderableWidget(mapScale);
 
         Slider mapYAnchor = new Slider(this.width / 2 + 10, getScaledY(7), "", ClientConfig.MAP_Y_ANCHOR.get(), 4, 0, anchorGetterY, width, elHeight);
         this.addRenderableWidget(mapYAnchor);
@@ -225,6 +232,7 @@ public class VaultMapperConfigScreen extends Screen {
         this.addRenderableWidget(saveButton);
 
         Button resetButton = new Button(this.width / 2 - 100, getScaledY(14), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+            mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
             mapXAnchor.sliderValue = 4;
@@ -238,6 +246,7 @@ public class VaultMapperConfigScreen extends Screen {
                 showInscription.onPress();
             }
 
+            ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
             ClientConfig.MAP_Y_OFFSET.set(0);
             ClientConfig.MAP_X_ANCHOR.set(4);
@@ -251,7 +260,7 @@ public class VaultMapperConfigScreen extends Screen {
 
             ClientConfig.SPEC.save();
 
-            VaultMapOverlayRenderer.updateAnchor();
+            VaultMapOverlayRenderer.onWindowResize();
 
             VaultMap.sendMap();
         });
