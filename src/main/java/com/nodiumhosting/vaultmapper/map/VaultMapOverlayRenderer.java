@@ -6,7 +6,9 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -56,6 +58,20 @@ public class VaultMapOverlayRenderer {
         // cell map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
+
+            // TODO: render icon
+            if (cell.roomName == RoomName.UNKNOWN) return;
+
+            String path = "textures/icons/" + cell.roomName.getName() + ".png";
+            VaultMapper.LOGGER.info("path: " + path);
+
+            try {
+                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                RenderSystem.setShaderTexture(0, icon);
+                Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
+            } catch (Exception e) {
+                VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+            }
         });
 
         bufferBuilder.end();
@@ -79,8 +95,6 @@ public class VaultMapOverlayRenderer {
     }
 
     private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z
-        // TODO: fix scaling with gui scale
-
         double x1 = -3 * mapScaleMultiplier;
         double y1 = -2 * mapScaleMultiplier;
         double x2 = -3 * mapScaleMultiplier;

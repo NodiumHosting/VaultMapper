@@ -21,6 +21,9 @@ public class VaultCell {
     @SerializedName("r")
     public RoomType roomType;
 
+    @SerializedName("n")
+    public RoomName roomName = RoomName.UNKNOWN;
+
     public VaultCell(int x, int z, CellType cellType, RoomType roomType) {
         this.x = x;
         this.z = z;

@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.roomdetection;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.map.RoomName;
 import com.nodiumhosting.vaultmapper.map.RoomType;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import iskallia.vault.block.CoinPileBlock;
@@ -299,19 +300,19 @@ public class RoomData {
         return true;
     }
 
-    public Tuple<RoomType,String> findRoom() {
+    public Tuple<RoomType, RoomName> findRoom() {
         for (RoomData omegaRoom : omegaRooms) {
             if (this.compareRoom(omegaRoom)) {
-                return new Tuple<RoomType,String>(RoomType.OMEGA,omegaRoom.simpleName);
+                return new Tuple<RoomType, RoomName>(RoomType.OMEGA, RoomName.fromName(omegaRoom.simpleName));
             }
         }
         for (RoomData challengeRoom : challengeRooms) {
             if (this.compareRoom(challengeRoom)) {
-                return new Tuple<RoomType,String>(RoomType.CHALLENGE,challengeRoom.simpleName);
+                return new Tuple<RoomType, RoomName>(RoomType.CHALLENGE, RoomName.fromName(challengeRoom.simpleName));
             }
         }
         // TODO: need to add support for vendor rooms
 
-        return new Tuple<RoomType,String>(RoomType.BASIC, "none");
+        return new Tuple<RoomType, RoomName>(RoomType.BASIC, RoomName.UNKNOWN);
     }
 }
