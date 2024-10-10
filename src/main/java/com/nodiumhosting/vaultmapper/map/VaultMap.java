@@ -4,6 +4,7 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -284,6 +285,7 @@ public class VaultMap {
             CompoundTag stack = compound.getCompound("stack");
             String id = stack.getString("id");
             int model = stack.getCompound("tag").getCompound("data").getInt("model");
+            ResourceLocation room = roomFromModel(model);
             CompoundTag translation = compound.getCompound("translation");
             byte translationX = translation.getByte("x");
             byte translationY = translation.getByte("y");
@@ -323,5 +325,13 @@ public class VaultMap {
         if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
 
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
+    }
+    public static ResourceLocation roomFromModel(int model) {
+        for (Map.Entry<ResourceLocation,Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
+            if (entry.getValue() == model) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }
