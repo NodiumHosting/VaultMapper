@@ -116,20 +116,13 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
-        Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
 
         VaultCell newCell;
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
-        RoomType roomType = detectedRoom.getA();
-        RoomName roomName = detectedRoom.getB();
-        if (playerRoomX == 0 && playerRoomZ == 0) {
-            //i dont like having this here but whatever (TODO: change if i rewrite RoomData (maybe))
-            roomType = RoomType.START;
-        }
-        newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, roomType); // update current room
+
+        newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current room
         currentRoom = newCell;
         newCell.setExplored(true);
-        newCell.roomName = roomName; // eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
         if (isNewCell(newCell, cells)) {
             if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
@@ -139,9 +132,17 @@ public class VaultMap {
             }
 
             if (cellType != CellType.NONE) {
-                cells.add(newCell);
+                if (!(playerRoomX == 0 && playerRoomZ == 0)) {
+                    //dont detect start room
+                    Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+                    RoomType roomType = detectedRoom.getA();
+                    RoomName roomName = detectedRoom.getB();
+                    newCell.roomName = roomName;
+                    newCell.roomType = roomType;
+                    VaultMapper.LOGGER.info("New room " + roomName);
+                }
 
-                VaultMapper.LOGGER.info("New room " + roomName);
+                cells.add(newCell);
             }
         }
         sendMap();
