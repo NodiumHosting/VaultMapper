@@ -4,6 +4,7 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -285,7 +286,7 @@ public class VaultMap {
             CompoundTag stack = compound.getCompound("stack");
             String id = stack.getString("id");
             int model = stack.getCompound("tag").getCompound("data").getInt("model");
-            ResourceLocation room = roomFromModel(model);
+            Tuple<RoomType, RoomName> room = roomFromModel(model);
             CompoundTag translation = compound.getCompound("translation");
             byte translationX = translation.getByte("x");
             byte translationY = translation.getByte("y");
@@ -293,7 +294,9 @@ public class VaultMap {
             int translationXInt = translationX;
             int translationYInt = translationY;
 
-            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.ROOM, RoomType.BASIC); // TODO change this later when we do detection of room types
+            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.ROOM, room.getA());
+            newCell.roomName = room.getB();
+            // TODO change this later when we do detection of room types
             newCell.inscripted = true;
             cells.add(newCell);
         });
@@ -326,12 +329,31 @@ public class VaultMap {
 
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
     }
-    public static ResourceLocation roomFromModel(int model) {
+    public static Tuple<RoomType, RoomName> roomFromModel(int model) {
+        ResourceLocation room = null;
         for (Map.Entry<ResourceLocation,Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
             if (entry.getValue() == model) {
-                return entry.getKey();
+                room = entry.getKey();
+                break;
             }
         }
-        return null;
+        if (room == null) {
+            return new Tuple<>(RoomType.BASIC,RoomName.UNKNOWN);
+        }
+        RoomType type = RoomType.BASIC;
+        if (room.getPath().contains("omega")) {
+            type = RoomType.OMEGA;
+        } else if (room.getPath().contains("challenge")) {
+            type = RoomType.OMEGA;
+        }
+        try
+        {
+            RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
+            return new Tuple<RoomType,RoomName>(type,name);
+
+        } catch(Exception e)
+        {
+            return new Tuple<RoomType,RoomName>(type,RoomName.UNKNOWN);
+        }
     }
 }
