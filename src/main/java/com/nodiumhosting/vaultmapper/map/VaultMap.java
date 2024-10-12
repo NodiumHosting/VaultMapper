@@ -139,7 +139,7 @@ public class VaultMap {
                     RoomName roomName = detectedRoom.getB();
                     newCell.roomName = roomName;
                     newCell.roomType = roomType;
-                    VaultMapper.LOGGER.info("New room " + roomName);
+                    VaultMapper.LOGGER.info(newCell.toString());
                 }
 
                 cells.add(newCell);
@@ -300,6 +300,7 @@ public class VaultMap {
             // TODO change this later when we do detection of room types
             newCell.inscripted = true;
             cells.add(newCell);
+            VaultMapper.LOGGER.info(newCell.toString());
         });
 
         sendMap();
