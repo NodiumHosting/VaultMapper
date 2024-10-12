@@ -58,7 +58,13 @@ public class VaultMapOverlayRenderer {
         // cell map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
+        });
 
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder); // render the map
+
+        // render icons
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
             // TODO: render icon
             if (cell.roomName == RoomName.UNKNOWN) return;
 
@@ -73,9 +79,6 @@ public class VaultMapOverlayRenderer {
                 VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
             }
         });
-
-        bufferBuilder.end();
-        BufferUploader.end(bufferBuilder); // render the map
 
         // player thingy
         if (VaultMap.currentRoom != null) {
@@ -102,7 +105,7 @@ public class VaultMapOverlayRenderer {
         double x3 = 3 * mapScaleMultiplier;
         double y3 = 0/* * mapScaleMultiplier*/;
 
-        double cx = -3* mapScaleMultiplier; // centers to rotate about
+        double cx = -3 * mapScaleMultiplier; // centers to rotate about
         double cy = 0/*  * mapScaleMultiplier*/;
         float playerYaw = Minecraft.getInstance().player.getYHeadRot();
         float radangle = (float) Math.toRadians(playerYaw + 90);
