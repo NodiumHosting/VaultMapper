@@ -13,15 +13,15 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 public class WSClient extends WebSocketClient {
+    //private final static String relayAddress = "wss://vmsync.boykiss.ing";
+    private final static String relayAddress = "ws://localhost:25284";
     private final int timerPeriod = 10000;
     private final Timer keepConnectedTimer = new Timer();
     private final WSClient self;
     private boolean keepMeOn = false;
 
-    //private final String relayAddress = "wss://vmsync.boykiss.ing";
-
     public WSClient(String playerName, String vaultID) {
-        super(URI.create("wss://vmsync.boykiss.ing/" + playerName + "/" + vaultID));
+        super(URI.create(relayAddress + "/" + playerName + "/" + vaultID));
 
         self = this;
 
