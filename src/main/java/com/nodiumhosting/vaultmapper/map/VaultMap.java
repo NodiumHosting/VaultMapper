@@ -140,6 +140,8 @@ public class VaultMap {
                     newCell.roomName = roomName;
                     newCell.roomType = roomType;
                     VaultMapper.LOGGER.info(newCell.toString());
+                } else {
+                    newCell.roomType = RoomType.START;
                 }
 
                 cells.add(newCell);
