@@ -346,14 +346,7 @@ public class VaultMap {
         } else if (room.getPath().contains("challenge")) {
             type = RoomType.OMEGA;
         }
-        try
-        {
-            RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
-            return new Tuple<RoomType,RoomName>(type,name);
-
-        } catch(Exception e)
-        {
-            return new Tuple<RoomType,RoomName>(type,RoomName.UNKNOWN);
-        }
+        RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
+        return new Tuple<RoomType,RoomName>(type,name);
     }
 }
