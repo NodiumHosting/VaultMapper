@@ -68,7 +68,7 @@ public class VaultMapOverlayRenderer {
             // TODO: render icon
             if (cell.roomName == RoomName.UNKNOWN) return;
 
-            String path = "textures/icons/" + cell.roomName.getName() + ".png";
+            String path = "textures/icons/" + cell.roomName.getName().toLowerCase() + ".png";
             VaultMapper.LOGGER.info("path: " + path);
 
             try {
