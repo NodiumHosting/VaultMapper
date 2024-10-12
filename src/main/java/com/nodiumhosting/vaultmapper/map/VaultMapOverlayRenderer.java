@@ -6,7 +6,6 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,6 +31,8 @@ public class VaultMapOverlayRenderer {
 
     static float mapAnchorX = 0;
     static float mapAnchorZ = 0;
+
+    static ResourceLocation icon = new ResourceLocation("vaultmapper", "/textures/gui/mine.png");
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
@@ -63,22 +64,6 @@ public class VaultMapOverlayRenderer {
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
 
-        // render icons
-        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
-            // TODO: render icon
-            if (cell.roomName == RoomName.UNKNOWN) return;
-
-            String path = "textures/icons/" + cell.roomName.getName().toLowerCase() + ".png";
-            VaultMapper.LOGGER.info("path: " + path);
-
-            try {
-                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
-                RenderSystem.setShaderTexture(0, icon);
-                Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
-            } catch (Exception e) {
-                VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
-            }
-        });
 
         // player thingy
         if (VaultMap.currentRoom != null) {
@@ -95,6 +80,33 @@ public class VaultMapOverlayRenderer {
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+
+        // render icons
+        //VaultMapper.LOGGER.info("Icon frame");
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.disableBlend();
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+            // TODO: render icon
+            if (cell.roomName == RoomName.UNKNOWN) return;
+
+            String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replace(" ", "_") + ".png";
+            //String path = "/textures/gui/mine.png";
+            ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+            RenderSystem.setShaderTexture(0, icon);
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+            try {
+
+
+                //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
+                //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
+                renderTextureCell(bufferBuilder, cell);
+            } catch (Exception e) {
+                VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+            }
+            bufferBuilder.end();
+            BufferUploader.end(bufferBuilder);
+        });
     }
 
     private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z
@@ -148,28 +160,31 @@ public class VaultMapOverlayRenderer {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
-            float halfRoomWidth = mapRoomWidth / 2;
+            //float roomWidth = (float) ((mapRoomWidth / 2) * 1.5);
+            //float tunnelLen = (float) ((mapRoomWidth / 2) * 0.5);
+            float roomWidth = mapRoomWidth / 2;
+            float tunnelLen = mapRoomWidth / 2;
             float startX;
             float startZ;
             float endX;
             float endZ;
             if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
                 if (cell.cellType == CellType.TUNNEL_X) { // X facing
-                    startX = mapX - halfRoomWidth;
-                    startZ = mapZ - halfRoomWidth / 2;
-                    endX = mapX + halfRoomWidth;
-                    endZ = mapZ + halfRoomWidth / 2;
+                    startX = mapX - tunnelLen;
+                    startZ = mapZ - roomWidth / 2;
+                    endX = mapX + tunnelLen;
+                    endZ = mapZ + roomWidth / 2;
                 } else { // Z facing
-                    startX = mapX - halfRoomWidth / 2;
-                    startZ = mapZ - halfRoomWidth;
-                    endX = mapX + halfRoomWidth / 2;
-                    endZ = mapZ + halfRoomWidth;
+                    startX = mapX - roomWidth / 2;
+                    startZ = mapZ - tunnelLen;
+                    endX = mapX + roomWidth / 2;
+                    endZ = mapZ + tunnelLen;
                 }
             } else { // square
-                startX = mapX - halfRoomWidth;
-                startZ = mapZ - halfRoomWidth;
-                endX = mapX + halfRoomWidth;
-                endZ = mapZ + halfRoomWidth;
+                startX = mapX - roomWidth;
+                startZ = mapZ - roomWidth;
+                endX = mapX + roomWidth;
+                endZ = mapZ + roomWidth;
             }
             var minX = Math.min(startX, endX);
             var maxX = Math.max(startX, endX);
@@ -180,6 +195,35 @@ public class VaultMapOverlayRenderer {
             bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
             bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
+        }
+    }
+
+    public static void renderTextureCell(BufferBuilder bufferBuilder, VaultCell cell) {
+        if (cell.cellType == CellType.ROOM) {
+            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
+            float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
+            float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
+            //float roomWidth = (float) (mapRoomWidth * 1.5);
+            float roomWidth = mapRoomWidth;
+            float startX;
+            float startZ;
+            float endX;
+            float endZ;
+
+            startX = mapX - roomWidth;
+            startZ = mapZ - roomWidth;
+            endX = mapX + roomWidth;
+            endZ = mapZ + roomWidth;
+
+            var minX = Math.min(startX, endX);
+            var maxX = Math.max(startX, endX);
+            var minZ = Math.min(startZ, endZ);
+            var maxZ = Math.max(startZ, endZ);
+
+            bufferBuilder.vertex(minX, maxZ, 0).uv(0.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, maxZ, 0).uv(1.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, minZ, 0).uv(1.0F, 0.0F).endVertex();
+            bufferBuilder.vertex(minX, minZ, 0).uv(0.0F, 0.0F).endVertex();
         }
     }
 

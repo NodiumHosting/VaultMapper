@@ -17,16 +17,12 @@ public enum RoomName {
     @SerializedName("11") VENDOR("Vendor"),
     @SerializedName("12") VILLAGE("Village"),
     @SerializedName("13") WILD_WEST("Wild West"),
-    @SerializedName("14") X_MARK("X-mark");
+    @SerializedName("14") X_MARK("x_mark");
 
     private final String name;
 
     RoomName(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public static RoomName fromName(String name) {
@@ -36,5 +32,9 @@ public enum RoomName {
             }
         }
         return RoomName.UNKNOWN;
+    }
+
+    public String getName() {
+        return name;
     }
 }
