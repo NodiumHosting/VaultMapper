@@ -3,6 +3,7 @@ package com.nodiumhosting.vaultmapper.map;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
+import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
@@ -35,7 +36,7 @@ public class VaultMap {
     public static boolean enabled;
     public static boolean debug;
 
-    static List<VaultCell> cells = new ArrayList<>();
+    public static List<VaultCell> cells = new ArrayList<>();
     static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
     static VaultCell currentRoom; // might not be needed
     static int defaultMapSize = 21; // map size in cells
@@ -139,12 +140,12 @@ public class VaultMap {
                     RoomName roomName = detectedRoom.getB();
                     newCell.roomName = roomName;
                     newCell.roomType = roomType;
-                    VaultMapper.LOGGER.info(newCell.toString());
                 } else {
                     newCell.roomType = RoomType.START;
                 }
 
                 cells.add(newCell);
+                MapCache.updateCache();
             }
         }
         sendMap();
@@ -302,7 +303,6 @@ public class VaultMap {
             // TODO change this later when we do detection of room types
             newCell.inscripted = true;
             cells.add(newCell);
-            VaultMapper.LOGGER.info(newCell.toString());
         });
 
         sendMap();

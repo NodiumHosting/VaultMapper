@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.events;
 
+import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -26,6 +27,7 @@ public class DimensionChangeEvent {
             //exiting vault
             VaultMap.enabled = false;
             VaultMapOverlayRenderer.enabled = false;
+            MapCache.deleteCache();
         }
     }
 }
