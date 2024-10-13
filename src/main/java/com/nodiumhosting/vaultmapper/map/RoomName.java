@@ -7,7 +7,7 @@ public enum RoomName {
     @SerializedName("1") BLACKSMITH("Blacksmith"),
     @SerializedName("2") COVE("Cove"),
     @SerializedName("3") CRYSTAL_CAVES("Crystal Caves"),
-    @SerializedName("4") DIGSITE("Digsite"),
+    @SerializedName("4") DIG_SITE("Dig Site"),
     @SerializedName("5") DRAGON("Dragon"),
     @SerializedName("6") FACTORY("Factory"),
     @SerializedName("7") LIBRARY("Library"),
