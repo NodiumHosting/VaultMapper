@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.map;
 
 import com.google.gson.annotations.SerializedName;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 
 public enum RoomName {
     @SerializedName("0") UNKNOWN("UNKNOWN"),
@@ -31,6 +32,7 @@ public enum RoomName {
                 return roomName;
             }
         }
+        VaultMapper.LOGGER.info("Unknown Room detected: " + name);
         return RoomName.UNKNOWN;
     }
 
