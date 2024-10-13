@@ -18,6 +18,7 @@ public class NetworkEvent {
         if (event.getPlayer().level.dimension().location().getNamespace().equals("the_vault")) {
             MapCache.readCache();
             VaultMap.enabled = true;
+            VaultMapOverlayRenderer.enabled = true;
         } else {
             VaultMapOverlayRenderer.enabled = false;
             VaultMap.enabled = false;
