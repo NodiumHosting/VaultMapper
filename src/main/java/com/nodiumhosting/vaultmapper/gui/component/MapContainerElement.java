@@ -36,9 +36,17 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
     double prevMouseZ;
     double zoomVal = 1;
 
-    public MapContainerElement(ISpatial spatial, UUID vaultUuid) {
+    public MapContainerElement(ISpatial spatial, String fileName) {
+        this(spatial,MapSnapshot.from(fileName));
+    }
+
+    public MapContainerElement(ISpatial spatial, UUID uuid) {
+        this(spatial,MapSnapshot.from(uuid));
+    }
+
+    public MapContainerElement(ISpatial spatial, Optional<MapSnapshot> snapshot) {
         super(spatial, Padding.of(2, 0));
-        this.addElement(new MapElement(Spatials.positionY(3), vaultUuid, this)).postLayout((screen, gui, parent, world) -> {
+        this.addElement(new MapElement(Spatials.positionY(3), snapshot, this)).postLayout((screen, gui, parent, world) -> {
             world.translateX((this.innerWidth() - world.width()) / 2);
             return true;
         });
@@ -154,12 +162,20 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
         List<VaultCell> cells;
         MapContainerElement window;
 
-        private MapElement(IPosition position, UUID vaultUuid, MapContainerElement window) {
+
+        private MapElement(IPosition position, UUID uuid, MapContainerElement window) {
+            this(position,MapSnapshot.from(uuid),window);
+        }
+
+        private MapElement(IPosition position, String fileName, MapContainerElement window) {
+            this(position,MapSnapshot.from(fileName),window);
+        }
+
+        private MapElement(IPosition position, Optional<MapSnapshot> optMap, MapContainerElement window) {
             super(Spatials.positionXYZ(position));
             this.window = window;
             IMutableSpatial spatial = Spatials.positionXYZ(position);
             spatial.positionZ(10); // TRY JUST ONE
-            Optional<MapSnapshot> optMap = MapSnapshot.from(vaultUuid);
             if (optMap.isEmpty()) {
                 this.addElement(new LabelElement(spatial.positionX(0).positionY(5), new TextComponent("No map save available for this vault"), new LabelTextStyle.Builder()));
                 return;

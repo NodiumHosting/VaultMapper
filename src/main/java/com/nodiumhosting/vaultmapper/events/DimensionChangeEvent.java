@@ -10,6 +10,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.UUID;
+
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class DimensionChangeEvent {
     @SubscribeEvent(priority = EventPriority.NORMAL)
