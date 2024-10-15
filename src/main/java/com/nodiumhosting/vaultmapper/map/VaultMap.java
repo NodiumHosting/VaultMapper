@@ -92,6 +92,12 @@ public class VaultMap {
         if (cell.inscripted) {
             return ClientConfig.INSCRIPTION_ROOM_COLOR.get();
         }
+        if (cell.roomType == RoomType.OMEGA) {
+            return ClientConfig.OMEGA_ROOM_COLOR.get();
+        }
+        if (cell.roomType == RoomType.CHALLENGE) {
+            return ClientConfig.CHALLENGE_ROOM_COLOR.get();
+        }
         return ClientConfig.ROOM_COLOR.get();
     }
 
