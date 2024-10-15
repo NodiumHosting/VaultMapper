@@ -170,15 +170,15 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).toArray().length;
             int inscriptionCount = cells.stream().filter(cell -> cell.inscripted).toArray().length;
             int markedCount = cells.stream().filter(cell -> cell.marked).toArray().length;
-            int omegaRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.OMEGA && cell.explored).toArray().length;
-            int challengeRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.CHALLENGE && cell.explored).toArray().length;
+            int omegaRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.OMEGA).toArray().length;
+            int challengeRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.CHALLENGE).toArray().length;
 
             // x was -35
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(5), new TextComponent("Explored Rooms: " + cellCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(15), new TextComponent("Inscription Rooms: " + inscriptionCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(25), new TextComponent("Marked Rooms: " + markedCount), new LabelTextStyle.Builder()));
-            this.addElement(new LabelElement(spatial.positionX(-55).positionY(35), new TextComponent("Explored Omega Rooms: " + omegaRoomCount), new LabelTextStyle.Builder()));
-            this.addElement(new LabelElement(spatial.positionX(-55).positionY(45), new TextComponent("Explored Challenge Rooms: " + challengeRoomCount), new LabelTextStyle.Builder()));
+            this.addElement(new LabelElement(spatial.positionX(-55).positionY(35), new TextComponent("Omega Rooms: " + omegaRoomCount), new LabelTextStyle.Builder()));
+            this.addElement(new LabelElement(spatial.positionX(-55).positionY(45), new TextComponent("Challenge Rooms: " + challengeRoomCount), new LabelTextStyle.Builder()));
         }
 
 
