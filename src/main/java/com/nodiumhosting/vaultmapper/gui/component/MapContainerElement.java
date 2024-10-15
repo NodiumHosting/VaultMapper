@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.CellType;
+import com.nodiumhosting.vaultmapper.map.RoomName;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
@@ -21,6 +22,7 @@ import iskallia.vault.client.gui.framework.text.LabelTextStyle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -44,6 +46,35 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             return true;
         });
     }
+
+    private static void renderTextureCell(BufferBuilder bufferBuilder, VaultCell cell, float centerX, float centerZ, float width) {
+        if (cell.cellType == CellType.ROOM) {
+            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
+            float mapX = centerX + cell.x * (width / 2);
+            float mapZ = centerZ + cell.z * (width / 2);
+            float coordOffset = width / 2;
+            float startX;
+            float startZ;
+            float endX;
+            float endZ;
+
+            startX = mapX - coordOffset;
+            startZ = mapZ - coordOffset;
+            endX = mapX + coordOffset;
+            endZ = mapZ + coordOffset;
+
+            var minX = Math.min(startX, endX);
+            var maxX = Math.max(startX, endX);
+            var minZ = Math.min(startZ, endZ);
+            var maxZ = Math.max(startZ, endZ);
+
+            bufferBuilder.vertex(minX, maxZ, 0).uv(0.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, maxZ, 0).uv(1.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, minZ, 0).uv(1.0F, 0.0F).endVertex();
+            bufferBuilder.vertex(minX, minZ, 0).uv(0.0F, 0.0F).endVertex();
+        }
+    }
+
 
     private static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color, float centerX, float centerZ, float width) {
         if (cell.cellType != CellType.NONE) {
@@ -185,6 +216,25 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
 
             RenderSystem.enableTexture();
             RenderSystem.disableBlend();
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+
+            cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+                if (cell.roomName == RoomName.UNKNOWN) return;
+
+                String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replace(" ", "_").replace("-", "_") + ".png";
+                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                RenderSystem.setShaderTexture(0, icon);
+                bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+                try {
+                    renderTextureCell(bufferBuilder, cell, (float) (w / 2 + window.mapCenterX), (float) (125 + window.mapCenterZ), mapRoomWidth * 2);
+                } catch (Exception e) {
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+                }
+                bufferBuilder.end();
+                BufferUploader.end(bufferBuilder);
+            });
         }
 
     }
