@@ -135,11 +135,13 @@ public class VaultMap {
             if (cellType != CellType.NONE) {
                 if (!(playerRoomX == 0 && playerRoomZ == 0)) {
                     //dont detect start room
-                    Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
-                    RoomType roomType = detectedRoom.getA();
-                    RoomName roomName = detectedRoom.getB();
-                    newCell.roomName = roomName;
-                    newCell.roomType = roomType;
+                    if (cellType == CellType.ROOM) {
+                        Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+                        RoomType roomType = detectedRoom.getA();
+                        RoomName roomName = detectedRoom.getB();
+                        newCell.roomName = roomName;
+                        newCell.roomType = roomType;
+                    }
                 } else {
                     newCell.roomType = RoomType.START;
                 }

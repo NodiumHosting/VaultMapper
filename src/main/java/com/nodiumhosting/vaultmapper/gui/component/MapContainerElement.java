@@ -4,10 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.map.CellType;
-import com.nodiumhosting.vaultmapper.map.RoomName;
-import com.nodiumhosting.vaultmapper.map.VaultCell;
-import com.nodiumhosting.vaultmapper.map.VaultMap;
+import com.nodiumhosting.vaultmapper.map.*;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.element.ElasticContainerElement;
 import iskallia.vault.client.gui.framework.element.LabelElement;
@@ -173,11 +170,15 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             int cellCount = cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).toArray().length;
             int inscriptionCount = cells.stream().filter(cell -> cell.inscripted).toArray().length;
             int markedCount = cells.stream().filter(cell -> cell.marked).toArray().length;
+            int omegaRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.OMEGA && cell.explored).toArray().length;
+            int challengeRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.CHALLENGE && cell.explored).toArray().length;
 
             // x was -35
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(5), new TextComponent("Explored Rooms: " + cellCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(15), new TextComponent("Inscription Rooms: " + inscriptionCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(25), new TextComponent("Marked Rooms: " + markedCount), new LabelTextStyle.Builder()));
+            this.addElement(new LabelElement(spatial.positionX(-55).positionY(35), new TextComponent("Explored Omega Rooms: " + omegaRoomCount), new LabelTextStyle.Builder()));
+            this.addElement(new LabelElement(spatial.positionX(-55).positionY(45), new TextComponent("Explored Challenge Rooms: " + challengeRoomCount), new LabelTextStyle.Builder()));
         }
 
 
