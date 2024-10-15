@@ -221,7 +221,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
             cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
-                if (cell.roomName == RoomName.UNKNOWN) return;
+                if (cell.roomName == null || cell.roomName == RoomName.UNKNOWN) return;
 
                 String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replace(" ", "_").replace("-", "_") + ".png";
                 ResourceLocation icon = new ResourceLocation("vaultmapper", path);
