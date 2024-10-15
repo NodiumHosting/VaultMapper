@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.commands;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -13,8 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.Optional;
-import java.util.UUID;
 
 public class VaultMapperCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -65,7 +64,9 @@ public class VaultMapperCommand {
                     VaultMap.debug = false;
                 } else if (args[1].equals("openByVaultId")) {
                     if (args.length > 2) {
-                        MapSnapshot.openScreen(args[2]);
+                        RenderSystem.recordRenderCall(() -> {
+                            MapSnapshot.openScreen(args[2]);
+                        });
                     } else {
                         player.sendMessage(new TextComponent("Usage: /vaultmapper openByVaultId <vaultId>"), player.getUUID());
                     }
