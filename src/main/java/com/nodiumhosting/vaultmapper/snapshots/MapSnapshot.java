@@ -171,7 +171,7 @@ public class MapSnapshot {
     }
 
     public void openScreen(Optional<Screen> previousScreen) {
-        VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(this, previousScreen);
+        VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(Optional.of(this), previousScreen);
         Minecraft.getInstance().setScreen(cellsScreen);
     }
 }
