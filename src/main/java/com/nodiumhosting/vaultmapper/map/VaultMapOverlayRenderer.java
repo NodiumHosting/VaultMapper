@@ -89,21 +89,19 @@ public class VaultMapOverlayRenderer {
             // TODO: render icon
             if (cell.roomName == RoomName.UNKNOWN) return;
 
-            String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replace(" ", "_").replace("-","_") + ".png";
-            //String path = "/textures/gui/mine.png";
+            String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
             ResourceLocation icon = new ResourceLocation("vaultmapper", path);
             RenderSystem.setShaderTexture(0, icon);
             bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
             try {
-
-
                 //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
                 //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
                 renderTextureCell(bufferBuilder, cell);
             } catch (Exception e) {
                 VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
             }
+
             bufferBuilder.end();
             BufferUploader.end(bufferBuilder);
         });
