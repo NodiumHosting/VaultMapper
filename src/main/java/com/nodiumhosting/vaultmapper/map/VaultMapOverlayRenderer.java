@@ -64,22 +64,9 @@ public class VaultMapOverlayRenderer {
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
 
-
-        // player thingy
-        if (VaultMap.currentRoom != null) {
-            float mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-            float mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
-            var triag = getRotatedTriangle();
-            bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-            bufferBuilder.end();
-            BufferUploader.end(bufferBuilder);
-        }
-
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+
 
         // render icons
         //VaultMapper.LOGGER.info("Icon frame");
@@ -105,6 +92,31 @@ public class VaultMapOverlayRenderer {
             bufferBuilder.end();
             BufferUploader.end(bufferBuilder);
         });
+
+
+
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        // player thingy
+        if (VaultMap.currentRoom != null) {
+            float mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            float mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+            var triag = getRotatedTriangle();
+            bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.end();
+            BufferUploader.end(bufferBuilder);
+        }
+
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+
+
     }
 
     private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z
