@@ -1,9 +1,11 @@
 package com.nodiumhosting.vaultmapper.commands;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
@@ -12,8 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.Optional;
-import java.util.UUID;
 
 public class VaultMapperCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -64,12 +64,9 @@ public class VaultMapperCommand {
                     VaultMap.debug = false;
                 } else if (args[1].equals("openByVaultId")) {
                     if (args.length > 2) {
-                        if (MapSnapshot.from(UUID.fromString(args[2])).isPresent()) {
-                            Optional<MapSnapshot> snapshot = MapSnapshot.from(UUID.fromString(args[2]));
-                            snapshot.get().openScreen(Optional.empty());
-                        } else {
-                            player.sendMessage(new TextComponent("Snapshot not found"), player.getUUID());
-                        }
+                        RenderSystem.recordRenderCall(() -> {
+                            MapSnapshot.openScreen(args[2]);
+                        });
                     } else {
                         player.sendMessage(new TextComponent("Usage: /vaultmapper openByVaultId <vaultId>"), player.getUUID());
                     }

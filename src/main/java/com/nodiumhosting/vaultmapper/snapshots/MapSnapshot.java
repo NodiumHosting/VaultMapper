@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
+import com.nodiumhosting.vaultmapper.gui.screen.VaultMapScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.util.BooleanSerializer;
@@ -122,9 +123,12 @@ public class MapSnapshot {
     }
 
     public static Optional<MapSnapshot> from(UUID uuid) {
+        return from(uuid.toString());
+    }
+    public static Optional<MapSnapshot> from(String filename) {
         makeSureFoldersExist();
-        String mapPath = mapSaveFolder + uuid.toString() + ".vaultmap";
-        String favPath = favoriteMapsFolder + uuid.toString() + ".vaultmap";
+        String mapPath = mapSaveFolder + filename + ".vaultmap";
+        String favPath = favoriteMapsFolder + filename + ".vaultmap";
 
         Optional<MapSnapshot> normalMap = readMapFromPath(mapPath);
         if (normalMap.isPresent()) {
@@ -170,8 +174,10 @@ public class MapSnapshot {
         this.cells = cells;
     }
 
-    public void openScreen(Optional<Screen> previousScreen) {
-        VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(Optional.of(this), previousScreen);
-        Minecraft.getInstance().setScreen(cellsScreen);
+    public static void openScreen(String uuid) {
+        Minecraft.getInstance().setScreen(new VaultMapScreen(uuid));
+    }
+    public void openScreen() {
+        Minecraft.getInstance().setScreen(new VaultMapScreen(Optional.of(this)));
     }
 }
