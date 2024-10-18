@@ -165,7 +165,7 @@ public class MapSnapshot {
     }
 
     @SerializedName("v")
-    public int version = 1;
+    public int version = 2;
 
     @SerializedName("cl")
     public List<VaultCell> cells;
