@@ -215,19 +215,12 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.MARKED_ROOM_COLOR.set(markedRoomColor.getValue());
             ClientConfig.INSCRIPTION_ROOM_COLOR.set(inscriptionRoomColor.getValue());
             ClientConfig.SHOW_INSCRIPTIONS.set(showInscription.selected());
-            if (!showInscription.selected()) {
-                VaultMap.getCells().forEach(cell -> {
-                    if (cell.inscripted && !cell.explored) {
-                        VaultMapper.wsServer.sendData(cell, "#00000000");
-                    }
-                });
-            }
 
             ClientConfig.SPEC.save();
 
             VaultMapOverlayRenderer.onWindowResize();
 
-            VaultMap.sendMap();
+            // TODO: send config to webmap
         });
         this.addRenderableWidget(saveButton);
 
@@ -262,7 +255,7 @@ public class VaultMapperConfigScreen extends Screen {
 
             VaultMapOverlayRenderer.onWindowResize();
 
-            VaultMap.sendMap();
+            // TODO: send config to webmap
         });
         this.addRenderableWidget(resetButton);
     }

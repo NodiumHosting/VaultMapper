@@ -5,6 +5,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
@@ -123,13 +124,16 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
-
         VaultCell newCell;
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
 
         newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current room
         currentRoom = newCell;
         newCell.setExplored(true);
+
+        if (playerRoomX == 0 && playerRoomZ == 0) {
+            newCell.roomType = RoomType.START;
+        }
 
         if (isNewCell(newCell, cells)) {
             if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
@@ -139,8 +143,7 @@ public class VaultMap {
             }
 
             if (cellType != CellType.NONE) {
-                if (!(playerRoomX == 0 && playerRoomZ == 0)) {
-                    //dont detect start room
+                if (!(playerRoomX == 0 && playerRoomZ == 0)) { //dont detect start room
                     if (cellType == CellType.ROOM) {
                         Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
                         RoomType roomType = detectedRoom.getA();
@@ -148,23 +151,26 @@ public class VaultMap {
                         newCell.roomName = roomName;
                         newCell.roomType = roomType;
                     }
-                } else {
-                    newCell.roomType = RoomType.START;
                 }
 
                 cells.add(newCell);
                 MapCache.updateCache();
             }
         }
-        sendMap();
+
+        sendCell(newCell);
     }
 
-    public static void sendMap() {
-        VaultMap.cells.forEach((cell) -> {
-            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-                VaultMapper.wsServer.sendData(cell, getCellColor(cell));
-            }
-        });
+//    public static void sendMap() {
+//        VaultMap.cells.forEach((cell) -> {
+//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
+//                VaultMapper.wsServer.sendData(cell);
+//            }
+//        });
+//    }
+
+    public static void sendCell(VaultCell cell) {
+        VaultMapper.wsServer.sendCell(cell);
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -189,7 +195,7 @@ public class VaultMap {
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
 
-        VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
+        VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
 
         if (debug) {
@@ -229,7 +235,7 @@ public class VaultMap {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
 
-        sendMap();
+        sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
     }
 
     public static void toggleRendering() {
@@ -311,9 +317,9 @@ public class VaultMap {
             // TODO change this later when we do detection of room types
             newCell.inscripted = true;
             cells.add(newCell);
-        });
 
-        sendMap();
+            sendCell(newCell);
+        });
 
         return hologramNbt;
     }
