@@ -11,6 +11,3 @@ This mod adds an on-screen minimap showing all the rooms you have explored in th
 The mod is currently fully client-sided, however you should get permission from server admins and other players before using it on a server.
 
 Development Discord Server: https://discord.gg/jq47BD9hS2
-
-# Ad
-Planning to host a Vault Hunters server? With [Nodium Hosting](https://nodiumhosting.com/), you can set up and manage your own game server with ease. Plus, if you [use the code `VAULTMAPPER300`](https://billing.nodiumhosting.com/store?voucher=VAULTMAPPER300), you'll receive 300 free credits to get started!
