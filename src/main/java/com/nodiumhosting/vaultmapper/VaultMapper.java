@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.nodiumhosting.vaultmapper.commands.VaultMapperCommand;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
+import com.nodiumhosting.vaultmapper.keybinds.OpenConfigScreenKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
@@ -32,6 +33,7 @@ public class VaultMapper {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(MarkRoomKeybind::register);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(OpenConfigScreenKeybind::register);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ToggleVaultMapKeybind::register);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, MODID + "-client.toml");
