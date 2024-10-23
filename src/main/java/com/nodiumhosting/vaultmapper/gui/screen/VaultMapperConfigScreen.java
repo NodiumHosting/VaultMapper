@@ -15,6 +15,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
 
 public class VaultMapperConfigScreen extends Screen {
     private static final boolean webMapEnabled = ClientConfig.WEBMAP_ENABLED.get();
@@ -301,6 +303,9 @@ public class VaultMapperConfigScreen extends Screen {
     @Override
     public void render(PoseStack pose, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(pose);
+
+        //mod version in the upper left
+        this.font.draw(pose, "Vault Mapper v" + VaultMapper.getVersion(), 8, 8, 0xFFFFFFFF);
 
         this.font.draw(pose, "Vault Mapper Config", this.width / 2 - this.font.width("Vault Mapper Config") / 2, 20, 0xFFFFFFFF);
 
