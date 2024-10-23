@@ -220,7 +220,8 @@ public class VaultMapperConfigScreen extends Screen {
 
             VaultMapOverlayRenderer.onWindowResize();
 
-            // TODO: send config to webmap
+            // send config to webmap
+            VaultMapper.wsServer.sendConfig();
         });
         this.addRenderableWidget(saveButton);
 
@@ -255,7 +256,8 @@ public class VaultMapperConfigScreen extends Screen {
 
             VaultMapOverlayRenderer.onWindowResize();
 
-            // TODO: send config to webmap
+            // send config to webmap
+            VaultMapper.wsServer.sendConfig();
         });
         this.addRenderableWidget(resetButton);
     }
