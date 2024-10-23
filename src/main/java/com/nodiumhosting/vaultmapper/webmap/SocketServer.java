@@ -76,7 +76,6 @@ public class SocketServer extends WebSocketServer {
     }
 
     class ClientConfigObject { // I'm sure this could be done better but I have no more fucks left to give
-        public String POINTER_COLOR;
         public String ROOM_COLOR;
         public String START_ROOM_COLOR;
         public String MARKED_ROOM_COLOR;
@@ -87,7 +86,6 @@ public class SocketServer extends WebSocketServer {
         public boolean SHOW_ROOM_ICONS;
 
         public ClientConfigObject() {
-            this.POINTER_COLOR = ClientConfig.POINTER_COLOR.get();
             this.ROOM_COLOR = ClientConfig.ROOM_COLOR.get();
             this.START_ROOM_COLOR = ClientConfig.START_ROOM_COLOR.get();
             this.MARKED_ROOM_COLOR = ClientConfig.MARKED_ROOM_COLOR.get();
