@@ -67,38 +67,35 @@ public class VaultMapOverlayRenderer {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
 
-
         // render icons
-        //VaultMapper.LOGGER.info("Icon frame");
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.disableBlend();
-        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
-            // TODO: render icon
-            if (cell.roomName == RoomName.UNKNOWN) return;
+        if (ClientConfig.SHOW_ROOM_ICONS.get()) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.disableBlend();
+            VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+                if (cell.roomName == RoomName.UNKNOWN) return;
 
-            String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
-            ResourceLocation icon = new ResourceLocation("vaultmapper", path);
-            RenderSystem.setShaderTexture(0, icon);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
+                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                RenderSystem.setShaderTexture(0, icon);
+                bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-            try {
-                //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
-                //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
-                renderTextureCell(bufferBuilder, cell);
-            } catch (Exception e) {
-                VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
-            }
+                try {
+                    //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
+                    //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
+                    renderTextureCell(bufferBuilder, cell);
+                } catch (Exception e) {
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+                }
 
-            bufferBuilder.end();
-            BufferUploader.end(bufferBuilder);
-        });
+                bufferBuilder.end();
+                BufferUploader.end(bufferBuilder);
+            });
 
-
-
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.enableBlend();
+            RenderSystem.disableTexture();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        }
 
         // player thingy
         if (VaultMap.currentRoom != null) {

@@ -44,7 +44,7 @@ public class VaultMapperConfigScreen extends Screen {
 
     private int getScaledY(float y) {
         float height = Minecraft.getInstance().getWindow().getGuiScaledHeight(); //Minecraft.getInstance().getWindow().getHeight() / 2;
-        float piece = height / 16;
+        float piece = height / 17;
         float scaledY = piece * y;
         return (int) scaledY;
     }
@@ -190,10 +190,36 @@ public class VaultMapperConfigScreen extends Screen {
         inscriptionRoomColor.setResponder((value) -> {
             inscriptionRoomColorPicker.setColor(parseColor(value));
         });
-        Checkbox showInscription = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(12) - 2, 20, 20, new TextComponent(""), ClientConfig.SHOW_INSCRIPTIONS.get());
+        Checkbox showInscription = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(12) - 3, 20, 20, new TextComponent(""), ClientConfig.SHOW_INSCRIPTIONS.get());
         this.addRenderableWidget(showInscription);
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(13), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        EditBox omegaRoomColor = new EditBox(this.font, this.width / 2 + 10, getScaledY(13), elWidthColor, elHeight, new TextComponent("OMEGA_ROOM_COLOR"));
+        omegaRoomColor.setValue(ClientConfig.OMEGA_ROOM_COLOR.get());
+        this.addRenderableWidget(omegaRoomColor);
+        ColorButton omegaRoomColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(13), elHeight, elHeight, parseColor(ClientConfig.OMEGA_ROOM_COLOR.get()), button -> {
+
+        }, omegaRoomColor, colorPicker);
+        this.addRenderableWidget(omegaRoomColorPicker);
+        omegaRoomColor.setResponder((value) -> {
+            omegaRoomColorPicker.setColor(parseColor(value));
+        });
+
+        EditBox challengeRoomColor = new EditBox(this.font, this.width / 2 + 10, getScaledY(14), elWidthColor, elHeight, new TextComponent("CHALLENGE_ROOM_COLOR"));
+        challengeRoomColor.setValue(ClientConfig.CHALLENGE_ROOM_COLOR.get());
+        this.addRenderableWidget(challengeRoomColor);
+        ColorButton challengeRoomColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(14), elHeight, elHeight, parseColor(ClientConfig.CHALLENGE_ROOM_COLOR.get()), button -> {
+
+        }, challengeRoomColor, colorPicker);
+        this.addRenderableWidget(challengeRoomColorPicker);
+        challengeRoomColor.setResponder((value) -> {
+            challengeRoomColorPicker.setColor(parseColor(value));
+        });
+
+        int roomIconsCheckboxY = getScaledY(13) + (getScaledY(1) / 2) - 2;
+        Checkbox showRoomIcons = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, roomIconsCheckboxY, 20, 20, new TextComponent(""), ClientConfig.SHOW_ROOM_ICONS.get());
+        this.addRenderableWidget(showRoomIcons);
+
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(15), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -215,6 +241,9 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.MARKED_ROOM_COLOR.set(markedRoomColor.getValue());
             ClientConfig.INSCRIPTION_ROOM_COLOR.set(inscriptionRoomColor.getValue());
             ClientConfig.SHOW_INSCRIPTIONS.set(showInscription.selected());
+            ClientConfig.OMEGA_ROOM_COLOR.set(omegaRoomColor.getValue());
+            ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
+            ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
 
             ClientConfig.SPEC.save();
 
@@ -225,7 +254,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(14), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
@@ -239,6 +268,11 @@ public class VaultMapperConfigScreen extends Screen {
             if (!showInscription.selected()) {
                 showInscription.onPress();
             }
+            omegaRoomColor.setValue("#55FF55");
+            challengeRoomColor.setValue("#F09E00");
+            if (!showRoomIcons.selected()) {
+                showRoomIcons.onPress();
+            }
 
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
@@ -251,6 +285,9 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.MARKED_ROOM_COLOR.set("#FF00FF");
             ClientConfig.INSCRIPTION_ROOM_COLOR.set("#FFFF00");
             ClientConfig.SHOW_INSCRIPTIONS.set(true);
+            ClientConfig.OMEGA_ROOM_COLOR.set("#55FF55");
+            ClientConfig.CHALLENGE_ROOM_COLOR.set("#F09E00");
+            ClientConfig.SHOW_ROOM_ICONS.set(true);
 
             ClientConfig.SPEC.save();
 
@@ -286,6 +323,8 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Start Room Color", this.width / 2 - 110, getScaledY(10) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Marked Room Color", this.width / 2 - 110, getScaledY(11) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Inscription Room Color", this.width / 2 - 110, getScaledY(12) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Omega Room Color", this.width / 2 - 110, getScaledY(13) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Challenge Room Color", this.width / 2 - 110, getScaledY(14) + offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 

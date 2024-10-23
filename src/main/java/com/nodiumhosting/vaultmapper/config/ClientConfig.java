@@ -19,6 +19,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> OMEGA_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> CHALLENGE_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_INSCRIPTIONS;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_ROOM_ICONS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
@@ -45,6 +46,7 @@ public class ClientConfig {
         OMEGA_ROOM_COLOR = BUILDER.comment("Color for an explored Omega Room").define("OMEGA_ROOM_COLOR", "#55FF55");
         CHALLENGE_ROOM_COLOR = BUILDER.comment("Color for an explored Challenge Room").define("CHALLENGE_ROOM_COLOR", "#F09E00");
         SHOW_INSCRIPTIONS = BUILDER.comment("Show Inscripted Rooms on the Map").define("SHOW_INSCRIPTIONS", true);
+        SHOW_ROOM_ICONS = BUILDER.comment("Show Room Icons on the Map").define("SHOW_ROOM_ICONS", true);
 
         WEBMAP_ENABLED = BUILDER.comment("Enable the WebMap Server").define("WEBMAP_ENABLED", false);
 
