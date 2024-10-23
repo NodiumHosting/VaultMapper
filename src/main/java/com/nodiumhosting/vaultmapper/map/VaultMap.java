@@ -133,10 +133,16 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
+        int playerRelativeX = (int) Math.abs(Math.floor(player.getX() % 47));
+        int playerRelativeZ = (int) Math.abs(Math.floor(player.getZ() % 47));
+
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
 
+        // only update tunnel if player is actually in a tunnel to prevent dungeons and doors from being detected as tunnels
         int playerY = (int) player.getY();
-        if ((playerY < 27 || playerY > 37) && (cellType == CellType.TUNNEL_X || cellType == CellType.TUNNEL_Z)) return; // only update tunnel if player is actually in a tunnel to prevent dungeons and doors from being detected as tunnels
+        if ((playerY < 27 || playerY > 37) && (cellType == CellType.TUNNEL_X || cellType == CellType.TUNNEL_Z)) return;
+        if (cellType == CellType.TUNNEL_X && (playerRelativeZ < 18 || playerRelativeZ > 28)) return;
+        if (cellType == CellType.TUNNEL_Z && (playerRelativeX < 18 || playerRelativeX > 28)) return;
 
         VaultCell newCell;
         newCell = getCell(playerRoomX, playerRoomZ);
