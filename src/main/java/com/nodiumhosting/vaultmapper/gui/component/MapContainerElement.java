@@ -131,6 +131,9 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
         if (this.zoomVal <= 0.3) {
             this.zoomVal = 0.3;
         }
+        if (this.zoomVal >= 3) {
+            this.zoomVal = 3;
+        }
 
         return super.onMouseScrolled(mouseX, mouseY, delta);
     }

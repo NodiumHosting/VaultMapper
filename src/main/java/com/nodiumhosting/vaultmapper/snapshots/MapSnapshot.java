@@ -6,13 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.util.BooleanSerializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 
 import java.io.*;
 import java.lang.reflect.Type;
