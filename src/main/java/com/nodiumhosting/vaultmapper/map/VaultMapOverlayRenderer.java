@@ -305,7 +305,7 @@ public class VaultMapOverlayRenderer {
             // Cast to int to use it as a 32-bit ARGB color
             return (int) Long.parseLong(hexColor, 16);
         } catch (NumberFormatException e) {
-            return 0xFFFFFF00; // Default color (white with full opacity)
+            return 0xFFFFFFFF; // Default color (white with full opacity)
         }
     }
 
