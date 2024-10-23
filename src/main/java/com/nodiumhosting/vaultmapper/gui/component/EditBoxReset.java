@@ -8,16 +8,9 @@ import net.minecraft.network.chat.Component;
 public class EditBoxReset extends EditBox {
     private String defaultText;
 
-    public EditBoxReset(Font pFont, int pX, int pY, int pWidth, int pHeight, Component pMessage) {
+    public EditBoxReset(Font pFont, int pX, int pY, int pWidth, int pHeight, Component pMessage, String defaultText) {
         super(pFont, pX, pY, pWidth, pHeight, pMessage);
-    }
-
-    @Override
-    public void setValue(String pValue) {
-        super.setValue(pValue);
-        if (this.defaultText == null) {
-            this.defaultText = pValue;
-        }
+        this.defaultText = defaultText;
     }
 
     @Override

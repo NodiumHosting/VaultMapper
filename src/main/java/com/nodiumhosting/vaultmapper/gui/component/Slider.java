@@ -18,12 +18,12 @@ public class Slider extends Button {
     public String text;
     public Function<Float, String> optionGetter;
 
-    public Slider(int x, int y, String text, int startingValue, float maxValue, float minValue, Function<Float, String> optionGetter, int width, int height) {
+    public Slider(int x, int y, String text, int startingValue, float maxValue, float minValue, Function<Float, String> optionGetter, int width, int height, int defaultValue) {
         super(x, y, width, height, new TextComponent(text), (button) -> {
         });
 
         this.text = text;
-        this.defaultValue = startingValue;
+        this.defaultValue = defaultValue;
         this.sliderValue = startingValue;
         this.sliderMaxValue = maxValue;
         this.sliderMinValue = minValue;
