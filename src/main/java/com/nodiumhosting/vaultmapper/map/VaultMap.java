@@ -114,6 +114,15 @@ public class VaultMap {
         return isNew.get();
     }
 
+    private static VaultCell getCell(int x, int z) {
+        return cells.stream().filter((cell) -> cell.x == x && cell.z == z).findFirst().orElse(null);
+    }
+
+    private static void addOrReplaceCell(VaultCell cell) {
+        cells.removeIf((c) -> c.x == cell.x && c.z == cell.z);
+        cells.add(cell);
+    }
+
     /**
      * Updates the map data and sends it to connected web clients (like OBS)
      */
@@ -127,7 +136,8 @@ public class VaultMap {
         VaultCell newCell;
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
 
-        newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current room
+        newCell = getCell(playerRoomX, playerRoomZ);
+        if (newCell == null) newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
         currentRoom = newCell;
         newCell.setExplored(true);
 
@@ -152,12 +162,11 @@ public class VaultMap {
                         newCell.roomType = roomType;
                     }
                 }
-
-                cells.add(newCell);
-                MapCache.updateCache();
             }
         }
 
+        addOrReplaceCell(newCell);
+        MapCache.updateCache();
         sendCell(newCell);
     }
 
