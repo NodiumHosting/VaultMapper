@@ -213,8 +213,7 @@ public class VaultMap {
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
 
-        VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
-
+        if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
 
         if (debug) {
             Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
