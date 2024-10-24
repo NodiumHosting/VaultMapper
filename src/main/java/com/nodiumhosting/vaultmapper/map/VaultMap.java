@@ -213,7 +213,7 @@ public class VaultMap {
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
 
-        VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
+        VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
 
 
         if (debug) {
