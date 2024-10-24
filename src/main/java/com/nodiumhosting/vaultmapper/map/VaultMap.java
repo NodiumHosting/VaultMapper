@@ -191,6 +191,11 @@ public class VaultMap {
         VaultMapper.wsServer.sendCell(cell);
     }
 
+    // TODO: do this properly
+    private static float oldYaw;
+    private static int oldRoomX;
+    private static int oldRoomZ;
+
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
         if (!enabled) return;
@@ -210,16 +215,22 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
-        float yaw = player.getYHeadRot();
-        String username = player.getName().getString();
-
-        if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
-
         if (debug) {
             Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
         }
         if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
             updateMap();
+        }
+
+        float yaw = player.getYHeadRot();
+
+        if (oldYaw != yaw || playerRoomX != oldRoomX || playerRoomZ != oldRoomZ) {
+            oldYaw = yaw;
+            oldRoomX = playerRoomX;
+            oldRoomZ = playerRoomZ;
+            String username = player.getName().getString();
+
+            if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
     }
 
