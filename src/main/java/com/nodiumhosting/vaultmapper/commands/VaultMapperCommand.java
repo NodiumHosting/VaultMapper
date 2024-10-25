@@ -1,17 +1,44 @@
 package com.nodiumhosting.vaultmapper.commands;
 
+import com.google.gson.Gson;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.server.command.EnumArgument;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class VaultMapperCommand {
+    enum Column {
+        MIDDLE,
+        NORTHWEST,
+        NORTHEAST,
+        SOUTHWEST,
+        SOUTHEAST
+    }
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("vaultmapper")
                 .executes(VaultMapperCommand::execute)
@@ -28,6 +55,20 @@ public class VaultMapperCommand {
                         .executes(VaultMapperCommand::execute)
                 )
                 .then(Commands.literal("disabledebug")
+                        .executes(VaultMapperCommand::execute)
+                )
+                .then(Commands.literal("openByVaultId")
+                        .then(Commands.argument("vaultId", StringArgumentType.string())
+                                .executes(VaultMapperCommand::execute)
+                        )
+                )
+                .then(Commands.literal("dumpColumn")
+                        .then(Commands.argument("column", EnumArgument.enumArgument(Column.class))
+                                .executes(VaultMapperCommand::execute)
+                        )
+                )
+                .then(Commands.literal("clearCell")
+                        .requires((source) -> source.hasPermission(2))
                         .executes(VaultMapperCommand::execute)
                 )
         );
@@ -53,11 +94,61 @@ public class VaultMapperCommand {
                     VaultMap.debug = true;
                 } else if (args[1].equals("disabledebug")) {
                     VaultMap.debug = false;
+                } else if (args[1].equals("openByVaultId")) {
+                    if (args.length > 2) {
+                        RenderSystem.recordRenderCall(() -> {
+                            MapSnapshot.openScreen(args[2]);
+                        });
+                    } else {
+                        player.sendMessage(new TextComponent("Usage: /vaultmapper openByVaultId <vaultId>"), player.getUUID());
+                    }
+                } else if (args[1].equals("dumpColumn")) {
+                    if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return 0;
+
+                    int blockX = 23;
+                    int blockZ = 23;
+
+                    switch (args[2]) {
+                        case "MIDDLE":
+                            blockX = 23;
+                            blockZ = 23;
+                            break;
+                        case "NORTHWEST":
+                            blockX = 0;
+                            blockZ = 0;
+                            break;
+                        case "NORTHEAST":
+                            blockX = 46;
+                            blockZ = 0;
+                            break;
+                        case "SOUTHWEST":
+                            blockX = 0;
+                            blockZ = 46;
+                            break;
+                        case "SOUTHEAST":
+                            blockX = 46;
+                            blockZ = 46;
+                            break;
+                    }
+
+                    // 9-55
+                    VaultCell currentCell = VaultMap.getCurrentCell();
+
+                    Map<Integer, String> middleColumn = new HashMap<>();
+                    for (int i = 9; i <= 55; i++) {
+                        Block block = VaultMap.getCellBlock(currentCell.x, currentCell.z, blockX, i, blockZ);
+                        if (block != null) {
+                            middleColumn.put(i, block.getRegistryName().toString());
+                        }
+                    }
+                    Gson gson = new Gson();
+                    String json = gson.toJson(middleColumn);
+                    Minecraft.getInstance().keyboardHandler.setClipboard(json);
                 } else {
-                    player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
+                    player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn>"), player.getUUID());
                 }
             } else {
-                player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset>"), player.getUUID());
+                player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn>"), player.getUUID());
             }
         }
         return Command.SINGLE_SUCCESS;

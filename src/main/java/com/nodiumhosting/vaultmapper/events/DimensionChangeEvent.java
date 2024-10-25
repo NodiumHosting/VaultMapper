@@ -1,5 +1,6 @@
 package com.nodiumhosting.vaultmapper.events;
 
+import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -8,6 +9,8 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.UUID;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class DimensionChangeEvent {
@@ -26,6 +29,7 @@ public class DimensionChangeEvent {
             VaultMap.enabled = false;
             VaultMapOverlayRenderer.enabled = false;
             VaultMap.stopSync();
+            MapCache.deleteCache();
         }
     }
 }

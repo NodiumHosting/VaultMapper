@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.gui.component;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import it.unimi.dsi.fastutil.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
 
 public class Slider extends Button {
+    private final int defaultValue;
     public int sliderValue;
     public float sliderMaxValue;
     public float sliderMinValue;
@@ -16,11 +18,12 @@ public class Slider extends Button {
     public String text;
     public Function<Float, String> optionGetter;
 
-    public Slider(int x, int y, String text, int startingValue, float maxValue, float minValue, Function<Float, String> optionGetter, int width, int height) {
+    public Slider(int x, int y, String text, int startingValue, float maxValue, float minValue, Function<Float, String> optionGetter, int width, int height, int defaultValue) {
         super(x, y, width, height, new TextComponent(text), (button) -> {
         });
 
         this.text = text;
+        this.defaultValue = defaultValue;
         this.sliderValue = startingValue;
         this.sliderMaxValue = maxValue;
         this.sliderMinValue = minValue;
@@ -66,6 +69,11 @@ public class Slider extends Button {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (pButton == 1 && this.isMouseOver(pMouseX, pMouseY)) {
+            this.sliderValue = defaultValue;
+            return false; //idk what this is for
+        }
+
         if (super.mouseClicked(pMouseX, pMouseY, pButton)) {
             this.sliderValue = (int) ((pMouseX - this.x) / (float) this.width * (sliderMaxValue - sliderMinValue) + sliderMinValue + 0.5F);
 

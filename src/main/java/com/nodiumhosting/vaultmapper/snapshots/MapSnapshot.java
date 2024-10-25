@@ -6,12 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.gui.screen.VaultMapPreviewScreen;
+import com.nodiumhosting.vaultmapper.gui.screen.VaultMapScreen;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.util.BooleanSerializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -122,9 +121,12 @@ public class MapSnapshot {
     }
 
     public static Optional<MapSnapshot> from(UUID uuid) {
+        return from(uuid.toString());
+    }
+    public static Optional<MapSnapshot> from(String filename) {
         makeSureFoldersExist();
-        String mapPath = mapSaveFolder + uuid.toString() + ".vaultmap";
-        String favPath = favoriteMapsFolder + uuid.toString() + ".vaultmap";
+        String mapPath = mapSaveFolder + filename + ".vaultmap";
+        String favPath = favoriteMapsFolder + filename + ".vaultmap";
 
         Optional<MapSnapshot> normalMap = readMapFromPath(mapPath);
         if (normalMap.isPresent()) {
@@ -161,7 +163,7 @@ public class MapSnapshot {
     }
 
     @SerializedName("v")
-    public int version = 1;
+    public int version = 2;
 
     @SerializedName("cl")
     public List<VaultCell> cells;
@@ -170,8 +172,10 @@ public class MapSnapshot {
         this.cells = cells;
     }
 
-    public void openScreen(Optional<Screen> previousScreen) {
-        VaultMapPreviewScreen cellsScreen = new VaultMapPreviewScreen(this, previousScreen);
-        Minecraft.getInstance().setScreen(cellsScreen);
+    public static void openScreen(String uuid) {
+        Minecraft.getInstance().setScreen(new VaultMapScreen(uuid));
+    }
+    public void openScreen() {
+        Minecraft.getInstance().setScreen(new VaultMapScreen(Optional.of(this)));
     }
 }

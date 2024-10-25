@@ -21,6 +21,9 @@ public class VaultCell {
     @SerializedName("r")
     public RoomType roomType;
 
+    @SerializedName("n")
+    public RoomName roomName = RoomName.UNKNOWN;
+
     public VaultCell(int x, int z, CellType cellType, RoomType roomType) {
         this.x = x;
         this.z = z;
@@ -38,5 +41,9 @@ public class VaultCell {
 
     public void setExplored(boolean explored) {
         this.explored = explored;
+    }
+
+    public String toString() {
+        return "Cell " + this.x + ":" + this.z + " CellType: " + this.cellType + " RoomType: " + this.roomType + " RoomName: " + this.roomName + " Explored: " + this.explored + " Marked: " + this.marked + " Inscripted: " + this.inscripted;
     }
 }

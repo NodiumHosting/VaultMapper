@@ -7,6 +7,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,15 +21,18 @@ public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
     public static boolean ignoreResearchRequirement = false;
 
-    static int mapRoomWidth;
+    static float mapScaleMultiplier;
+    static float mapRoomWidth;
 
     static boolean prepped = false;
 
-    static int centerX;
-    static int centerZ;
+    static float centerX;
+    static float centerZ;
 
-    static int mapAnchorX = 0;
-    static int mapAnchorZ = 0;
+    static float mapAnchorX = 0;
+    static float mapAnchorZ = 0;
+
+    static ResourceLocation icon = new ResourceLocation("vaultmapper", "/textures/gui/mine.png");
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
@@ -60,6 +64,39 @@ public class VaultMapOverlayRenderer {
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder); // render the map
 
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+
+        // render icons
+        if (ClientConfig.SHOW_ROOM_ICONS.get()) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.disableBlend();
+            VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+                if (cell.roomName == RoomName.UNKNOWN) return;
+
+                String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
+                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                RenderSystem.setShaderTexture(0, icon);
+                bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+                try {
+                    //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
+                    //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
+                    renderTextureCell(bufferBuilder, cell);
+                } catch (Exception e) {
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+                }
+
+                bufferBuilder.end();
+                BufferUploader.end(bufferBuilder);
+            });
+
+            RenderSystem.enableBlend();
+            RenderSystem.disableTexture();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        }
+
 
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         // player thingies
@@ -77,21 +114,23 @@ public class VaultMapOverlayRenderer {
         BufferUploader.end(bufferBuilder);
 
 
-        // player thingy
+        // player thingy TODO: Might need to remove this thing as the previous loop handles it
         if (VaultMap.currentRoom != null) {
-            int mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-            int mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+            float mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            float mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
             var triag = getRotatedTriangle();
             bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-            bufferBuilder.vertex(triag.get(0) + mapX + 3, triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-            bufferBuilder.vertex(triag.get(2) + mapX + 3, triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-            bufferBuilder.vertex(triag.get(4) + mapX + 3, triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
             bufferBuilder.end();
             BufferUploader.end(bufferBuilder);
         }
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+
+
     }
 
     private static ArrayList<Float> getRotatedTriangle(float yaw) { // returns three points that make a rotated triangle when added with mapx,z
@@ -121,15 +160,15 @@ public class VaultMapOverlayRenderer {
     }
 
     private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z
-        double x1 = -3;
-        double y1 = -2;
-        double x2 = -3;
-        double y2 = 2;
-        double x3 = 3;
-        double y3 = 0;
+        double x1 = -3 * mapScaleMultiplier;
+        double y1 = -2 * mapScaleMultiplier;
+        double x2 = -3 * mapScaleMultiplier;
+        double y2 = 2 * mapScaleMultiplier;
+        double x3 = 3 * mapScaleMultiplier;
+        double y3 = 0/* * mapScaleMultiplier*/;
 
-        double cx = -3; // centers to rotate about
-        double cy = 0;
+        double cx = -3 * mapScaleMultiplier; // centers to rotate about
+        double cy = 0/*  * mapScaleMultiplier*/;
         float playerYaw = Minecraft.getInstance().player.getYHeadRot();
         float radangle = (float) Math.toRadians(playerYaw + 90);
 
@@ -169,29 +208,33 @@ public class VaultMapOverlayRenderer {
     public static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.cellType != CellType.NONE) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
-            int mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            int mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
-            int startX;
-            int startZ;
-            int endX;
-            int endZ;
+            float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
+            float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
+            //float roomWidth = (float) ((mapRoomWidth / 2) * 1.5);
+            //float tunnelLen = (float) ((mapRoomWidth / 2) * 0.5);
+            float roomWidth = mapRoomWidth / 2;
+            float tunnelLen = mapRoomWidth / 2;
+            float startX;
+            float startZ;
+            float endX;
+            float endZ;
             if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
                 if (cell.cellType == CellType.TUNNEL_X) { // X facing
-                    startX = mapX - 2;
-                    startZ = mapZ - 1;
-                    endX = mapX + 2;
-                    endZ = mapZ + 1;
+                    startX = mapX - tunnelLen;
+                    startZ = mapZ - roomWidth / 2;
+                    endX = mapX + tunnelLen;
+                    endZ = mapZ + roomWidth / 2;
                 } else { // Z facing
-                    startX = mapX - 1;
-                    startZ = mapZ - 2;
-                    endX = mapX + 1;
-                    endZ = mapZ + 2;
+                    startX = mapX - roomWidth / 2;
+                    startZ = mapZ - tunnelLen;
+                    endX = mapX + roomWidth / 2;
+                    endZ = mapZ + tunnelLen;
                 }
             } else { // square
-                startX = mapX - 2;
-                startZ = mapZ - 2;
-                endX = mapX + 2;
-                endZ = mapZ + 2;
+                startX = mapX - roomWidth;
+                startZ = mapZ - roomWidth;
+                endX = mapX + roomWidth;
+                endZ = mapZ + roomWidth;
             }
             var minX = Math.min(startX, endX);
             var maxX = Math.max(startX, endX);
@@ -205,13 +248,43 @@ public class VaultMapOverlayRenderer {
         }
     }
 
+    public static void renderTextureCell(BufferBuilder bufferBuilder, VaultCell cell) {
+        if (cell.cellType == CellType.ROOM) {
+            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
+            float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
+            float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
+            //float roomWidth = (float) (mapRoomWidth * 1.5);
+            float roomWidth = mapRoomWidth;
+            float startX;
+            float startZ;
+            float endX;
+            float endZ;
+
+            startX = mapX - roomWidth;
+            startZ = mapZ - roomWidth;
+            endX = mapX + roomWidth;
+            endZ = mapZ + roomWidth;
+
+            var minX = Math.min(startX, endX);
+            var maxX = Math.max(startX, endX);
+            var minZ = Math.min(startZ, endZ);
+            var maxZ = Math.max(startZ, endZ);
+
+            bufferBuilder.vertex(minX, maxZ, 0).uv(0.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, maxZ, 0).uv(1.0F, 1.0F).endVertex();
+            bufferBuilder.vertex(maxX, minZ, 0).uv(1.0F, 0.0F).endVertex();
+            bufferBuilder.vertex(minX, minZ, 0).uv(0.0F, 0.0F).endVertex();
+        }
+    }
+
     public static void onWindowResize() {
         int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int h = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
         int mapSize = (int) (w * 0.25f);
-
-        mapRoomWidth = mapSize / 49;
+        int baseMapRoomWidth = mapSize / 49;
+        mapScaleMultiplier = (float) ClientConfig.MAP_SCALE.get() / 10;
+        mapRoomWidth = ((float) baseMapRoomWidth * mapScaleMultiplier);
 
         updateAnchor();
     }
@@ -220,20 +293,20 @@ public class VaultMapOverlayRenderer {
         int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
-        int mapSize = (VaultMap.currentMapSize * mapRoomWidth);
+        float mapSize = (VaultMap.currentMapSize * mapRoomWidth);
 
         switch (ClientConfig.MAP_X_ANCHOR.get()) {
             case 0 -> {
                 mapAnchorX = (mapSize / 3) * 2;
             }
             case 1 -> {
-                mapAnchorX = width / 4;
+                mapAnchorX = (float) width / 4;
             }
             case 2 -> {
-                mapAnchorX = width / 2;
+                mapAnchorX = (float) width / 2;
             }
             case 3 -> {
-                mapAnchorX = width - width / 4;
+                mapAnchorX = width - (float) width / 4;
             }
             case 4 -> {
                 mapAnchorX = width - (mapSize / 3) * 2;
@@ -245,13 +318,13 @@ public class VaultMapOverlayRenderer {
                 mapAnchorZ = (mapSize / 3) * 2;
             }
             case 1 -> {
-                mapAnchorZ = height / 4;
+                mapAnchorZ = (float) height / 4;
             }
             case 2 -> {
-                mapAnchorZ = height / 2;
+                mapAnchorZ = (float) height / 2;
             }
             case 3 -> {
-                mapAnchorZ = height - height / 4;
+                mapAnchorZ = height - (float) height / 4;
             }
             case 4 -> {
                 mapAnchorZ = height - (mapSize / 3) * 2;
@@ -275,7 +348,7 @@ public class VaultMapOverlayRenderer {
             // Cast to int to use it as a 32-bit ARGB color
             return (int) Long.parseLong(hexColor, 16);
         } catch (NumberFormatException e) {
-            return 0xFFFFFF00; // Default color (white with full opacity)
+            return 0xFFFFFFFF; // Default color (white with full opacity)
         }
     }
 

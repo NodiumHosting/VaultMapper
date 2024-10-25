@@ -3,7 +3,12 @@ package com.nodiumhosting.vaultmapper.map;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
+import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
+import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import com.nodiumhosting.vaultmapper.webmap.SocketServer;
+import iskallia.vault.core.vault.VaultRegistry;
+import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +17,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -84,6 +90,10 @@ public class VaultMap {
         VaultMapper.wsServer.sendReset();
     }
 
+    public static VaultCell getCurrentCell() {
+        return currentRoom;
+    }
+
     private static boolean isCurrentRoom(int x, int z) {
         if (currentRoom == null) return false;
         return currentRoom.x == x && currentRoom.z == z;
@@ -117,6 +127,12 @@ public class VaultMap {
         if (cell.inscripted) {
             return ClientConfig.INSCRIPTION_ROOM_COLOR.get();
         }
+        if (cell.roomType == RoomType.OMEGA) {
+            return ClientConfig.OMEGA_ROOM_COLOR.get();
+        }
+        if (cell.roomType == RoomType.CHALLENGE) {
+            return ClientConfig.CHALLENGE_ROOM_COLOR.get();
+        }
         return ClientConfig.ROOM_COLOR.get();
     }
 
@@ -132,6 +148,15 @@ public class VaultMap {
         return isNew.get();
     }
 
+    private static VaultCell getCell(int x, int z) {
+        return cells.stream().filter((cell) -> cell.x == x && cell.z == z).findFirst().orElse(null);
+    }
+
+    private static void addOrReplaceCell(VaultCell cell) {
+        cells.removeIf((c) -> c.x == cell.x && c.z == cell.z);
+        cells.add(cell);
+    }
+
     /**
      * Updates the map data and sends it to connected web clients (like OBS)
      */
@@ -142,40 +167,63 @@ public class VaultMap {
         int playerRoomX = (int) Math.floor(player.getX() / 47);
         int playerRoomZ = (int) Math.floor(player.getZ() / 47);
 
-        VaultCell newCell;
+        int playerRelativeX = (int) Math.abs(Math.floor(player.getX() % 47));
+        int playerRelativeZ = (int) Math.abs(Math.floor(player.getZ() % 47));
+
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
-        RoomType roomType = RoomType.BASIC; // TODO change this later when we do detection of room types
-        if (playerRoomX == 0 && playerRoomZ == 0) {
-            roomType = RoomType.START;
-        }
-        newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, roomType); // update current room
+
+        // only update tunnel if player is actually in a tunnel to prevent dungeons and doors from being detected as tunnels
+        int playerY = (int) player.getY();
+        if ((playerY < 27 || playerY > 37) && (cellType == CellType.TUNNEL_X || cellType == CellType.TUNNEL_Z)) return;
+        if (cellType == CellType.TUNNEL_X && (playerRelativeZ < 18 || playerRelativeZ > 28)) return;
+        if (cellType == CellType.TUNNEL_Z && (playerRelativeX < 18 || playerRelativeX > 28)) return;
+
+        VaultCell newCell;
+        newCell = getCell(playerRoomX, playerRoomZ);
+        if (newCell == null) newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
         currentRoom = newCell;
         newCell.setExplored(true);
 
+        if (playerRoomX == 0 && playerRoomZ == 0) {
+            newCell.roomType = RoomType.START;
+        }
+
         if (isNewCell(newCell, cells)) {
+            if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
+                currentMapSize += 4;
+                currentCoordLimit += 2;
+                VaultMapOverlayRenderer.updateAnchor();
+            }
+
             if (cellType != CellType.NONE) {
-                VaultMap.addCell(newCell);
+                if (!(playerRoomX == 0 && playerRoomZ == 0)) { //dont detect start room
+                    if (cellType == CellType.ROOM) {
+                        Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+                        RoomType roomType = detectedRoom.getA();
+                        RoomName roomName = detectedRoom.getB();
+                        newCell.roomName = roomName;
+                        newCell.roomType = roomType;
+                    }
+                }
             }
         }
-        sendMap();
+        addOrReplaceCell(newCell);
+        MapCache.updateCache();
+        sendCell(newCell);
+        sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
     }
 
-    /**
-     * If new cell, adds a cell to the map
-     *
-     * @param cell
-     */
-    public static void addCell(VaultCell cell) {
-        if (!isNewCell(cell, cells)) return;
+//    public static void sendMap() {
+//        VaultMap.cells.forEach((cell) -> {
+//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
+//                VaultMapper.wsServer.sendData(cell);
+//            }
+//        });
+//    }
 
-        if (abs(cell.x) > currentCoordLimit || abs(cell.z) > currentCoordLimit) { // resize map
-            currentMapSize += 4;
-            currentCoordLimit += 2;
-            VaultMapOverlayRenderer.updateAnchor();
+    public static void sendCell(VaultCell cell) {
+        VaultMapper.wsServer.sendCell(cell);
         }
-
-        cells.add(cell);
-    }
 
     public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
@@ -184,6 +232,11 @@ public class VaultMap {
             }
         });
     }
+
+    // TODO: do this properly
+    private static float oldYaw;
+    private static int oldRoomX;
+    private static int oldRoomZ;
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
@@ -218,6 +271,17 @@ public class VaultMap {
             updateMap();
             if (mapSyncClient != null) mapSyncClient.sendCellData(playerRoomX, playerRoomZ);
         }
+
+        float yaw = player.getYHeadRot();
+
+        if (oldYaw != yaw || playerRoomX != oldRoomX || playerRoomZ != oldRoomZ) {
+            oldYaw = yaw;
+            oldRoomX = playerRoomX;
+            oldRoomZ = playerRoomZ;
+            String username = player.getName().getString();
+
+            if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
+        }
     }
 
     public static void markCurrentCell() {
@@ -249,7 +313,7 @@ public class VaultMap {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
 
-        sendMap();
+        sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
     }
 
     public static void toggleRendering() {
@@ -317,6 +381,7 @@ public class VaultMap {
             CompoundTag stack = compound.getCompound("stack");
             String id = stack.getString("id");
             int model = stack.getCompound("tag").getCompound("data").getInt("model");
+            Tuple<RoomType, RoomName> room = roomFromModel(model);
             CompoundTag translation = compound.getCompound("translation");
             byte translationX = translation.getByte("x");
             byte translationY = translation.getByte("y");
@@ -324,12 +389,14 @@ public class VaultMap {
             int translationXInt = translationX;
             int translationYInt = translationY;
 
-            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.ROOM, RoomType.BASIC); // TODO change this later when we do detection of room types
+            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.ROOM, room.getA());
+            newCell.roomName = room.getB();
+            // TODO change this later when we do detection of room types
             newCell.inscripted = true;
             cells.add(newCell);
-        });
 
-        sendMap();
+            sendCell(newCell);
+        });
 
         return hologramNbt;
     }
@@ -349,8 +416,9 @@ public class VaultMap {
         if (player == null) return null;
         if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return null;
 
-        int xCoord = cellX * 49 + blockX;
-        int zCoord = cellZ * 49 + blockZ;
+        int xCoord = cellX * 47 + blockX;
+        int zCoord = cellZ * 47 + blockZ;
+        //VaultMapper.LOGGER.info("X " + xCoord + " Z " + zCoord);
 
         if (!player.level.isLoaded(new BlockPos(xCoord, blockY, zCoord))) return null;
 
@@ -361,5 +429,25 @@ public class VaultMap {
         int x;
         int y;
         float yaw;
+    }
+    public static Tuple<RoomType, RoomName> roomFromModel(int model) {
+        ResourceLocation room = null;
+        for (Map.Entry<ResourceLocation,Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
+            if (entry.getValue() == model) {
+                room = entry.getKey();
+                break;
+            }
+        }
+        if (room == null) {
+            return new Tuple<>(RoomType.BASIC,RoomName.UNKNOWN);
+        }
+        RoomType type = RoomType.BASIC;
+        if (room.getPath().contains("omega")) {
+            type = RoomType.OMEGA;
+        } else if (room.getPath().contains("challenge")) {
+            type = RoomType.OMEGA;
+        }
+        RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
+        return new Tuple<RoomType,RoomName>(type,name);
     }
 }

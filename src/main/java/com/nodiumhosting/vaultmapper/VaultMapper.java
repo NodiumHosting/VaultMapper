@@ -8,9 +8,11 @@ import com.nodiumhosting.vaultmapper.keybinds.OpenConfigScreenKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.network.handlers.AuthNetworkingHandler;
+import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -58,6 +60,9 @@ public class VaultMapper {
         if (ClientConfig.WEBMAP_ENABLED.get()) {
             wsServer.start();
         }
+        if (RoomData.omegaRooms == null || RoomData.challengeRooms == null) {
+            RoomData.initRooms();
+        }
     }
 
     @Mod.EventBusSubscriber(modid = VaultMapper.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -67,5 +72,12 @@ public class VaultMapper {
             VaultMapperCommand.register(event.getDispatcher());
             LOGGER.info("registered client commands");
         }
+    }
+
+    public static String getVersion() {
+        return ModList.get()
+                .getModContainerById(VaultMapper.MODID)
+                .map(container -> container.getModInfo().getVersion().toString())
+                .orElse("Unknown");
     }
 }
