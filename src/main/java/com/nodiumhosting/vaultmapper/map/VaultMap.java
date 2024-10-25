@@ -64,6 +64,10 @@ public class VaultMap {
         VaultMapper.wsServer.sendReset();
     }
 
+    public static VaultCell getCurrentCell() {
+        return currentRoom;
+    }
+
     private static boolean isCurrentRoom(int x, int z) {
         if (currentRoom == null) return false;
         return currentRoom.x == x && currentRoom.z == z;
