@@ -31,7 +31,7 @@ public class MapCache {
         Gson gson = gsonBuilder.create();
         try {
             FileWriter writer = new FileWriter(cachePath);
-            gson.toJson(VaultMap.cells, writer);
+            gson.toJson(VaultMap.getCells(), writer);
             writer.close();
         } catch (IOException e) {
             VaultMapper.LOGGER.error("Couldn't create map cache file");
@@ -53,7 +53,7 @@ public class MapCache {
         try {
             FileReader reader = new FileReader(cachePath);
             Type saveType = new TypeToken<List<VaultCell>>() {}.getType();
-            VaultMap.cells = (gson.fromJson(reader, saveType));
+            //VaultMap.cells = (gson.fromJson(reader, saveType)); // TODO: FIX THIS
         } catch (FileNotFoundException e) {
             return;
         }
