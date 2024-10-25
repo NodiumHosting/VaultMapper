@@ -223,12 +223,12 @@ public class VaultMap {
 
     public static void sendCell(VaultCell cell) {
         VaultMapper.wsServer.sendCell(cell);
-        }
+    }
 
     public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
             if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-                VaultMapper.wsServer.sendData(cell, getCellColor(cell));
+                VaultMapper.wsServer.sendData(cell, getCellColor(cell)); // TODO: NEEDS FIING
             }
         });
     }
@@ -260,7 +260,7 @@ public class VaultMap {
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
 
-        VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
+        //VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get()); // TODO: NEEDS FIXING
 
         if (mapSyncClient != null) mapSyncClient.sendPlayerData(username, playerRoomX, playerRoomZ, yaw);
 
@@ -272,13 +272,10 @@ public class VaultMap {
             if (mapSyncClient != null) mapSyncClient.sendCellData(playerRoomX, playerRoomZ);
         }
 
-        float yaw = player.getYHeadRot();
-
         if (oldYaw != yaw || playerRoomX != oldRoomX || playerRoomZ != oldRoomZ) {
             oldYaw = yaw;
             oldRoomX = playerRoomX;
             oldRoomZ = playerRoomZ;
-            String username = player.getName().getString();
 
             if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
