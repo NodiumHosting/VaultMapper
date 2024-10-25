@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -13,6 +16,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +36,18 @@ public class SocketServer extends WebSocketServer {
 
         conn.send("version:"+WEBMAP_VERSION);
         sendConfig();
+
+        //send all cells
+        List<VaultCell> cells = VaultMap.getCells();
+        for (VaultCell cell : cells) {
+            sendCell(cell);
+        }
+
+        VaultCell current = VaultMap.getCurrentCell();
+        Player player = Minecraft.getInstance().player;
+        if (current != null) {
+            sendArrow(current.x, current.z, player.getYHeadRot(), player.getName().getString(), ClientConfig.POINTER_COLOR.get());
+        }
     }
 
     @Override
