@@ -294,8 +294,8 @@ public class VaultMap {
         VaultMapper.LOGGER.info("Marking room");
         if (player == null) return;
 
-        int playerRoomX = (int) Math.floor(player.getX() / 47);
-        int playerRoomZ = (int) Math.floor(player.getZ() / 47);
+        int playerRoomX = getCurrentCell().x;
+        int playerRoomZ = getCurrentCell().z;
 
         if (playerRoomX == 0 && playerRoomZ == 0) {
             player.sendMessage(new TextComponent("You can't mark the start room"), player.getUUID());

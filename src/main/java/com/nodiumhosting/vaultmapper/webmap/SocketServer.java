@@ -37,6 +37,11 @@ public class SocketServer extends WebSocketServer {
         conn.send("version:" + WEBMAP_VERSION);
         sendConfig();
 
+        if (!VaultMap.enabled) {
+            sendReset();
+            return;
+        }
+
         //send all cells
         List<VaultCell> cells = VaultMap.getCells();
         for (VaultCell cell : cells) {
