@@ -69,7 +69,7 @@ public class WSClient extends WebSocketClient {
             int cell_y = Integer.parseInt(split[2]);
             CellType type = VaultMap.getCellType(cell_x, cell_y);
             if (!type.equals(CellType.NONE)) {
-                //VaultMap.addCell(new VaultCell(cell_x, cell_y, type, RoomType.BASIC)); // TODO: FIX THIS
+                VaultMap.addOrReplaceCell(new VaultCell(cell_x, cell_y, type, RoomType.BASIC));
             }
         }
     }

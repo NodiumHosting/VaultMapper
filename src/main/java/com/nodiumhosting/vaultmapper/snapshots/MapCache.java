@@ -14,6 +14,7 @@ import java.util.List;
 
 public class MapCache {
     public static String cachePath = "vaultmaps/cache.json";
+
     public static void deleteCache() {
         MapSnapshot.makeSureFoldersExist();
         File mapFile = new File(cachePath);
@@ -52,10 +53,10 @@ public class MapCache {
         Gson gson = gsonBuilder.create();
         try {
             FileReader reader = new FileReader(cachePath);
-            Type saveType = new TypeToken<List<VaultCell>>() {}.getType();
-            //VaultMap.cells = (gson.fromJson(reader, saveType)); // TODO: FIX THIS
+            Type saveType = new TypeToken<List<VaultCell>>() {
+            }.getType();
+            VaultMap.cells = (gson.fromJson(reader, saveType));
         } catch (FileNotFoundException e) {
-            return;
         }
     }
 

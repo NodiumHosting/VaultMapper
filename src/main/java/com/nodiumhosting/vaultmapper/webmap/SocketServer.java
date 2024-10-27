@@ -8,33 +8,33 @@ import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 public class SocketServer extends WebSocketServer {
+    int WEBMAP_VERSION = 2;
+    ArrayList<WebSocket> wslist;
+
     public SocketServer(InetSocketAddress address) {
         super(address);
         wslist = new ArrayList<>();
     }
 
-    int WEBMAP_VERSION = 2;
-    ArrayList<WebSocket> wslist;
-
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         wslist.add(conn);
 
-        conn.send("version:"+WEBMAP_VERSION);
+        conn.send("version:" + WEBMAP_VERSION);
         sendConfig();
 
         //send all cells
@@ -62,7 +62,7 @@ public class SocketServer extends WebSocketServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-
+        wslist.remove(conn);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SocketServer extends WebSocketServer {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             GZIPOutputStream gzos = new GZIPOutputStream(baos);
-            gzos.write(json.getBytes("UTF-8"));
+            gzos.write(json.getBytes(StandardCharsets.UTF_8));
             gzos.close();
             byte[] compressed = baos.toByteArray();
             String base64 = Base64.getEncoder().encodeToString(compressed);
@@ -88,6 +88,75 @@ public class SocketServer extends WebSocketServer {
             });
         } catch (IOException e) {
             VaultMapper.LOGGER.error("Failed to send config data to webmap");
+        }
+    }
+
+    public void sendCell(VaultCell cell) {
+        try {
+            // Gson serialize -> byte array -> gzip -> base64 encode
+            Gson gson = new Gson();
+            String json = gson.toJson(cell);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            GZIPOutputStream gzos = new GZIPOutputStream(baos);
+            gzos.write(json.getBytes(StandardCharsets.UTF_8));
+            gzos.close();
+            byte[] compressed = baos.toByteArray();
+            String base64 = Base64.getEncoder().encodeToString(compressed);
+
+            wslist.forEach((conn) -> {
+                conn.send("cell|" + base64);
+            });
+        } catch (IOException e) {
+            VaultMapper.LOGGER.error("Failed to send cell data to webmap");
+        }
+    }
+
+    public void sendArrow(int x, int z, float yaw, String username, String color) {
+        Arrow arrow = new Arrow(x, z, yaw, username, color);
+
+        try {
+            // Gson serialize -> byte array -> gzip -> base64 encode
+            Gson gson = new Gson();
+            String json = gson.toJson(arrow);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            GZIPOutputStream gzos = new GZIPOutputStream(baos);
+            gzos.write(json.getBytes(StandardCharsets.UTF_8));
+            gzos.close();
+            byte[] compressed = baos.toByteArray();
+            String base64 = Base64.getEncoder().encodeToString(compressed);
+
+            wslist.forEach((conn) -> {
+                conn.send("arrow|" + base64);
+            });
+        } catch (IOException e) {
+            VaultMapper.LOGGER.error("Failed to send cell data to webmap");
+        }
+    }
+
+    public void sendReset() {
+        wslist.forEach((conn) -> {
+            conn.send("reset");
+        });
+    }
+
+    static class Arrow {
+        int x;
+        int z;
+        @SerializedName("y")
+        float yaw;
+        @SerializedName("u")
+        String username;
+        @SerializedName("c")
+        String color;
+
+        public Arrow(int x, int z, float yaw, String username, String color) {
+            this.x = x;
+            this.z = z;
+            this.yaw = yaw;
+            this.username = username;
+            this.color = color;
         }
     }
 
@@ -111,74 +180,5 @@ public class SocketServer extends WebSocketServer {
             this.SHOW_INSCRIPTIONS = ClientConfig.SHOW_INSCRIPTIONS.get();
             this.SHOW_ROOM_ICONS = ClientConfig.SHOW_ROOM_ICONS.get();
         }
-    }
-
-    public void sendCell(VaultCell cell) {
-        try {
-            // Gson serialize -> byte array -> gzip -> base64 encode
-            Gson gson = new Gson();
-            String json = gson.toJson(cell);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            GZIPOutputStream gzos = new GZIPOutputStream(baos);
-            gzos.write(json.getBytes("UTF-8"));
-            gzos.close();
-            byte[] compressed = baos.toByteArray();
-            String base64 = Base64.getEncoder().encodeToString(compressed);
-
-            wslist.forEach((conn) -> {
-                conn.send("cell|" + base64);
-            });
-        } catch (IOException e) {
-            VaultMapper.LOGGER.error("Failed to send cell data to webmap");
-        }
-    }
-
-    public void sendArrow(int x, int z, float yaw, String username, String color) {
-        Arrow arrow = new Arrow(x, z, yaw, username, color);
-
-        try {
-            // Gson serialize -> byte array -> gzip -> base64 encode
-            Gson gson = new Gson();
-            String json = gson.toJson(arrow);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            GZIPOutputStream gzos = new GZIPOutputStream(baos);
-            gzos.write(json.getBytes("UTF-8"));
-            gzos.close();
-            byte[] compressed = baos.toByteArray();
-            String base64 = Base64.getEncoder().encodeToString(compressed);
-
-            wslist.forEach((conn) -> {
-                conn.send("arrow|" + base64);
-            });
-        } catch (IOException e) {
-            VaultMapper.LOGGER.error("Failed to send cell data to webmap");
-        }
-    }
-
-    static class Arrow {
-        int x;
-        int z;
-        @SerializedName("y")
-        float yaw;
-        @SerializedName("u")
-        String username;
-        @SerializedName("c")
-        String color;
-
-        public Arrow(int x, int z, float yaw, String username, String color) {
-            this.x = x;
-            this.z = z;
-            this.yaw = yaw;
-            this.username = username;
-            this.color = color;
-        }
-    }
-
-    public void sendReset() {
-        wslist.forEach((conn) -> {
-            conn.send("reset");
-        });
     }
 }

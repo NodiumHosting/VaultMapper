@@ -6,7 +6,6 @@ import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
-import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
@@ -28,7 +27,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,7 +43,7 @@ public class VaultMap {
     public static boolean debug;
     public static WSClient mapSyncClient;
     static public ConcurrentHashMap<String, MapPlayer> players = new ConcurrentHashMap<>();
-    static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
+    public static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
     static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
     static VaultCell currentRoom; // might not be needed
     static int defaultMapSize = 21; // map size in cells
@@ -50,6 +52,10 @@ public class VaultMap {
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
+    // TODO: do this properly
+    private static float oldYaw;
+    private static int oldRoomX;
+    private static int oldRoomZ;
 
     public static void updatePlayerMapData(String name, int x, int y, float yaw) {
         if (!players.containsKey(name)) {
@@ -148,11 +154,19 @@ public class VaultMap {
         return isNew.get();
     }
 
+//    public static void sendMap() {
+//        VaultMap.cells.forEach((cell) -> {
+//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
+//                VaultMapper.wsServer.sendData(cell);
+//            }
+//        });
+//    }
+
     private static VaultCell getCell(int x, int z) {
         return cells.stream().filter((cell) -> cell.x == x && cell.z == z).findFirst().orElse(null);
     }
 
-    private static void addOrReplaceCell(VaultCell cell) {
+    public static void addOrReplaceCell(VaultCell cell) {
         cells.removeIf((c) -> c.x == cell.x && c.z == cell.z);
         cells.add(cell);
     }
@@ -180,7 +194,8 @@ public class VaultMap {
 
         VaultCell newCell;
         newCell = getCell(playerRoomX, playerRoomZ);
-        if (newCell == null) newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
+        if (newCell == null)
+            newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
         currentRoom = newCell;
         newCell.setExplored(true);
 
@@ -213,14 +228,6 @@ public class VaultMap {
         sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
     }
 
-//    public static void sendMap() {
-//        VaultMap.cells.forEach((cell) -> {
-//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-//                VaultMapper.wsServer.sendData(cell);
-//            }
-//        });
-//    }
-
     public static void sendCell(VaultCell cell) {
         VaultMapper.wsServer.sendCell(cell);
     }
@@ -228,15 +235,10 @@ public class VaultMap {
     public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
             if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-                //VaultMapper.wsServer.sendData(cell, getCellColor(cell)); // TODO: NEEDS FIING
+                VaultMapper.wsServer.sendCell(cell);
             }
         });
     }
-
-    // TODO: do this properly
-    private static float oldYaw;
-    private static int oldRoomX;
-    private static int oldRoomZ;
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
@@ -260,7 +262,7 @@ public class VaultMap {
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
 
-        //VaultMapper.wsServer.sendPlayerData(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get()); // TODO: NEEDS FIXING
+        VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
         if (mapSyncClient != null) mapSyncClient.sendPlayerData(username, playerRoomX, playerRoomZ, yaw);
 
@@ -277,7 +279,8 @@ public class VaultMap {
             oldRoomX = playerRoomX;
             oldRoomZ = playerRoomZ;
 
-            if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
+            if (currentRoom != null)
+                VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
     }
 
@@ -422,21 +425,16 @@ public class VaultMap {
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
     }
 
-    static public class MapPlayer {
-        int x;
-        int y;
-        float yaw;
-    }
     public static Tuple<RoomType, RoomName> roomFromModel(int model) {
         ResourceLocation room = null;
-        for (Map.Entry<ResourceLocation,Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
             if (entry.getValue() == model) {
                 room = entry.getKey();
                 break;
             }
         }
         if (room == null) {
-            return new Tuple<>(RoomType.BASIC,RoomName.UNKNOWN);
+            return new Tuple<>(RoomType.BASIC, RoomName.UNKNOWN);
         }
         RoomType type = RoomType.BASIC;
         if (room.getPath().contains("omega")) {
@@ -445,6 +443,12 @@ public class VaultMap {
             type = RoomType.OMEGA;
         }
         RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
-        return new Tuple<RoomType,RoomName>(type,name);
+        return new Tuple<RoomType, RoomName>(type, name);
+    }
+
+    static public class MapPlayer {
+        int x;
+        int y;
+        float yaw;
     }
 }

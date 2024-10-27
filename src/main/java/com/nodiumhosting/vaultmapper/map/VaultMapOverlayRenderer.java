@@ -114,7 +114,7 @@ public class VaultMapOverlayRenderer {
         BufferUploader.end(bufferBuilder);
 
 
-        // player thingy TODO: Might need to remove this thing as the previous loop handles it
+        // player thingy TODO: Might need to adjust this thing as the previous loop handles it
         if (VaultMap.currentRoom != null) {
             float mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
             float mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
