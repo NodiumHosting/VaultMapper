@@ -41,7 +41,7 @@ public class WSClient extends WebSocketClient {
 
 
     public void sendKeepalive() {
-        if (this.isClosing() || this.isClosing()) {
+        if (this.isClosing() || this.isClosed()) {
             Logger.getAnonymousLogger().info("Can't send keep-alive, socket is closed.");
         }
         //this.send("keep_me_alive");
