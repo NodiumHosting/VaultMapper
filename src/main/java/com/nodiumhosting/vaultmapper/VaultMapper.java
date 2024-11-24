@@ -49,7 +49,8 @@ public class VaultMapper {
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         VaultMapOverlayRenderer.prep();
-        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
+//        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
+        VaultMapOverlayRenderer.ignoreResearchRequirement = true; // removed the research requirement for now because people were confused why their map wasn't working
         InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
         wsServer = new SocketServer(addr);
 
