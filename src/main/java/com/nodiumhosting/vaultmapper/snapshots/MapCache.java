@@ -10,7 +10,7 @@ import com.nodiumhosting.vaultmapper.util.BooleanSerializer;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MapCache {
     public static String cachePath = "vaultmaps/cache.json";
@@ -53,7 +53,7 @@ public class MapCache {
         Gson gson = gsonBuilder.create();
         try {
             FileReader reader = new FileReader(cachePath);
-            Type saveType = new TypeToken<List<VaultCell>>() {
+            Type saveType = new TypeToken<CopyOnWriteArrayList<VaultCell>>() {
             }.getType();
             VaultMap.cells = (gson.fromJson(reader, saveType));
         } catch (FileNotFoundException e) {

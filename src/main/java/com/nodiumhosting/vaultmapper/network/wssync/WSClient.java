@@ -1,5 +1,7 @@
 package com.nodiumhosting.vaultmapper.network.wssync;
 
+import com.google.gson.GsonBuilder;
+import com.nodiumhosting.vaultmapper.auth.Token;
 import com.nodiumhosting.vaultmapper.map.CellType;
 import com.nodiumhosting.vaultmapper.map.RoomType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
@@ -18,10 +20,13 @@ public class WSClient extends WebSocketClient {
     private final int timerPeriod = 10000;
     private final Timer keepConnectedTimer = new Timer();
     private final WSClient self;
+    PlayerData old_data = new PlayerData("", 0, 0, 0);
     private boolean keepMeOn = false;
 
-    public WSClient(String playerName, String vaultID) {
-        super(URI.create(relayAddress + "/" + playerName + "/" + vaultID));
+
+    public WSClient(String playerUUID, String vaultID) {
+        //super(URI.create(relayAddress + "/" + playerName + "/" + vaultID));
+        super(URI.create(relayAddress + "/" + vaultID + "/?uuid=" + playerUUID + "&token=" + Token.getToken()));
 
         self = this;
 
@@ -39,12 +44,11 @@ public class WSClient extends WebSocketClient {
         }, timerPeriod, timerPeriod);
     }
 
-
     public void sendKeepalive() {
         if (this.isClosing() || this.isClosed()) {
             Logger.getAnonymousLogger().info("Can't send keep-alive, socket is closed.");
         }
-        //this.send("keep_me_alive");
+        //this.send("[\"keep_me_alive\"]");
         this.sendPing();
     }
 
@@ -97,11 +101,12 @@ public class WSClient extends WebSocketClient {
     /**
      * Sends new(hopefully) cell data to the proxy server
      *
-     * @param x
-     * @param y
+     * @param cell
      */
-    public void sendCellData(int x, int y) {
-        if (this.isOpen()) this.send("cell:" + x + ":" + y);
+    public void sendCellData(VaultCell cell) {
+        if (this.isOpen()) {
+            this.send(new GsonBuilder().create().toJson(new Capsule(1, cell)));
+        }
     }
 
     public void sendMapPing() {
@@ -117,7 +122,45 @@ public class WSClient extends WebSocketClient {
      * @param rotation
      */
     public void sendPlayerData(String name, int cellX, int cellY, float rotation) {
-        if (this.isOpen()) this.send("player:" + name + ":" + cellX + ":" + cellY + ":" + rotation);
+        if (this.isOpen()) {
+            PlayerData data = new PlayerData(name, cellX, cellY, rotation);
+            if (!old_data.equals(data)) {
+                old_data = data;
+
+                this.send(new GsonBuilder().create().toJson(new Capsule(0, data)));
+            }
+
+        }
     }
 
+    class Capsule {
+        public int type;
+        public Object data;
+
+        public Capsule(int type, Object data) {
+            this.type = type;
+            this.data = data;
+        }
+    }
+
+    /**
+     * class for easy JSON serialization when sending player data
+     */
+    class PlayerData {
+        public String uuid;
+        public int cellX;
+        public int cellY;
+        public float rot;
+
+        public PlayerData(String uuid, int cellX, int cellY, float rot) {
+            this.uuid = uuid;
+            this.cellX = cellX;
+            this.cellY = cellY;
+            this.rot = rot;
+        }
+
+        public boolean equals(PlayerData data) {
+            return data.uuid.equals(this.uuid) && data.cellX == this.cellX && data.cellY == this.cellY && data.rot == this.rot;
+        }
+    }
 }

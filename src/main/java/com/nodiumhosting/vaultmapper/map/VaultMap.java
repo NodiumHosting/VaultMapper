@@ -67,8 +67,8 @@ public class VaultMap {
         player.yaw = yaw;
     }
 
-    public static void startSync(String playerName, String dimName) {
-        mapSyncClient = new WSClient(playerName, dimName);
+    public static void startSync(String playerUUID, String dimName) {
+        mapSyncClient = new WSClient(playerUUID, dimName);
         mapSyncClient.connect();
     }
 
@@ -221,6 +221,7 @@ public class VaultMap {
                     }
                 }
             }
+            if (mapSyncClient != null) mapSyncClient.sendCellData(newCell);
         }
         addOrReplaceCell(newCell);
         MapCache.updateCache();
@@ -261,17 +262,18 @@ public class VaultMap {
 
         float yaw = player.getYHeadRot();
         String username = player.getName().getString();
+        String uuid = player.getUUID().toString();
 
         VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
-        if (mapSyncClient != null) mapSyncClient.sendPlayerData(username, playerRoomX, playerRoomZ, yaw);
+        if (mapSyncClient != null) mapSyncClient.sendPlayerData(uuid, playerRoomX, playerRoomZ, yaw);
 
         if (debug) {
             Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
         }
         if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
             updateMap();
-            if (mapSyncClient != null) mapSyncClient.sendCellData(playerRoomX, playerRoomZ);
+
         }
 
         if (oldYaw != yaw || playerRoomX != oldRoomX || playerRoomZ != oldRoomZ) {
