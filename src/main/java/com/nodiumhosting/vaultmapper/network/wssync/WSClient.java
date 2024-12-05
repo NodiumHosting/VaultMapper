@@ -3,10 +3,7 @@ package com.nodiumhosting.vaultmapper.network.wssync;
 import com.google.gson.GsonBuilder;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.auth.Token;
-import com.nodiumhosting.vaultmapper.map.CellType;
-import com.nodiumhosting.vaultmapper.map.RoomType;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
-import com.nodiumhosting.vaultmapper.map.VaultMap;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -65,6 +62,15 @@ public class WSClient extends WebSocketClient {
         var x = new GsonBuilder().create().fromJson(message, Capsule.class);
         VaultMapper.LOGGER.info(String.valueOf(x.type));
         //VaultMapper.LOGGER.info(x.data);
+        if (x.type == 0) {// player info
+
+            PlayerData dat = new GsonBuilder().create().fromJson(x.data, PlayerData.class);
+            VaultMapper.LOGGER.info(dat.cellX + " : " + dat.cellY + " : " + dat.rot);
+        } else if (x.type == 1) {
+            VaultCell cell = new GsonBuilder().create().fromJson(x.data, VaultCell.class);
+            VaultMapper.LOGGER.info("NEW CELL: " + cell.toString());
+        }
+
 
         /*var split = message.split(":");
         String arg1 = split[0]; //1-playername, 2-x, 3-y, 4-yaw
@@ -110,7 +116,7 @@ public class WSClient extends WebSocketClient {
      */
     public void sendCellData(VaultCell cell) {
         if (this.isOpen()) {
-            this.send(new GsonBuilder().create().toJson(new Capsule(1, cell)));
+            this.send(new GsonBuilder().create().toJson(new Capsule(1, new GsonBuilder().create().toJson(cell))));
         }
     }
 
@@ -132,7 +138,7 @@ public class WSClient extends WebSocketClient {
             if (!old_data.equals(data)) {
                 old_data = data;
 
-                this.send(new GsonBuilder().create().toJson(new Capsule(0, data)));
+                this.send(new GsonBuilder().create().toJson(new Capsule(0, new GsonBuilder().create().toJson(data))));
             }
 
         }
@@ -140,9 +146,9 @@ public class WSClient extends WebSocketClient {
 
     class Capsule {
         public int type;
-        public Object data;
+        public String data;
 
-        public Capsule(int type, Object data) {
+        public Capsule(int type, String data) {
             this.type = type;
             this.data = data;
         }
