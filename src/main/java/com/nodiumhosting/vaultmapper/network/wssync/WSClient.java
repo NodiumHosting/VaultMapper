@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.network.wssync;
 
 import com.google.gson.GsonBuilder;
+import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.auth.Token;
 import com.nodiumhosting.vaultmapper.map.CellType;
 import com.nodiumhosting.vaultmapper.map.RoomType;
@@ -61,7 +62,11 @@ public class WSClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         Logger.getAnonymousLogger().info(message);
-        var split = message.split(":");
+        var x = new GsonBuilder().create().fromJson(message, Capsule.class);
+        VaultMapper.LOGGER.info(String.valueOf(x.type));
+        //VaultMapper.LOGGER.info(x.data);
+
+        /*var split = message.split(":");
         String arg1 = split[0]; //1-playername, 2-x, 3-y, 4-yaw
         if (arg1.equals("player")) {
             // update the players
@@ -75,7 +80,7 @@ public class WSClient extends WebSocketClient {
             if (!type.equals(CellType.NONE)) {
                 VaultMap.addOrReplaceCell(new VaultCell(cell_x, cell_y, type, RoomType.BASIC));
             }
-        }
+        }*/
     }
 
     @Override
