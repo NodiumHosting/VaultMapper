@@ -19,7 +19,9 @@ public enum RoomName {
     @SerializedName("12") VILLAGE("Village"),
     @SerializedName("13") WILD_WEST("Wild West"),
     @SerializedName("14") X_MARK("X-mark"),
-    @SerializedName("15") CUBE("Cube");
+    @SerializedName("15") CUBE("Cube"),
+    @SerializedName("16") LAB("Lab"),
+    @SerializedName("17") RAID("Raid");
     private final String name;
 
     RoomName(String name) {
