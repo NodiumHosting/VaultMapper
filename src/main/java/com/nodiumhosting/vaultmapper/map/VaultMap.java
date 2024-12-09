@@ -52,12 +52,11 @@ public class VaultMap {
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
-    static String local_player_uuid;
-
     // TODO: do this properly
     private static float oldYaw;
     private static int oldRoomX;
     private static int oldRoomZ;
+    static String local_player_uuid;
 
     public static void updatePlayerMapData(String uuid, int x, int y, float yaw) {
         // uuid equals might solve the sticky ghost arrow
@@ -160,14 +159,6 @@ public class VaultMap {
         });
         return isNew.get();
     }
-
-//    public static void sendMap() {
-//        VaultMap.cells.forEach((cell) -> {
-//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-//                VaultMapper.wsServer.sendData(cell);
-//            }
-//        });
-//    }
 
     private static VaultCell getCell(int x, int z) {
         return cells.stream().filter((cell) -> cell.x == x && cell.z == z).findFirst().orElse(null);
@@ -295,7 +286,7 @@ public class VaultMap {
 
     public static void markCurrentCell() {
         Player player = Minecraft.getInstance().player;
-        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault") || !VaultMapper.isVaultDimension(player.getLevel().dimension().location().getPath())) {
             player.sendMessage(new TextComponent("You can't use this outside of Vaults"), player.getUUID());
             return;
         }
@@ -328,7 +319,7 @@ public class VaultMap {
     public static void toggleRendering() {
         Player player = Minecraft.getInstance().player;
 
-        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault") || !VaultMapper.isVaultDimension(player.getLevel().dimension().location().getPath())) {
             player.sendMessage(new TextComponent("You can't use this outside of Vaults"), player.getUUID());
             return;
         }

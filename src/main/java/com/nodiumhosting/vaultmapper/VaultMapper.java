@@ -22,6 +22,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("vaultmapper")
@@ -32,6 +34,8 @@ public class VaultMapper {
 
     public static SocketServer wsServer;
 
+    public static Pattern vault_regex = Pattern.compile("vault_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
+
     public VaultMapper() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
@@ -40,6 +44,18 @@ public class VaultMapper {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ToggleVaultMapKeybind::register);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, MODID + "-client.toml");
+    }
+
+    public static String getVersion() {
+        return ModList.get()
+                .getModContainerById(VaultMapper.MODID)
+                .map(container -> container.getModInfo().getVersion().toString())
+                .orElse("Unknown");
+    }
+
+    public static boolean isVaultDimension(String vault_string) {
+        Matcher matcher = vault_regex.matcher(vault_string);
+        return matcher.find();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -73,12 +89,5 @@ public class VaultMapper {
             VaultMapperCommand.register(event.getDispatcher());
             LOGGER.info("registered client commands");
         }
-    }
-
-    public static String getVersion() {
-        return ModList.get()
-                .getModContainerById(VaultMapper.MODID)
-                .map(container -> container.getModInfo().getVersion().toString())
-                .orElse("Unknown");
     }
 }
