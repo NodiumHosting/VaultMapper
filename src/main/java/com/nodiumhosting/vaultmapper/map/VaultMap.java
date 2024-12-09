@@ -5,7 +5,6 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
-import com.nodiumhosting.vaultmapper.webmap.SocketServer;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
@@ -46,6 +45,10 @@ public class VaultMap {
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
+    // TODO: do this properly
+    private static float oldYaw;
+    private static int oldRoomX;
+    private static int oldRoomZ;
 
     public static List<VaultCell> getCells() {
         return cells;
@@ -118,6 +121,14 @@ public class VaultMap {
         return isNew.get();
     }
 
+//    public static void sendMap() {
+//        VaultMap.cells.forEach((cell) -> {
+//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
+//                VaultMapper.wsServer.sendData(cell);
+//            }
+//        });
+//    }
+
     private static VaultCell getCell(int x, int z) {
         return cells.stream().filter((cell) -> cell.x == x && cell.z == z).findFirst().orElse(null);
     }
@@ -150,7 +161,8 @@ public class VaultMap {
 
         VaultCell newCell;
         newCell = getCell(playerRoomX, playerRoomZ);
-        if (newCell == null) newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
+        if (newCell == null)
+            newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
         currentRoom = newCell;
         newCell.setExplored(true);
 
@@ -183,22 +195,9 @@ public class VaultMap {
         sendCell(newCell);
     }
 
-//    public static void sendMap() {
-//        VaultMap.cells.forEach((cell) -> {
-//            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-//                VaultMapper.wsServer.sendData(cell);
-//            }
-//        });
-//    }
-
     public static void sendCell(VaultCell cell) {
         VaultMapper.wsServer.sendCell(cell);
     }
-
-    // TODO: do this properly
-    private static float oldYaw;
-    private static int oldRoomX;
-    private static int oldRoomZ;
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(MovementInputUpdateEvent event) {
@@ -234,13 +233,14 @@ public class VaultMap {
             oldRoomZ = playerRoomZ;
             String username = player.getName().getString();
 
-            if (currentRoom != null) VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
+            if (currentRoom != null)
+                VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
     }
 
     public static void markCurrentCell() {
         Player player = Minecraft.getInstance().player;
-        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault") || !VaultMapper.isVaultDimension(player.getLevel().dimension().location().getPath())) {
             player.sendMessage(new TextComponent("You can't use this outside of Vaults"), player.getUUID());
             return;
         }
@@ -273,7 +273,7 @@ public class VaultMap {
     public static void toggleRendering() {
         Player player = Minecraft.getInstance().player;
 
-        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) {
+        if (!player.getLevel().dimension().location().getNamespace().equals("the_vault") || !VaultMapper.isVaultDimension(player.getLevel().dimension().location().getPath())) {
             player.sendMessage(new TextComponent("You can't use this outside of Vaults"), player.getUUID());
             return;
         }
@@ -379,16 +379,17 @@ public class VaultMap {
 
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
     }
+
     public static Tuple<RoomType, RoomName> roomFromModel(int model) {
         ResourceLocation room = null;
-        for (Map.Entry<ResourceLocation,Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
             if (entry.getValue() == model) {
                 room = entry.getKey();
                 break;
             }
         }
         if (room == null) {
-            return new Tuple<>(RoomType.BASIC,RoomName.UNKNOWN);
+            return new Tuple<>(RoomType.BASIC, RoomName.UNKNOWN);
         }
         RoomType type = RoomType.BASIC;
         if (room.getPath().contains("omega")) {
@@ -397,6 +398,6 @@ public class VaultMap {
             type = RoomType.OMEGA;
         }
         RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
-        return new Tuple<RoomType,RoomName>(type,name);
+        return new Tuple<RoomType, RoomName>(type, name);
     }
 }

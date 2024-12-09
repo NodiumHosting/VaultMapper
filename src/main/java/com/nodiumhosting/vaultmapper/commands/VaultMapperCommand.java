@@ -4,26 +4,19 @@ import com.google.gson.Gson;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
+import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.server.command.EnumArgument;
 
 import java.util.HashMap;
@@ -31,14 +24,6 @@ import java.util.Map;
 
 
 public class VaultMapperCommand {
-    enum Column {
-        MIDDLE,
-        NORTHWEST,
-        NORTHEAST,
-        SOUTHWEST,
-        SOUTHEAST
-    }
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("vaultmapper")
                 .executes(VaultMapperCommand::execute)
@@ -82,6 +67,7 @@ public class VaultMapperCommand {
                     VaultMap.resetMap();
                     VaultMap.enabled = true;
                     VaultMapOverlayRenderer.enabled = true;
+                    MapCache.readCache();
                     player.sendMessage(new TextComponent("Vault Mapper enabled"), player.getUUID());
                 } else if (args[1].equals("disable")) {
                     VaultMapOverlayRenderer.enabled = false;
@@ -152,5 +138,13 @@ public class VaultMapperCommand {
             }
         }
         return Command.SINGLE_SUCCESS;
+    }
+
+    enum Column {
+        MIDDLE,
+        NORTHWEST,
+        NORTHEAST,
+        SOUTHWEST,
+        SOUTHEAST
     }
 }
