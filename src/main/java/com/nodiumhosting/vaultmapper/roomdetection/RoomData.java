@@ -14,6 +14,7 @@ import iskallia.vault.core.world.data.tile.PartialTile;
 import iskallia.vault.core.world.template.Template;
 import iskallia.vault.core.world.template.data.DirectTemplateEntry;
 import iskallia.vault.core.world.template.data.IndirectTemplateEntry;
+import iskallia.vault.core.world.template.data.TemplateEntry;
 import iskallia.vault.core.world.template.data.TemplatePool;
 import iskallia.vault.init.ModBlocks;
 import net.minecraft.core.BlockPos;
@@ -60,21 +61,8 @@ public class RoomData {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
                     return true;
                 }
-                TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
                 String simpleName = roomBatchRef.getReference().getName();
-                //VaultMapper.LOGGER.info("Challenge Room Batch name: " + simpleName);
-                roomBatch.iterate((inner) -> {
-                    if (inner instanceof DirectTemplateEntry roomFileRef) {
-                        if (!roomFileRef.getTemplate().supports(Version.latest())) {
-                            return true;
-                        }
-                        Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-                        String name = roomFileRef.getTemplate().getName();
-                        //VaultMapper.LOGGER.info("Room File name: " + name);
-                        challengeRooms.add(new RoomData("challenge", simpleName,name,roomFile));
-                    }
-                    return true;
-                });
+                iterateRooms(challengeRooms,"challenge",simpleName,roomBatchRef);
             }
 
             return true;
@@ -85,25 +73,31 @@ public class RoomData {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
                     return true;
                 }
-                TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
                 String simpleName = roomBatchRef.getReference().getName();
-                //VaultMapper.LOGGER.info("Omega Room Batch name: " + simpleName);
-                roomBatch.iterate((inner) -> {
-                    if (inner instanceof DirectTemplateEntry roomFileRef) {
-                        if (!roomFileRef.getTemplate().supports(Version.latest())) {
-                            return true;
-                        }
-                        Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-                        String name = roomFileRef.getTemplate().getName();
-                        //VaultMapper.LOGGER.info("Room File name: " + name);
-                        omegaRooms.add(new RoomData("omega", simpleName,name,roomFile));
-                    }
-                    return true;
-                });
+                iterateRooms(omegaRooms,"omega",simpleName,roomBatchRef);
             }
 
             return true;
         }));
+    }
+    public static void iterateRooms(List<RoomData> listToAdd, String type, String simpleName, IndirectTemplateEntry roomBatchRef) {
+        TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
+        roomBatch.iterate((inner) -> {
+            if (inner instanceof DirectTemplateEntry roomFileRef) {
+                if (!roomFileRef.getTemplate().supports(Version.latest())) {
+                    return true;
+                }
+                Template roomFile = roomFileRef.getTemplate().get(Version.latest());
+                String name = roomFileRef.getTemplate().getName();
+                //VaultMapper.LOGGER.info("Room File name: " + name);
+                listToAdd.add(new RoomData(type, simpleName,name,roomFile));
+                return true;
+            }
+            if (inner instanceof IndirectTemplateEntry batchRef) {
+                iterateRooms(listToAdd,type,simpleName,batchRef);
+            }
+            return true;
+        });
     }
 
 
@@ -208,6 +202,7 @@ public class RoomData {
     public List<Map<Integer,Block>> columnList = new ArrayList<>();
     public Block mineOption1;
     public Block mineOption2;
+    public Block raidOption;
     //public Map<Integer,Block> centerColumn = new HashMap<>();
 
     public RoomData() {
@@ -262,6 +257,9 @@ public class RoomData {
             if (x==23 && y==31 && z==23) {
                 mineOption2 = block;
             }
+            if (x==23 && y==29 && z==23) {
+                raidOption = block;
+            }
             //if (x==23 && z == 23) {
                 //centerColumn.put(pos.getY(),block);
             //}
@@ -271,7 +269,7 @@ public class RoomData {
         //roomData is omega/challenge
         //this is current
         int yLevel = 0;
-        if (roomData.simpleName.equals("Village")) {
+        if (roomData.simpleName.equals("Village") || roomData.simpleName.equals("Raid")) {
             yLevel = 19;
         }
         if (roomData.simpleName.equals("Mine")) {
@@ -280,6 +278,11 @@ public class RoomData {
             //}
             if (!(mineOption1 == Blocks.LANTERN || mineOption2 == Blocks.LANTERN)) {
                 return false;
+            }
+        }
+        if (roomData.simpleName.equals("Raid")) {
+            if (raidOption == ModBlocks.RAID_CONTROLLER) {
+                return true;
             }
         }
 
