@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.auth.Token;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -62,13 +63,21 @@ public class WSClient extends WebSocketClient {
         var x = new GsonBuilder().create().fromJson(message, Capsule.class);
         VaultMapper.LOGGER.info(String.valueOf(x.type));
         //VaultMapper.LOGGER.info(x.data);
-        if (x.type == 0) {// player info
+        if (x.type == PacketType.PlayerData.ordinal()) {// player info
 
             PlayerData dat = new GsonBuilder().create().fromJson(x.data, PlayerData.class);
             VaultMapper.LOGGER.info(dat.cellX + " : " + dat.cellY + " : " + dat.rot);
-        } else if (x.type == 1) {
+
+            VaultMap.updatePlayerMapData(dat.uuid, dat.cellX, dat.cellY, dat.rot);
+        } else if (x.type == PacketType.CellData.ordinal()) {
             VaultCell cell = new GsonBuilder().create().fromJson(x.data, VaultCell.class);
             VaultMapper.LOGGER.info("NEW CELL: " + cell.toString());
+
+            VaultMap.addOrReplaceCell(cell);
+        } else if (x.type == PacketType.Disconnect.ordinal()) {
+            Disconnect d = new GsonBuilder().create().fromJson(x.data, Disconnect.class);
+            VaultMap.removePlayerMapData(d.uuid);
+            VaultMapper.LOGGER.info("Disconnected: " + d.uuid);
         }
 
 
@@ -116,7 +125,7 @@ public class WSClient extends WebSocketClient {
      */
     public void sendCellData(VaultCell cell) {
         if (this.isOpen()) {
-            this.send(new GsonBuilder().create().toJson(new Capsule(1, new GsonBuilder().create().toJson(cell))));
+            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CellData.ordinal(), new GsonBuilder().create().toJson(cell))));
         }
     }
 
@@ -138,10 +147,16 @@ public class WSClient extends WebSocketClient {
             if (!old_data.equals(data)) {
                 old_data = data;
 
-                this.send(new GsonBuilder().create().toJson(new Capsule(0, new GsonBuilder().create().toJson(data))));
+                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.PlayerData.ordinal(), new GsonBuilder().create().toJson(data))));
             }
 
         }
+    }
+
+    enum PacketType {
+        PlayerData,
+        CellData,
+        Disconnect
     }
 
     class Capsule {
@@ -152,6 +167,13 @@ public class WSClient extends WebSocketClient {
             this.type = type;
             this.data = data;
         }
+    }
+
+    /**
+     * Helper class for JSON deserialization of disconnect packets
+     */
+    class Disconnect {
+        public String uuid;
     }
 
     /**

@@ -105,9 +105,9 @@ public class VaultMapOverlayRenderer {
             float mapX = centerX + data.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
             float mapZ = centerZ + data.y * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
             var triag = getRotatedTriangle(data.yaw);
-            bufferBuilder.vertex(triag.get(0) + mapX + 3, triag.get(1) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
-            bufferBuilder.vertex(triag.get(2) + mapX + 3, triag.get(3) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
-            bufferBuilder.vertex(triag.get(4) + mapX + 3, triag.get(5) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
 
         });
         bufferBuilder.end();
@@ -134,14 +134,14 @@ public class VaultMapOverlayRenderer {
     }
 
     private static ArrayList<Float> getRotatedTriangle(float yaw) { // returns three points that make a rotated triangle when added with mapx,z
-        double x1 = -3;
-        double y1 = -2;
-        double x2 = -3;
-        double y2 = 2;
-        double x3 = 3;
-        double y3 = 0;
+        double x1 = -3 * mapScaleMultiplier;
+        double y1 = -2 * mapScaleMultiplier;
+        double x2 = -3 * mapScaleMultiplier;
+        double y2 = 2 * mapScaleMultiplier;
+        double x3 = 3 * mapScaleMultiplier;
+        double y3 = 0 * mapScaleMultiplier;
 
-        double cx = -3; // centers to rotate about
+        double cx = -3 * mapScaleMultiplier; // centers to rotate about
         double cy = 0;
         float radangle = (float) Math.toRadians(yaw + 90);
 

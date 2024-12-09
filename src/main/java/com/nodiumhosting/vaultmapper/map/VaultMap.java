@@ -52,19 +52,26 @@ public class VaultMap {
     static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
     static CompoundTag hologramData;
     static boolean hologramChecked;
+    static String local_player_uuid;
+
     // TODO: do this properly
     private static float oldYaw;
     private static int oldRoomX;
     private static int oldRoomZ;
 
-    public static void updatePlayerMapData(String name, int x, int y, float yaw) {
-        if (!players.containsKey(name)) {
-            players.put(name, new MapPlayer());
+    public static void updatePlayerMapData(String uuid, int x, int y, float yaw) {
+        // uuid equals might solve the sticky ghost arrow
+        if (!players.containsKey(uuid) && !uuid.equals(Objects.requireNonNull(Minecraft.getInstance().player).getStringUUID())) {
+            players.put(uuid, new MapPlayer());
         }
-        MapPlayer player = players.get(name);
+        MapPlayer player = players.get(uuid);
         player.x = x;
         player.y = y;
         player.yaw = yaw;
+    }
+
+    public static void removePlayerMapData(String uuid) {
+        players.remove(uuid);
     }
 
     public static void startSync(String playerUUID, String dimName) {
