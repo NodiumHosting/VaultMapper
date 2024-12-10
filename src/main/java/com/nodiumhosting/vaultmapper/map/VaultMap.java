@@ -247,9 +247,13 @@ public class VaultMap {
 
         VaultMapper.LOGGER.info("Marking room");
         if (player == null) return;
-
-        int playerRoomX = getCurrentCell().x;
-        int playerRoomZ = getCurrentCell().z;
+        VaultCell currentCell = getCurrentCell();
+        if (currentCell == null) {
+            player.sendMessage(new TextComponent("No rooms available in map"), player.getUUID());
+            return;
+        }
+        int playerRoomX = currentCell.x;
+        int playerRoomZ = currentCell.z;
 
         if (playerRoomX == 0 && playerRoomZ == 0) {
             player.sendMessage(new TextComponent("You can't mark the start room"), player.getUUID());
