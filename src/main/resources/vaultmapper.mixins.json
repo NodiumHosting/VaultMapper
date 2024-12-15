@@ -9,10 +9,12 @@
     "MixinVaultExitTabContainerElement"
   ],
   "client": [
+    "FavoriteDisplayElementMixin",
+    "JoinMultiplayerScreenMixin",
     "OptionsScreenConfigButtonMixin",
+    "SelectWorldScreenMixin",
     "VaultEndScreenMixin",
-    "WindowMixin",
-    "FavoriteDisplayElementMixin"
+    "WindowMixin"
   ],
   "injectors": {
     "defaultRequire": 1

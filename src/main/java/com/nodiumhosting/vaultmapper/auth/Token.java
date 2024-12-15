@@ -7,10 +7,14 @@ import java.io.*;
 public class Token {
     private static final String tokenPath = "vaultmapper/";
     private static final String tokenName = "tok.ken";
-    private static String tkn = "test";
+    private static String tkn = "";
 
     static {
         readTokenFromFile();
+    }
+
+    public static boolean hasToken() {
+        return tkn != null && !tkn.isEmpty();
     }
 
     public static String getToken() {
