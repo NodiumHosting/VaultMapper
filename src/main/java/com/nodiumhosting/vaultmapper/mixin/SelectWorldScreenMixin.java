@@ -34,8 +34,8 @@ public class SelectWorldScreenMixin extends Screen {
     protected void init(CallbackInfo ci) {
         boolean tokenExists = Token.hasToken();
 
-        MutableComponent textAuth = new TextComponent("VaultMapper Sync: ").withStyle(Style.EMPTY).append(new TextComponent("✓").withStyle(Style.EMPTY.applyFormats(ChatFormatting.GREEN, ChatFormatting.BOLD)));
-        MutableComponent textNoAuth = new TextComponent("VaultMapper Sync: ").withStyle(Style.EMPTY).append(new TextComponent("✗").withStyle(Style.EMPTY.applyFormats(ChatFormatting.RED, ChatFormatting.BOLD)));
+        MutableComponent textAuth = new TextComponent("VM Sync Auth: ").withStyle(Style.EMPTY).append(new TextComponent("✓").withStyle(Style.EMPTY.applyFormats(ChatFormatting.GREEN, ChatFormatting.BOLD)));
+        MutableComponent textNoAuth = new TextComponent("VM Sync Auth: ").withStyle(Style.EMPTY).append(new TextComponent("✗").withStyle(Style.EMPTY.applyFormats(ChatFormatting.RED, ChatFormatting.BOLD)));
 
         Component text = tokenExists ? textAuth : textNoAuth;
 
