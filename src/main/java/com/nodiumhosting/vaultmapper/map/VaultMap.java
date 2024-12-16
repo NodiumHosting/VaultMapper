@@ -2,7 +2,7 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.network.wssync.WSClient;
+import com.nodiumhosting.vaultmapper.sync.WSClient;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
@@ -56,7 +56,6 @@ public class VaultMap {
     private static float oldYaw;
     private static int oldRoomX;
     private static int oldRoomZ;
-    static String local_player_uuid;
 
     public static void updatePlayerMapData(String uuid, String color, int x, int y, float yaw) {
         // uuid equals might solve the sticky ghost arrow

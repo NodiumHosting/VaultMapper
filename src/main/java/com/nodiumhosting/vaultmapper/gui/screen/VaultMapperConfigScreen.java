@@ -10,10 +10,12 @@ import com.nodiumhosting.vaultmapper.gui.component.Slider;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.util.Clamp;
 import it.unimi.dsi.fastutil.Function;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
@@ -45,7 +47,7 @@ public class VaultMapperConfigScreen extends Screen {
 
     private int getScaledY(float y) {
         float height = Minecraft.getInstance().getWindow().getGuiScaledHeight(); //Minecraft.getInstance().getWindow().getHeight() / 2;
-        float piece = height / 17;
+        float piece = height / 18;
         float scaledY = piece * y;
         return (int) scaledY;
     }
@@ -220,7 +222,19 @@ public class VaultMapperConfigScreen extends Screen {
         Checkbox showRoomIcons = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, roomIconsCheckboxY, 20, 20, new TextComponent(""), ClientConfig.SHOW_ROOM_ICONS.get());
         this.addRenderableWidget(showRoomIcons);
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(15), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(15), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
+        syncServer.setValue(ClientConfig.SYNC_SERVER.get());
+        this.addRenderableWidget(syncServer);
+        MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
+        MutableComponent disabledText = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
+        Button enableSyncButton = new Button(this.width / 2 + elWidthColor + 5 + 10, getScaledY(15), elHeight, elHeight, ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
+            ClientConfig.SYNC_ENABLED.set(!ClientConfig.SYNC_ENABLED.get());
+            ClientConfig.SPEC.save();
+            button.setMessage(ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText);
+        });
+        this.addRenderableWidget(enableSyncButton);
+
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -245,6 +259,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set(omegaRoomColor.getValue());
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
             ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
+            ClientConfig.SYNC_SERVER.set(syncServer.getValue());
 
             ClientConfig.SPEC.save();
 
@@ -255,7 +270,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(16.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
@@ -274,6 +289,8 @@ public class VaultMapperConfigScreen extends Screen {
             if (!showRoomIcons.selected()) {
                 showRoomIcons.onPress();
             }
+            syncServer.setValue("wss://vmsync.boykiss.ing:25284");
+            enableSyncButton.setMessage(enabledText);
 
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
@@ -289,6 +306,8 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set("#55FF55");
             ClientConfig.CHALLENGE_ROOM_COLOR.set("#F09E00");
             ClientConfig.SHOW_ROOM_ICONS.set(true);
+            ClientConfig.SYNC_SERVER.set("wss://vmsync.boykiss.ing:25284");
+            ClientConfig.SYNC_ENABLED.set(true);
 
             ClientConfig.SPEC.save();
 
@@ -315,9 +334,8 @@ public class VaultMapperConfigScreen extends Screen {
         }
 
         // labels
-        int offsetY = getScaledY(1) / 2;
-        offsetY = getScaledY(1) / 4;
-        this.font.draw(pose,"Map Scale",this.width/2-110,getScaledY(3)+offsetY,0xFFFFFFFF);
+        int offsetY = getScaledY(1) / 8;
+        this.font.draw(pose,"Map Scale",this.width / 2 - 110,getScaledY(3) + offsetY,0xFFFFFFFF);
         this.font.draw(pose, "Map X Offset", this.width / 2 - 110, getScaledY(4) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map Y Offset", this.width / 2 - 110, getScaledY(5) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map X Anchor", this.width / 2 - 110, getScaledY(6) + offsetY, 0xFFFFFFFF);
@@ -329,6 +347,7 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Inscription Room Color", this.width / 2 - 110, getScaledY(12) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Omega Room Color", this.width / 2 - 110, getScaledY(13) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Challenge Room Color", this.width / 2 - 110, getScaledY(14) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "VMSync", this.width / 2 - 110, getScaledY(15) + offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 

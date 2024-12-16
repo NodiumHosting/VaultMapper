@@ -10,9 +10,7 @@
   ],
   "client": [
     "FavoriteDisplayElementMixin",
-    "JoinMultiplayerScreenMixin",
     "OptionsScreenConfigButtonMixin",
-    "SelectWorldScreenMixin",
     "VaultEndScreenMixin",
     "WindowMixin"
   ],

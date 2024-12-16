@@ -1,9 +1,9 @@
-package com.nodiumhosting.vaultmapper.network.wssync;
+package com.nodiumhosting.vaultmapper.sync;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.nodiumhosting.vaultmapper.VaultMapper;
-import com.nodiumhosting.vaultmapper.auth.Token;
+import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import org.java_websocket.client.WebSocketClient;
@@ -15,19 +15,16 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 public class WSClient extends WebSocketClient {
-    //private final static String relayAddress = "wss://vmsync.boykiss.ing";
-    private final static String relayAddress = "ws://127.0.0.1:25284";
+    private final static String relayAddress = ClientConfig.SYNC_SERVER.get();
     private final int timerPeriod = 10000;
     private final Timer keepConnectedTimer = new Timer();
     private final WSClient self;
-    MovePacket old_data = new MovePacket("", "#000000", 0, 0, 0);
+    MovePacket old_data = new MovePacket("", "", 0, 0, 0);
     private boolean keepMeOn = false;
 
 
     public WSClient(String playerUUID, String vaultID) {
-        //super(URI.create(relayAddress + "/" + playerName + "/" + vaultID));
-        super(URI.create(relayAddress + "/" + vaultID + "/?uuid=" + playerUUID + "&token=" + Token.getToken()));
-//        Logger.getAnonymousLogger().info("(VMSYNC) Trying to connect to websocket " + URI.create(relayAddress + "/" + vaultID + "/?uuid=" + playerUUID + "&token=" + Token.getToken()).toString());
+        super(URI.create(relayAddress + "/" + vaultID + "/" + playerUUID));
 
         self = this;
 
@@ -63,41 +60,22 @@ public class WSClient extends WebSocketClient {
     public void onMessage(String message) {
         Logger.getAnonymousLogger().info(message);
         var x = new GsonBuilder().create().fromJson(message, Capsule.class);
-        VaultMapper.LOGGER.info(String.valueOf(x.type));
-        //VaultMapper.LOGGER.info(x.data);
-        if (x.type == PacketType.MOVE.ordinal()) {// player info
+        if (x.type.equals(String.valueOf(PacketType.MOVE.getValue()))) {
+            MovePacket movePacket = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
+            VaultMapper.LOGGER.info("MOVE " + movePacket.uuid + " " + movePacket.x + " " + movePacket.z + " " + movePacket.yaw);
 
-            MovePacket dat = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
-            VaultMapper.LOGGER.info(dat.x + " : " + dat.z + " : " + dat.yaw);
+            VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
+        } else if (x.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
+            VaultCell cellPacket = new GsonBuilder().create().fromJson(x.data, VaultCell.class); //have to change maybe
+            VaultMapper.LOGGER.info("CELL " + cellPacket.x + " " + cellPacket.z);
 
-            VaultMap.updatePlayerMapData(dat.uuid, dat.color, dat.x, dat.z, dat.yaw);
-        } else if (x.type == PacketType.CELL.ordinal()) {
-            VaultCell cell = new GsonBuilder().create().fromJson(x.data, VaultCell.class);
-            VaultMapper.LOGGER.info("NEW CELL: " + cell.toString());
+            VaultMap.addOrReplaceCell(cellPacket);
+        } else if (x.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
+            LeavePacket leavePacket = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
+            VaultMapper.LOGGER.info("LEAVE " + leavePacket.uuid);
 
-            VaultMap.addOrReplaceCell(cell);
-        } else if (x.type == PacketType.LEAVE.ordinal()) {
-            LeavePacket d = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
-            VaultMap.removePlayerMapData(d.uuid);
-            VaultMapper.LOGGER.info("Disconnected: " + d.uuid);
+            VaultMap.removePlayerMapData(leavePacket.uuid);
         }
-
-
-        /*var split = message.split(":");
-        String arg1 = split[0]; //1-playername, 2-x, 3-y, 4-yaw
-        if (arg1.equals("player")) {
-            // update the players
-            Logger.getAnonymousLogger().info("updated player data:" + split[1] + Integer.parseInt(split[2]) + Integer.parseInt(split[3]) + Float.parseFloat(split[4]));
-            VaultMap.updatePlayerMapData(split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]));
-        } else if (arg1.equals("cell")) {
-            Logger.getAnonymousLogger().info("received new cell");
-            int cell_x = Integer.parseInt(split[1]);
-            int cell_y = Integer.parseInt(split[2]);
-            CellType type = VaultMap.getCellType(cell_x, cell_y);
-            if (!type.equals(CellType.NONE)) {
-                VaultMap.addOrReplaceCell(new VaultCell(cell_x, cell_y, type, RoomType.BASIC));
-            }
-        }*/
     }
 
     @Override
@@ -127,7 +105,7 @@ public class WSClient extends WebSocketClient {
      */
     public void sendCellData(VaultCell cell) {
         if (this.isOpen()) {
-            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CELL.ordinal(), new GsonBuilder().create().toJson(cell))));
+            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CELL.getValue(), new GsonBuilder().create().toJson(cell))));
         }
     }
 
@@ -149,24 +127,34 @@ public class WSClient extends WebSocketClient {
             if (!old_data.equals(data)) {
                 old_data = data;
 
-                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.MOVE.ordinal(), new GsonBuilder().create().toJson(data))));
+                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.MOVE.getValue(), new GsonBuilder().create().toJson(data))));
             }
 
         }
     }
 
     enum PacketType {
-        JOIN, //unused on client side for now
-        LEAVE, //S2C for removing player arrows
-        CELL,
-        MOVE;
+        @SerializedName("0") JOIN("0"), //unused on client side for now
+        @SerializedName("1") LEAVE("1"), //S2C for removing player arrows
+        @SerializedName("2") CELL("2"),
+        @SerializedName("3") MOVE("3");
+
+        private final String value;
+
+        PacketType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     class Capsule {
-        public int type;
+        public String type;
         public String data;
 
-        public Capsule(int type, String data) {
+        public Capsule(String type, String data) {
             this.type = type;
             this.data = data;
         }

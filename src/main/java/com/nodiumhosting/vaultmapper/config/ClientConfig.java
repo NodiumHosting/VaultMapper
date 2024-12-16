@@ -24,6 +24,8 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_SCALE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SYNC_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<String> SYNC_SERVER;
 
     static {
         BUILDER.push("VaultMapper Client Config");
@@ -58,6 +60,10 @@ public class ClientConfig {
 //        IGNORE_RESEARCH_REQUIREMENT = BUILDER.comment("Option to ignore the Vault Compass research requirement for Vault Map.\n" +
 //                        "Please don't abuse this option on servers where you don't have permission to do so.")
 //                .define("IGNORE_RESEARCH_REQUIREMENT", false);
+
+        SYNC_ENABLED = BUILDER.comment("Enable syncing the map data between players").define("SYNC_ENABLED", true);
+
+        SYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("SYNC_SERVER", "wss://vmsync.boykiss.ing:25284");
 
         BUILDER.pop();
         SPEC = BUILDER.build();
