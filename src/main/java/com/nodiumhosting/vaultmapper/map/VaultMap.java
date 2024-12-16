@@ -220,7 +220,7 @@ public class VaultMap {
                     }
                 }
             }
-            if (mapSyncClient != null) mapSyncClient.sendCellData(newCell);
+            if (mapSyncClient != null) mapSyncClient.sendCellPacket(newCell);
         }
         addOrReplaceCell(newCell);
         MapCache.updateCache();
@@ -265,7 +265,7 @@ public class VaultMap {
 
         VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
-        if (mapSyncClient != null) mapSyncClient.sendPlayerData(uuid, playerRoomX, playerRoomZ, yaw);
+        if (mapSyncClient != null) mapSyncClient.sendMovePacket(uuid, playerRoomX, playerRoomZ, yaw);
 
         if (debug) {
             Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
