@@ -74,6 +74,10 @@ public class VaultMap {
         players.remove(uuid);
     }
 
+    public static void clearPlayers() {
+        players.clear();
+    }
+
     public static void startSync(String playerUUID, String dimName) {
         if (!ClientConfig.SYNC_ENABLED.get()) return;
         mapSyncClient = new WSClient(playerUUID, dimName);
@@ -82,6 +86,7 @@ public class VaultMap {
 
     public static void stopSync() {
         if (mapSyncClient != null) {
+            clearPlayers();
             mapSyncClient.closeGracefully();
             mapSyncClient = null;
         }
