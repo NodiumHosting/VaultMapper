@@ -1,5 +1,6 @@
 # Vault Mapper
-![Modrinth Downloads](https://img.shields.io/modrinth/dt/vaultmapper?style=for-the-badge&logo=modrinth&color=green)
+![Modrinth Downloads](https://img.shields.io/modrinth/dt/vaultmapper?style=for-the-badge&logo=modrinth&color=1bd96a&link=https%3A%2F%2Fmodrinth.com%2Fmod%2Fvaultmapper%2F)
+![CurseForge Downloads](https://img.shields.io/curseforge/dt/1099126?style=for-the-badge&logo=curseforge&color=f16436&link=https%3A%2F%2Fwww.curseforge.com%2Fminecraft%2Fmc-mods%2Fvaultmapper)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/NodiumHosting/VaultMapper/build-release.yml?style=for-the-badge)
 
 ### This is an unofficial add-on mod for the [Vault Hunters 3rd Edition](https://www.curseforge.com/minecraft/modpacks/vault-hunters-1-18-2) modpack
