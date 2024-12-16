@@ -75,6 +75,7 @@ public class VaultMap {
     }
 
     public static void startSync(String playerUUID, String dimName) {
+        if (!ClientConfig.SYNC_ENABLED.get()) return;
         mapSyncClient = new WSClient(playerUUID, dimName);
         mapSyncClient.connect();
     }
