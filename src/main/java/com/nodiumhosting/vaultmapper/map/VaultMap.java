@@ -320,7 +320,10 @@ public class VaultMap {
             player.sendMessage(new TextComponent("You can only mark rooms"), player.getUUID());
         }
 
-        sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
+        VaultCell c = cells.stream().filter((ce) -> ce.x == playerRoomX && ce.z == playerRoomZ).findFirst().orElseThrow();
+
+        sendCell(c);
+        if (mapSyncClient != null) mapSyncClient.sendCellPacket(c);
     }
 
     public static void toggleRendering() {
