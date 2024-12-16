@@ -105,9 +105,9 @@ public class VaultMapOverlayRenderer {
             float mapX = centerX + data.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
             float mapZ = centerZ + data.y * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
             var triag = getRotatedTriangle(data.yaw);
-            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
-            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
-            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor("#ffffffff")).endVertex();
+            bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(data.color)).endVertex();
+            bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(data.color)).endVertex();
+            bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(data.color)).endVertex();
 
         });
         bufferBuilder.end();

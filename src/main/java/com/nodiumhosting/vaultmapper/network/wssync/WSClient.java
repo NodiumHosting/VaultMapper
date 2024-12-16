@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.network.wssync;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.auth.Token;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
@@ -15,17 +16,18 @@ import java.util.logging.Logger;
 
 public class WSClient extends WebSocketClient {
     //private final static String relayAddress = "wss://vmsync.boykiss.ing";
-    private final static String relayAddress = "ws://localhost:25284";
+    private final static String relayAddress = "ws://127.0.0.1:25284";
     private final int timerPeriod = 10000;
     private final Timer keepConnectedTimer = new Timer();
     private final WSClient self;
-    PlayerData old_data = new PlayerData("", 0, 0, 0);
+    MovePacket old_data = new MovePacket("", "#000000", 0, 0, 0);
     private boolean keepMeOn = false;
 
 
     public WSClient(String playerUUID, String vaultID) {
         //super(URI.create(relayAddress + "/" + playerName + "/" + vaultID));
         super(URI.create(relayAddress + "/" + vaultID + "/?uuid=" + playerUUID + "&token=" + Token.getToken()));
+//        Logger.getAnonymousLogger().info("(VMSYNC) Trying to connect to websocket " + URI.create(relayAddress + "/" + vaultID + "/?uuid=" + playerUUID + "&token=" + Token.getToken()).toString());
 
         self = this;
 
@@ -63,19 +65,19 @@ public class WSClient extends WebSocketClient {
         var x = new GsonBuilder().create().fromJson(message, Capsule.class);
         VaultMapper.LOGGER.info(String.valueOf(x.type));
         //VaultMapper.LOGGER.info(x.data);
-        if (x.type == PacketType.PlayerData.ordinal()) {// player info
+        if (x.type == PacketType.MOVE.ordinal()) {// player info
 
-            PlayerData dat = new GsonBuilder().create().fromJson(x.data, PlayerData.class);
-            VaultMapper.LOGGER.info(dat.cellX + " : " + dat.cellY + " : " + dat.rot);
+            MovePacket dat = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
+            VaultMapper.LOGGER.info(dat.x + " : " + dat.z + " : " + dat.yaw);
 
-            VaultMap.updatePlayerMapData(dat.uuid, dat.cellX, dat.cellY, dat.rot);
-        } else if (x.type == PacketType.CellData.ordinal()) {
+            VaultMap.updatePlayerMapData(dat.uuid, dat.color, dat.x, dat.z, dat.yaw);
+        } else if (x.type == PacketType.CELL.ordinal()) {
             VaultCell cell = new GsonBuilder().create().fromJson(x.data, VaultCell.class);
             VaultMapper.LOGGER.info("NEW CELL: " + cell.toString());
 
             VaultMap.addOrReplaceCell(cell);
-        } else if (x.type == PacketType.Disconnect.ordinal()) {
-            Disconnect d = new GsonBuilder().create().fromJson(x.data, Disconnect.class);
+        } else if (x.type == PacketType.LEAVE.ordinal()) {
+            LeavePacket d = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
             VaultMap.removePlayerMapData(d.uuid);
             VaultMapper.LOGGER.info("Disconnected: " + d.uuid);
         }
@@ -125,7 +127,7 @@ public class WSClient extends WebSocketClient {
      */
     public void sendCellData(VaultCell cell) {
         if (this.isOpen()) {
-            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CellData.ordinal(), new GsonBuilder().create().toJson(cell))));
+            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CELL.ordinal(), new GsonBuilder().create().toJson(cell))));
         }
     }
 
@@ -138,25 +140,26 @@ public class WSClient extends WebSocketClient {
      *
      * @param name     Player name
      * @param cellX
-     * @param cellY
+     * @param cellZ
      * @param rotation
      */
-    public void sendPlayerData(String name, int cellX, int cellY, float rotation) {
+    public void sendPlayerData(String name, int cellX, int cellZ, float rotation) {
         if (this.isOpen()) {
-            PlayerData data = new PlayerData(name, cellX, cellY, rotation);
+            MovePacket data = new MovePacket(name, "#000000", cellX, cellZ, rotation);
             if (!old_data.equals(data)) {
                 old_data = data;
 
-                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.PlayerData.ordinal(), new GsonBuilder().create().toJson(data))));
+                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.MOVE.ordinal(), new GsonBuilder().create().toJson(data))));
             }
 
         }
     }
 
     enum PacketType {
-        PlayerData,
-        CellData,
-        Disconnect
+        JOIN, //unused on client side for now
+        LEAVE, //S2C for removing player arrows
+        CELL,
+        MOVE;
     }
 
     class Capsule {
@@ -172,28 +175,31 @@ public class WSClient extends WebSocketClient {
     /**
      * Helper class for JSON deserialization of disconnect packets
      */
-    class Disconnect {
+    class LeavePacket {
         public String uuid;
+        public String color;
     }
 
     /**
      * class for easy JSON serialization when sending player data
      */
-    class PlayerData {
+    class MovePacket {
         public String uuid;
-        public int cellX;
-        public int cellY;
-        public float rot;
+        public String color;
+        public int x;
+        public int z;
+        public float yaw;
 
-        public PlayerData(String uuid, int cellX, int cellY, float rot) {
+        public MovePacket(String uuid, String color, int x, int z, float yaw) {
             this.uuid = uuid;
-            this.cellX = cellX;
-            this.cellY = cellY;
-            this.rot = rot;
+            this.color = color;
+            this.x = x;
+            this.z = z;
+            this.yaw = yaw;
         }
 
-        public boolean equals(PlayerData data) {
-            return data.uuid.equals(this.uuid) && data.cellX == this.cellX && data.cellY == this.cellY && data.rot == this.rot;
+        public boolean equals(MovePacket data) {
+            return data.uuid.equals(this.uuid) && data.color.equals(this.color) && data.x == this.x && data.z == this.z && data.yaw == this.yaw;
         }
     }
 }

@@ -58,12 +58,14 @@ public class VaultMap {
     private static int oldRoomZ;
     static String local_player_uuid;
 
-    public static void updatePlayerMapData(String uuid, int x, int y, float yaw) {
+    public static void updatePlayerMapData(String uuid, String color, int x, int y, float yaw) {
         // uuid equals might solve the sticky ghost arrow
         if (!players.containsKey(uuid) && !uuid.equals(Objects.requireNonNull(Minecraft.getInstance().player).getStringUUID())) {
             players.put(uuid, new MapPlayer());
         }
         MapPlayer player = players.get(uuid);
+        player.uuid = uuid;
+        player.color = color;
         player.x = x;
         player.y = y;
         player.yaw = yaw;
@@ -447,6 +449,8 @@ public class VaultMap {
     }
 
     static public class MapPlayer {
+        String uuid;
+        String color;
         int x;
         int y;
         float yaw;
