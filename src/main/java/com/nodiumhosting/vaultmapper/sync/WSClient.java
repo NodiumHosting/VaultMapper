@@ -21,7 +21,7 @@ public class WSClient extends WebSocketClient {
     private boolean keepMeOn = false;
 
     public WSClient(String playerUUID, String vaultID) {
-        super(URI.create(relayAddress + "/" + vaultID + "/" + playerUUID));
+        super(URI.create(relayAddress + "/" + vaultID + "/" + playerUUID)); //TODO: add check whether server is even online
 
         self = this;
 
