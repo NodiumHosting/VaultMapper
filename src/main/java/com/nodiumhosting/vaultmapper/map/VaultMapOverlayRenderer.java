@@ -74,12 +74,12 @@ public class VaultMapOverlayRenderer {
             VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
                 if (cell.roomName == RoomName.UNKNOWN) return;
 
-                String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
-                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
-                RenderSystem.setShaderTexture(0, icon);
-                bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-
                 try {
+                    String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
+                    ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                    RenderSystem.setShaderTexture(0, icon);
+                    bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
                     //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
                     //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
                     renderTextureCell(bufferBuilder, cell);
