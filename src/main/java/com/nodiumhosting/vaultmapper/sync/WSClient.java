@@ -14,14 +14,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class WSClient extends WebSocketClient {
-    private final static String relayAddress = ClientConfig.SYNC_SERVER.get();
     private final Timer keepConnectedTimer = new Timer();
     private final WSClient self;
     MovePacket old_data = new MovePacket("", "", 0, 0, 0);
     private boolean keepMeOn = false;
 
     public WSClient(String playerUUID, String vaultID) {
-        super(URI.create(relayAddress + "/" + vaultID + "/" + playerUUID)); //TODO: add check whether server is even online
+        super(URI.create(ClientConfig.SYNC_SERVER.get() + "/" + vaultID + "/" + playerUUID)); //TODO: add check whether server is even online
 
         self = this;
 
@@ -76,7 +75,7 @@ public class WSClient extends WebSocketClient {
                 VaultMapper.wsServer.removeArrow(leavePacket.uuid);
             }
         } catch (Exception e) {
-            VaultMapper.LOGGER.error("Sync WS Error: " + e.toString());
+            VaultMapper.LOGGER.error("Sync WS Error: " + e);
         }
     }
 
