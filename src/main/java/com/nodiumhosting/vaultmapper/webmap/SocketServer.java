@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 public class SocketServer extends WebSocketServer {
-    int WEBMAP_VERSION = 2;
+    int WEBMAP_VERSION = 3;
     ArrayList<WebSocket> wslist;
 
     public SocketServer(InetSocketAddress address) {
@@ -117,8 +117,8 @@ public class SocketServer extends WebSocketServer {
         }
     }
 
-    public void sendArrow(int x, int z, float yaw, String username, String color) {
-        Arrow arrow = new Arrow(x, z, yaw, username, color);
+    public void sendArrow(int x, int z, float yaw, String uuid, String color) {
+        Arrow arrow = new Arrow(x, z, yaw, uuid, color);
 
         try {
             // Gson serialize -> byte array -> gzip -> base64 encode
@@ -140,6 +140,12 @@ public class SocketServer extends WebSocketServer {
         }
     }
 
+    public void removeArrow(String uuid) {
+        wslist.forEach((conn) -> {
+            conn.send("removearrow|" + uuid);
+        });
+    }
+
     public void sendReset() {
         wslist.forEach((conn) -> {
             conn.send("reset");
@@ -152,15 +158,15 @@ public class SocketServer extends WebSocketServer {
         @SerializedName("y")
         float yaw;
         @SerializedName("u")
-        String username;
+        String uuid;
         @SerializedName("c")
         String color;
 
-        public Arrow(int x, int z, float yaw, String username, String color) {
+        public Arrow(int x, int z, float yaw, String uuid, String color) {
             this.x = x;
             this.z = z;
             this.yaw = yaw;
-            this.username = username;
+            this.uuid = uuid;
             this.color = color;
         }
     }
