@@ -72,7 +72,7 @@ public class VaultMapOverlayRenderer {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.disableBlend();
             VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
-                if (cell.roomName == RoomName.UNKNOWN) return;
+                if (cell.roomName == null || cell.roomName == RoomName.UNKNOWN) return;
 
                 try {
                     String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
