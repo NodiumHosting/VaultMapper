@@ -34,7 +34,7 @@ public class SocketServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         wslist.add(conn);
 
-        conn.send("version:" + WEBMAP_VERSION);
+        conn.send("version|" + WEBMAP_VERSION);
         sendConfig();
 
         if (!VaultMap.enabled) {
