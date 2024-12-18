@@ -73,7 +73,7 @@ public class WSClient extends WebSocketClient {
                 LeavePacket leavePacket = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
 
                 VaultMap.removePlayerMapData(leavePacket.uuid);
-                VaultMapper.wsServer.sendArrow(0, 0, 0, leavePacket.uuid, leavePacket.color);
+                VaultMapper.wsServer.removeArrow(leavePacket.uuid);
             }
         } catch (Exception e) {
             VaultMapper.LOGGER.error("Sync WS Error: " + e.toString());
