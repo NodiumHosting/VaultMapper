@@ -63,14 +63,17 @@ public class WSClient extends WebSocketClient {
                 MovePacket movePacket = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
 
                 VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
+                VaultMapper.wsServer.sendArrow(movePacket.x, movePacket.z, movePacket.yaw, movePacket.uuid, movePacket.color);
             } else if (x.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
                 VaultCell cellPacket = new GsonBuilder().create().fromJson(x.data, VaultCell.class); //have to change maybe
 
                 VaultMap.addOrReplaceCell(cellPacket);
+                VaultMapper.wsServer.sendCell(cellPacket);
             } else if (x.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
                 LeavePacket leavePacket = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
 
                 VaultMap.removePlayerMapData(leavePacket.uuid);
+                VaultMapper.wsServer.sendArrow(0, 0, 0, leavePacket.uuid, leavePacket.color);
             }
         } catch (Exception e) {
             VaultMapper.LOGGER.error("Sync WS Error: " + e.toString());
