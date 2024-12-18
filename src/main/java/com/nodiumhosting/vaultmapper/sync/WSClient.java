@@ -57,19 +57,23 @@ public class WSClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
 //        VaultMapper.LOGGER.info(message); // log the json
-        var x = new GsonBuilder().create().fromJson(message, Capsule.class);
-        if (x.type.equals(String.valueOf(PacketType.MOVE.getValue()))) {
-            MovePacket movePacket = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
+        try {
+            var x = new GsonBuilder().create().fromJson(message, Capsule.class);
+            if (x.type.equals(String.valueOf(PacketType.MOVE.getValue()))) {
+                MovePacket movePacket = new GsonBuilder().create().fromJson(x.data, MovePacket.class);
 
-            VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
-        } else if (x.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
-            VaultCell cellPacket = new GsonBuilder().create().fromJson(x.data, VaultCell.class); //have to change maybe
+                VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
+            } else if (x.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
+                VaultCell cellPacket = new GsonBuilder().create().fromJson(x.data, VaultCell.class); //have to change maybe
 
-            VaultMap.addOrReplaceCell(cellPacket);
-        } else if (x.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
-            LeavePacket leavePacket = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
+                VaultMap.addOrReplaceCell(cellPacket);
+            } else if (x.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
+                LeavePacket leavePacket = new GsonBuilder().create().fromJson(x.data, LeavePacket.class);
 
-            VaultMap.removePlayerMapData(leavePacket.uuid);
+                VaultMap.removePlayerMapData(leavePacket.uuid);
+            }
+        } catch (Exception e) {
+            VaultMapper.LOGGER.error("Sync WS Error: " + e.toString());
         }
     }
 
