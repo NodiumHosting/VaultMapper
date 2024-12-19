@@ -1,0 +1,3 @@
+[submodule "VaultMapperProtocol"]
+	path = VaultMapperProtocol
+	url = https://github.com/NodiumHosting/VaultMapperProtocol
