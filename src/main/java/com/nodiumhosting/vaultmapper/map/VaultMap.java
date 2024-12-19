@@ -2,9 +2,9 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.sync.WSClient;
 import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
 import com.nodiumhosting.vaultmapper.snapshots.MapCache;
+import com.nodiumhosting.vaultmapper.sync.WSClient;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
@@ -174,6 +174,11 @@ public class VaultMap {
     public static void addOrReplaceCell(VaultCell cell) {
         cells.removeIf((c) -> c.x == cell.x && c.z == cell.z);
         cells.add(cell);
+        if (abs(cell.x) > currentCoordLimit || abs(cell.z) > currentCoordLimit) { // resize map
+            currentMapSize += 4;
+            currentCoordLimit += 2;
+            VaultMapOverlayRenderer.updateAnchor();
+        }
     }
 
     /**
