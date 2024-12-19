@@ -17,8 +17,6 @@ import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
-import net.minecraftforge.forgespi.language.IModInfo;
 
 public class VaultMapperConfigScreen extends Screen {
     private static final boolean webMapEnabled = ClientConfig.WEBMAP_ENABLED.get();
@@ -266,7 +264,7 @@ public class VaultMapperConfigScreen extends Screen {
             VaultMapOverlayRenderer.onWindowResize();
 
             // send config to webmap
-            VaultMapper.wsServer.sendConfig();
+            VaultMapper.webMapServer.sendConfig();
         });
         this.addRenderableWidget(saveButton);
 
@@ -314,7 +312,7 @@ public class VaultMapperConfigScreen extends Screen {
             VaultMapOverlayRenderer.onWindowResize();
 
             // send config to webmap
-            VaultMapper.wsServer.sendConfig();
+            VaultMapper.webMapServer.sendConfig();
         });
         this.addRenderableWidget(resetButton);
     }

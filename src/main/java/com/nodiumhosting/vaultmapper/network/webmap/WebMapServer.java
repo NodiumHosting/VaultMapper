@@ -1,4 +1,4 @@
-package com.nodiumhosting.vaultmapper.webmap;
+package com.nodiumhosting.vaultmapper.network.webmap;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -21,11 +21,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
-public class SocketServer extends WebSocketServer {
+public class WebMapServer extends WebSocketServer {
     int WEBMAP_VERSION = 3;
     ArrayList<WebSocket> wslist;
 
-    public SocketServer(InetSocketAddress address) {
+    public WebMapServer(InetSocketAddress address) {
         super(address);
         wslist = new ArrayList<>();
     }

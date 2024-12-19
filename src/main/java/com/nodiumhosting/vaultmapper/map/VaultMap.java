@@ -2,9 +2,8 @@ package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
-import com.nodiumhosting.vaultmapper.snapshots.MapCache;
-import com.nodiumhosting.vaultmapper.sync.WSClient;
+import com.nodiumhosting.vaultmapper.map.snapshots.MapCache;
+import com.nodiumhosting.vaultmapper.network.sync.SyncClient;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
@@ -41,7 +40,7 @@ import static java.lang.Math.abs;
 public class VaultMap {
     public static boolean enabled;
     public static boolean debug;
-    public static WSClient mapSyncClient;
+    public static SyncClient syncClient;
     static public ConcurrentHashMap<String, MapPlayer> players = new ConcurrentHashMap<>();
     public static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
     static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
@@ -80,15 +79,15 @@ public class VaultMap {
 
     public static void startSync(String playerUUID, String dimName) {
         if (!ClientConfig.SYNC_ENABLED.get()) return;
-        mapSyncClient = new WSClient(playerUUID, dimName);
-        mapSyncClient.connect();
+        syncClient = new SyncClient(playerUUID, dimName);
+        syncClient.connect();
     }
 
     public static void stopSync() {
-        if (mapSyncClient != null) {
+        if (syncClient != null) {
             clearPlayers();
-            mapSyncClient.closeGracefully();
-            mapSyncClient = null;
+            syncClient.closeGracefully();
+            syncClient = null;
         }
     }
 
@@ -106,7 +105,7 @@ public class VaultMap {
         currentMapSize = defaultMapSize;
         currentCoordLimit = defaultCoordLimit;
 
-        VaultMapper.wsServer.sendReset();
+        VaultMapper.webMapServer.sendReset();
     }
 
     public static VaultCell getCurrentCell() {
@@ -231,7 +230,7 @@ public class VaultMap {
                     }
                 }
             }
-            if (mapSyncClient != null) mapSyncClient.sendCellPacket(newCell);
+            if (syncClient != null) syncClient.sendCellPacket(newCell);
         }
         addOrReplaceCell(newCell);
         MapCache.updateCache();
@@ -240,13 +239,13 @@ public class VaultMap {
     }
 
     public static void sendCell(VaultCell cell) {
-        VaultMapper.wsServer.sendCell(cell);
+        VaultMapper.webMapServer.sendCell(cell);
     }
 
     public static void sendMap() {
         VaultMap.cells.forEach((cell) -> {
             if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-                VaultMapper.wsServer.sendCell(cell);
+                VaultMapper.webMapServer.sendCell(cell);
             }
         });
     }
@@ -274,9 +273,9 @@ public class VaultMap {
         String username = player.getName().getString();
         String uuid = player.getUUID().toString();
 
-        VaultMapper.wsServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
+        VaultMapper.webMapServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
 
-        if (mapSyncClient != null) mapSyncClient.sendMovePacket(uuid, playerRoomX, playerRoomZ, yaw);
+        if (syncClient != null) syncClient.sendMovePacket(uuid, playerRoomX, playerRoomZ, yaw);
 
         if (debug) {
             Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
@@ -292,7 +291,7 @@ public class VaultMap {
             oldRoomZ = playerRoomZ;
 
             if (currentRoom != null)
-                VaultMapper.wsServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
+                VaultMapper.webMapServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
     }
 
@@ -332,7 +331,7 @@ public class VaultMap {
         VaultCell c = cells.stream().filter((ce) -> ce.x == playerRoomX && ce.z == playerRoomZ).findFirst().orElseThrow();
 
         sendCell(c);
-        if (mapSyncClient != null) mapSyncClient.sendCellPacket(c);
+        if (syncClient != null) syncClient.sendCellPacket(c);
     }
 
     public static void toggleRendering() {

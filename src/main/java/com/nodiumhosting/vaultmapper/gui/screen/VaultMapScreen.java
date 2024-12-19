@@ -1,39 +1,23 @@
 package com.nodiumhosting.vaultmapper.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.gui.component.MapContainerElement;
-import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
+import com.nodiumhosting.vaultmapper.map.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.ScreenRenderers;
 import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ButtonElement;
 import iskallia.vault.client.gui.framework.element.LabelElement;
 import iskallia.vault.client.gui.framework.element.NineSliceElement;
 import iskallia.vault.client.gui.framework.render.ScreenTooltipRenderer;
-import iskallia.vault.client.gui.framework.render.TooltipDirection;
 import iskallia.vault.client.gui.framework.screen.AbstractElementScreen;
 import iskallia.vault.client.gui.framework.spatial.Spatials;
 import iskallia.vault.client.gui.framework.spatial.spi.ISpatial;
 import iskallia.vault.client.gui.framework.text.LabelTextStyle;
 import iskallia.vault.client.gui.framework.text.TextBorder;
-import iskallia.vault.client.gui.screen.player.element.PointLabelContainerElement;
-import iskallia.vault.client.gui.screen.summary.element.OverviewContainerElement;
-import iskallia.vault.client.gui.screen.summary.element.VaultExitTabContainerElement;
-import iskallia.vault.core.vault.Vault;
-import iskallia.vault.init.ModNetwork;
-import iskallia.vault.init.ModSounds;
-import iskallia.vault.network.message.ServerboundOpenHistoricMessage;
-import iskallia.vault.network.message.VaultPlayerStatsMessage;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.*;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

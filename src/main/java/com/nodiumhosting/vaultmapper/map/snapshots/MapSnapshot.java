@@ -1,4 +1,4 @@
-package com.nodiumhosting.vaultmapper.snapshots;
+package com.nodiumhosting.vaultmapper.map.snapshots;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

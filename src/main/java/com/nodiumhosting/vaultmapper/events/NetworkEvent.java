@@ -3,7 +3,7 @@ package com.nodiumhosting.vaultmapper.events;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
-import com.nodiumhosting.vaultmapper.snapshots.MapCache;
+import com.nodiumhosting.vaultmapper.map.snapshots.MapCache;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.EventPriority;

@@ -1,4 +1,4 @@
-package com.nodiumhosting.vaultmapper.sync;
+package com.nodiumhosting.vaultmapper.network.sync;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -13,13 +13,13 @@ import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class WSClient extends WebSocketClient {
+public class SyncClient extends WebSocketClient {
     private final Timer keepConnectedTimer = new Timer();
-    private final WSClient self;
+    private final SyncClient self;
     MovePacket old_data = new MovePacket("", "", 0, 0, 0);
     private boolean keepMeOn = false;
 
-    public WSClient(String playerUUID, String vaultID) {
+    public SyncClient(String playerUUID, String vaultID) {
         super(URI.create(ClientConfig.SYNC_SERVER.get() + "/" + vaultID + "/" + playerUUID)); //TODO: add check whether server is even online
 
         self = this;
@@ -62,17 +62,17 @@ public class WSClient extends WebSocketClient {
                 MovePacket movePacket = new GsonBuilder().create().fromJson(dataCapsule.data, MovePacket.class);
 
                 VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
-                VaultMapper.wsServer.sendArrow(movePacket.x, movePacket.z, movePacket.yaw, movePacket.uuid, movePacket.color);
+                VaultMapper.webMapServer.sendArrow(movePacket.x, movePacket.z, movePacket.yaw, movePacket.uuid, movePacket.color);
             } else if (dataCapsule.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
                 VaultCell cellPacket = new GsonBuilder().create().fromJson(dataCapsule.data, VaultCell.class); //have to change maybe
 
                 VaultMap.addOrReplaceCell(cellPacket);
-                VaultMapper.wsServer.sendCell(cellPacket);
+                VaultMapper.webMapServer.sendCell(cellPacket);
             } else if (dataCapsule.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
                 LeavePacket leavePacket = new GsonBuilder().create().fromJson(dataCapsule.data, LeavePacket.class);
 
                 VaultMap.removePlayerMapData(leavePacket.uuid);
-                VaultMapper.wsServer.removeArrow(leavePacket.uuid);
+                VaultMapper.webMapServer.removeArrow(leavePacket.uuid);
             }
         } catch (Exception e) {
             VaultMapper.LOGGER.error("Sync WS Error: " + e);

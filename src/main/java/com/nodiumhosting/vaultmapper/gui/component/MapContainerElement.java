@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.*;
-import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
+import com.nodiumhosting.vaultmapper.map.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.framework.element.ElasticContainerElement;
 import iskallia.vault.client.gui.framework.element.LabelElement;
 import iskallia.vault.client.gui.framework.element.VerticalScrollClipContainer;

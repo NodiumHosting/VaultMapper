@@ -1,7 +1,6 @@
 package com.nodiumhosting.vaultmapper.mixin;
 
-import com.nodiumhosting.vaultmapper.snapshots.MapSnapshot;
-import iskallia.vault.client.gui.framework.spatial.spi.IPosition;
+import com.nodiumhosting.vaultmapper.map.snapshots.MapSnapshot;
 import iskallia.vault.client.gui.screen.summary.VaultHistoricDataScreen;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

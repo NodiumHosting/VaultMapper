@@ -7,8 +7,8 @@ import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.OpenConfigScreenKeybind;
 import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
-import com.nodiumhosting.vaultmapper.roomdetection.RoomData;
-import com.nodiumhosting.vaultmapper.webmap.SocketServer;
+import com.nodiumhosting.vaultmapper.map.RoomData;
+import com.nodiumhosting.vaultmapper.network.webmap.WebMapServer;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -31,7 +31,7 @@ public class VaultMapper {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static SocketServer wsServer;
+    public static WebMapServer webMapServer;
 
     public static Pattern vault_regex = Pattern.compile("vault_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
 
@@ -69,10 +69,10 @@ public class VaultMapper {
 //        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
         VaultMapOverlayRenderer.ignoreResearchRequirement = true; // removed the research requirement for now because people were confused why their map wasn't working
         InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
-        wsServer = new SocketServer(addr);
+        webMapServer = new WebMapServer(addr);
 
         if (ClientConfig.WEBMAP_ENABLED.get()) {
-            wsServer.start();
+            webMapServer.start();
         }
         if (RoomData.omegaRooms == null || RoomData.challengeRooms == null) {
             RoomData.initRooms();

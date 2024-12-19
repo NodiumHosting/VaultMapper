@@ -1,9 +1,6 @@
-package com.nodiumhosting.vaultmapper.roomdetection;
+package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
-import com.nodiumhosting.vaultmapper.map.RoomName;
-import com.nodiumhosting.vaultmapper.map.RoomType;
-import com.nodiumhosting.vaultmapper.map.VaultMap;
 import iskallia.vault.block.CoinPileBlock;
 import iskallia.vault.block.VaultChestBlock;
 import iskallia.vault.block.VaultOreBlock;
@@ -14,7 +11,6 @@ import iskallia.vault.core.world.data.tile.PartialTile;
 import iskallia.vault.core.world.template.Template;
 import iskallia.vault.core.world.template.data.DirectTemplateEntry;
 import iskallia.vault.core.world.template.data.IndirectTemplateEntry;
-import iskallia.vault.core.world.template.data.TemplateEntry;
 import iskallia.vault.core.world.template.data.TemplatePool;
 import iskallia.vault.init.ModBlocks;
 import net.minecraft.core.BlockPos;
