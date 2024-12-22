@@ -4,7 +4,11 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.network.sync.SyncClient;
+import com.nodiumhosting.vaultmapper.proto.CellType;
+import com.nodiumhosting.vaultmapper.proto.RoomName;
+import com.nodiumhosting.vaultmapper.proto.RoomType;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
@@ -43,7 +47,7 @@ public class VaultMap {
     public static SyncClient syncClient;
     static public ConcurrentHashMap<String, MapPlayer> players = new ConcurrentHashMap<>();
     public static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
-    static VaultCell startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
+    static VaultCell startRoom = new VaultCell(0, 0, CellType.CELLTYPE_ROOM, RoomType.ROOMTYPE_START);
     static VaultCell currentRoom; // might not be needed
     static int defaultMapSize = 21; // map size in cells
     static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
@@ -97,7 +101,7 @@ public class VaultMap {
 
     public static void resetMap() {
         cells = new CopyOnWriteArrayList<>();
-        startRoom = new VaultCell(0, 0, CellType.ROOM, RoomType.START);
+        startRoom = new VaultCell(0, 0, CellType.CELLTYPE_ROOM, RoomType.ROOMTYPE_START);
         currentRoom = null;
         hologramChecked = false;
         hologramData = null;
@@ -123,20 +127,20 @@ public class VaultMap {
 
     public static CellType getCellType(int x, int z) {
         if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
-            return CellType.ROOM;
+            return CellType.CELLTYPE_ROOM;
         } else if (abs(x) % 2 == 1 && abs(z) % 2 == 1) { //void
-            return CellType.NONE;
+            return CellType.CELLTYPE_UNKNOWN;
         } else { // tunnel
             if (abs(x) % 2 == 1 && z % 2 == 0) { // x tunnel
-                return CellType.TUNNEL_X;
+                return CellType.CELLTYPE_TUNNEL_X;
             } else { // z tunnel
-                return CellType.TUNNEL_Z;
+                return CellType.CELLTYPE_TUNNEL_Z;
             }
         }
     }
 
     public static String getCellColor(VaultCell cell) {
-        if (cell.roomType == RoomType.START) {
+        if (cell.roomType == RoomType.ROOMTYPE_START) {
             return ClientConfig.START_ROOM_COLOR.get();
         }
         if (cell.marked) {
@@ -145,10 +149,10 @@ public class VaultMap {
         if (cell.inscripted) {
             return ClientConfig.INSCRIPTION_ROOM_COLOR.get();
         }
-        if (cell.roomType == RoomType.OMEGA) {
+        if (cell.roomType == RoomType.ROOMTYPE_OMEGA) {
             return ClientConfig.OMEGA_ROOM_COLOR.get();
         }
-        if (cell.roomType == RoomType.CHALLENGE) {
+        if (cell.roomType == RoomType.ROOMTYPE_CHALLENGE) {
             return ClientConfig.CHALLENGE_ROOM_COLOR.get();
         }
         return ClientConfig.ROOM_COLOR.get();
@@ -197,19 +201,20 @@ public class VaultMap {
 
         // only update tunnel if player is actually in a tunnel to prevent dungeons and doors from being detected as tunnels
         int playerY = (int) player.getY();
-        if ((playerY < 27 || playerY > 37) && (cellType == CellType.TUNNEL_X || cellType == CellType.TUNNEL_Z)) return;
-        if (cellType == CellType.TUNNEL_X && (playerRelativeZ < 18 || playerRelativeZ > 28)) return;
-        if (cellType == CellType.TUNNEL_Z && (playerRelativeX < 18 || playerRelativeX > 28)) return;
+        if ((playerY < 27 || playerY > 37) && (cellType == CellType.CELLTYPE_TUNNEL_X || cellType == CellType.CELLTYPE_TUNNEL_Z))
+            return;
+        if (cellType == CellType.CELLTYPE_TUNNEL_X && (playerRelativeZ < 18 || playerRelativeZ > 28)) return;
+        if (cellType == CellType.CELLTYPE_TUNNEL_Z && (playerRelativeX < 18 || playerRelativeX > 28)) return;
 
         VaultCell newCell;
         newCell = getCell(playerRoomX, playerRoomZ);
         if (newCell == null)
-            newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.BASIC); // update current roomv
+            newCell = new VaultCell(playerRoomX, playerRoomZ, cellType, RoomType.ROOMTYPE_BASIC); // update current roomv
         currentRoom = newCell;
         newCell.setExplored(true);
 
         if (playerRoomX == 0 && playerRoomZ == 0) {
-            newCell.roomType = RoomType.START;
+            newCell.roomType = RoomType.ROOMTYPE_START;
         }
 
         if (isNewCell(newCell, cells)) {
@@ -219,9 +224,9 @@ public class VaultMap {
                 VaultMapOverlayRenderer.updateAnchor();
             }
 
-            if (cellType != CellType.NONE) {
+            if (cellType != CellType.CELLTYPE_UNKNOWN) {
                 if (!(playerRoomX == 0 && playerRoomZ == 0)) { //dont detect start room
-                    if (cellType == CellType.ROOM) {
+                    if (cellType == CellType.CELLTYPE_ROOM) {
                         Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
                         RoomType roomType = detectedRoom.getA();
                         RoomName roomName = detectedRoom.getB();
@@ -278,7 +283,7 @@ public class VaultMap {
         if (syncClient != null) syncClient.sendMovePacket(uuid, playerRoomX, playerRoomZ, yaw);
 
         if (debug) {
-            Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.ROOM && cell.explored).count() + " Explored Rooms)"), false);
+            Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Current room: " + playerRoomX + ", " + playerRoomZ + " Hologram: " + (hologramData != null ? "Found" : "Not found") + (hologramChecked ? " (Checked)" : "(Not checked)") + " Vault Map Data Size: " + cells.size() + " (" + cells.stream().filter(cell -> cell.cellType == CellType.CELLTYPE_ROOM && cell.explored).count() + " Explored Rooms)"), false);
         }
         if (!isCurrentRoom(playerRoomX, playerRoomZ)) { // if were in a different room
             updateMap();
@@ -317,7 +322,7 @@ public class VaultMap {
             return;
         }
 
-        if (getCellType(playerRoomX, playerRoomZ) == CellType.ROOM) {
+        if (getCellType(playerRoomX, playerRoomZ) == CellType.CELLTYPE_ROOM) {
             boolean marked = cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow().switchMarked();
             if (marked) {
                 player.sendMessage(new TextComponent("Room marked"), player.getUUID());
@@ -407,7 +412,7 @@ public class VaultMap {
             int translationXInt = translationX;
             int translationYInt = translationY;
 
-            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.ROOM, room.getA());
+            VaultCell newCell = new VaultCell(translationXInt * 2, translationYInt * -2, CellType.CELLTYPE_ROOM, room.getA());
             newCell.roomName = room.getB();
             // TODO change this later when we do detection of room types
             newCell.inscripted = true;
@@ -452,15 +457,15 @@ public class VaultMap {
             }
         }
         if (room == null) {
-            return new Tuple<>(RoomType.BASIC, RoomName.UNKNOWN);
+            return new Tuple<>(RoomType.ROOMTYPE_BASIC, RoomName.ROOMNAME_UNKNOWN);
         }
-        RoomType type = RoomType.BASIC;
+        RoomType type = RoomType.ROOMTYPE_BASIC;
         if (room.getPath().contains("omega")) {
-            type = RoomType.OMEGA;
+            type = RoomType.ROOMTYPE_OMEGA;
         } else if (room.getPath().contains("challenge")) {
-            type = RoomType.OMEGA;
+            type = RoomType.ROOMTYPE_OMEGA;
         }
-        RoomName name = RoomName.fromName(VaultRegistry.TEMPLATE_POOL.getKey(room).getName());
+        RoomName name = Util.RoomFromName((VaultRegistry.TEMPLATE_POOL.getKey(room).getName()));
         return new Tuple<RoomType, RoomName>(type, name);
     }
 

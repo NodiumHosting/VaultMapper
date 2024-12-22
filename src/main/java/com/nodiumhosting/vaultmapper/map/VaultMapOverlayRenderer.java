@@ -4,7 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.proto.CellType;
+import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
+import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -52,12 +55,12 @@ public class VaultMapOverlayRenderer {
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         // Tunnel map
-        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z).forEach((cell) -> {
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
 
         // cell map
-        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
+        VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM).forEach((cell) -> {
             renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
 
@@ -71,11 +74,11 @@ public class VaultMapOverlayRenderer {
         if (ClientConfig.SHOW_ROOM_ICONS.get()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.disableBlend();
-            VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.ROOM).forEach((cell) -> {
-                if (cell.roomName == null || cell.roomName == RoomName.UNKNOWN) return;
+            VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM).forEach((cell) -> {
+                if (cell.roomName == null || cell.roomName == RoomName.ROOMNAME_UNKNOWN) return;
 
                 try {
-                    String path = "/textures/icons/" + cell.roomName.getName().toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
+                    String path = "/textures/icons/" + Util.NameFromRoom(cell.roomName).toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
                     ResourceLocation icon = new ResourceLocation("vaultmapper", path);
                     RenderSystem.setShaderTexture(0, icon);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
@@ -84,7 +87,7 @@ public class VaultMapOverlayRenderer {
                     //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
                     renderTextureCell(bufferBuilder, cell);
                 } catch (Exception e) {
-                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName.getName());
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + Util.NameFromRoom(cell.roomName));
                 }
 
                 bufferBuilder.end();
@@ -206,7 +209,7 @@ public class VaultMapOverlayRenderer {
     }
 
     public static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
-        if (cell.cellType != CellType.NONE) {
+        if (cell.cellType != CellType.CELLTYPE_UNKNOWN) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
@@ -218,8 +221,8 @@ public class VaultMapOverlayRenderer {
             float startZ;
             float endX;
             float endZ;
-            if (cell.cellType == CellType.TUNNEL_X || cell.cellType == CellType.TUNNEL_Z) {
-                if (cell.cellType == CellType.TUNNEL_X) { // X facing
+            if (cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z) {
+                if (cell.cellType == CellType.CELLTYPE_TUNNEL_X) { // X facing
                     startX = mapX - tunnelLen;
                     startZ = mapZ - roomWidth / 2;
                     endX = mapX + tunnelLen;
@@ -249,7 +252,7 @@ public class VaultMapOverlayRenderer {
     }
 
     public static void renderTextureCell(BufferBuilder bufferBuilder, VaultCell cell) {
-        if (cell.cellType == CellType.ROOM) {
+        if (cell.cellType == CellType.CELLTYPE_ROOM) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
             float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();

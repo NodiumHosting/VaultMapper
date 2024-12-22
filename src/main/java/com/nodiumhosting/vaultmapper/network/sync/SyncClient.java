@@ -6,10 +6,15 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
+import com.nodiumhosting.vaultmapper.proto.Color;
+import com.nodiumhosting.vaultmapper.proto.Message;
+import com.nodiumhosting.vaultmapper.proto.MessageType;
+import com.nodiumhosting.vaultmapper.proto.VaultPlayer;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +25,7 @@ public class SyncClient extends WebSocketClient {
     private boolean keepMeOn = false;
 
     public SyncClient(String playerUUID, String vaultID) {
-        super(URI.create(ClientConfig.SYNC_SERVER.get() + "/" + vaultID + "/" + playerUUID)); //TODO: add check whether server is even online
+        super(URI.create(ClientConfig.SYNC_SERVER.get() + "/?vaultID=" + vaultID + "&uuid=" + playerUUID)); //TODO: add check whether server is even online
 
         self = this;
 
@@ -44,7 +49,7 @@ public class SyncClient extends WebSocketClient {
 //            VaultMapper.LOGGER.info("Can't send keep-alive, socket is closed.");
         }
         //this.send("[\"keep_me_alive\"]");
-        this.sendPing();
+        //this.sendPing();
     }
 
     @Override
@@ -52,6 +57,77 @@ public class SyncClient extends WebSocketClient {
 //        VaultMapper.LOGGER.info("Sync WS Connected");
         keepMeOn = true;
     }
+
+    @Override
+    public void onMessage(ByteBuffer buf) {
+        try {
+            var msg = Message.parseFrom(buf);
+            switch (msg.getType()) {
+                case VAULT -> {
+                }
+                case VAULT_PLAYER -> {
+                    var data = msg.getVaultPlayer();
+                    var uuid = data.getUuid();
+                    var color = data.getColor();
+                    var x = data.getX();
+                    var z = data.getZ();
+                    var yaw = data.getYaw();
+                    var col = "#" + color.getR() + color.getG() + color.getB();
+
+                    VaultMap.updatePlayerMapData(uuid, col, x, z, yaw);
+                    VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, col);
+                }
+                case VAULT_CELL -> {
+                    var data = msg.getVaultCell();
+                    VaultCell cell = CellFromPacket(data);
+
+                    VaultMap.addOrReplaceCell(cell);
+                    VaultMapper.webMapServer.sendCell(cell);
+                }
+                case PLAYER_DISCONNECT -> {
+                    var data = msg.getPlayerDisconnect();
+
+                    VaultMap.removePlayerMapData(data.getUuid());
+                    VaultMapper.webMapServer.removeArrow(data.getUuid());
+                }
+                default -> {
+                    VaultMapper.LOGGER.info("Something weird with onMessage");
+                }
+            }
+        } catch (Exception e) {
+            VaultMapper.LOGGER.error("Sync WS Error: " + e);
+        }
+    }
+
+    private VaultCell CellFromPacket(com.nodiumhosting.vaultmapper.proto.VaultCell data) {
+        var x = data.getX();
+        var z = data.getZ();
+        var cellType = data.getCellType();
+        var roomType = data.getRoomType();
+
+        var cell = new VaultCell(x, z, cellType, roomType);
+
+        cell.roomName = data.getRoomName();
+        cell.explored = data.getExplored();
+        cell.inscripted = data.getInscribed();
+        cell.marked = data.getMarked();
+
+        return cell;
+    }
+
+    private com.nodiumhosting.vaultmapper.proto.VaultCell PCellFromCell(VaultCell cell) {
+        return com.nodiumhosting.vaultmapper.proto.VaultCell.newBuilder()
+                .setX(cell.x)
+                .setZ(cell.z)
+                .setCellType(cell.cellType)
+                .setRoomType(cell.roomType)
+                .setRoomName(cell.roomName)
+                .setExplored(cell.explored)
+                .setInscribed(cell.inscripted)
+                .setMarked(cell.marked)
+                .build();
+    }
+
 
     @Override
     public void onMessage(String message) {
@@ -100,17 +176,36 @@ public class SyncClient extends WebSocketClient {
 
     public void sendCellPacket(VaultCell cell) {
         if (this.isOpen()) {
-            this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.CELL.getValue(), new GsonBuilder().create().toJson(cell))));
+            this.send(Message.newBuilder()
+                    .setType(MessageType.VAULT_CELL)
+                    .setVaultCell(PCellFromCell(cell))
+                    .build()
+                    .toByteArray());
         }
     }
 
     public void sendMovePacket(String name, int cellX, int cellZ, float rotation) {
         if (this.isOpen()) {
-            MovePacket data = new MovePacket(name, "", cellX, cellZ, rotation);
+            MovePacket data = new MovePacket(name, "", cellX, cellZ, rotation); // legacy, remove and reimplement optimalization
             if (!old_data.equals(data)) {
                 old_data = data;
 
-                this.send(new GsonBuilder().create().toJson(new Capsule(PacketType.MOVE.getValue(), new GsonBuilder().create().toJson(data))));
+                this.send(Message.newBuilder()
+                        .setType(MessageType.VAULT_PLAYER)
+                        .setVaultPlayer(VaultPlayer.newBuilder()
+                                .setUuid(name)
+                                .setX(cellX)
+                                .setZ(cellZ)
+                                .setYaw(rotation)
+                                .setColor(Color.newBuilder()
+                                        .setR(0)
+                                        .setG(0)
+                                        .setB(0)
+                                        .build())
+                                .build())
+                        .build()
+                        .toByteArray()
+                );
             }
 
         }

@@ -1,6 +1,9 @@
 package com.nodiumhosting.vaultmapper.map;
 
 import com.google.gson.annotations.SerializedName;
+import com.nodiumhosting.vaultmapper.proto.CellType;
+import com.nodiumhosting.vaultmapper.proto.RoomName;
+import com.nodiumhosting.vaultmapper.proto.RoomType;
 
 public class VaultCell {
     public int x;
@@ -22,7 +25,7 @@ public class VaultCell {
     public RoomType roomType;
 
     @SerializedName("n")
-    public RoomName roomName = RoomName.UNKNOWN;
+    public RoomName roomName = RoomName.ROOMNAME_UNKNOWN;
 
     public VaultCell(int x, int z, CellType cellType, RoomType roomType) {
         this.x = x;
