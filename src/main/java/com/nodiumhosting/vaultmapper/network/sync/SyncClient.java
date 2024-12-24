@@ -72,10 +72,11 @@ public class SyncClient extends WebSocketClient {
                     var x = data.getX();
                     var z = data.getZ();
                     var yaw = data.getYaw();
-                    var col = "#" + color.getR() + color.getG() + color.getB();
 
-                    VaultMap.updatePlayerMapData(uuid, col, x, z, yaw);
-                    VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, col);
+                    String hex = String.format("#%02x%02x%02x", color.getR(), color.getG(), color.getB());
+
+                    VaultMap.updatePlayerMapData(uuid, hex, x, z, yaw);
+                    VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, hex);
                 }
                 case VAULT_CELL -> {
                     var data = msg.getVaultCell();
