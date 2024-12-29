@@ -64,6 +64,13 @@ public class SyncClient extends WebSocketClient {
             var msg = Message.parseFrom(buf);
             switch (msg.getType()) {
                 case VAULT -> {
+                    var data = msg.getVault();
+                    for (var cell : data.getCellsList()) {
+                        VaultCell vaultCell = CellFromPacket(cell);
+
+                        VaultMap.addOrReplaceCell(vaultCell);
+                        VaultMapper.webMapServer.sendCell(vaultCell);
+                    }
                 }
                 case VAULT_PLAYER -> {
                     var data = msg.getVaultPlayer();
