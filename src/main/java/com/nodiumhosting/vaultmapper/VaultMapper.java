@@ -3,10 +3,7 @@ package com.nodiumhosting.vaultmapper;
 import com.mojang.logging.LogUtils;
 import com.nodiumhosting.vaultmapper.commands.VaultMapperCommand;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.keybinds.MarkRoomKeybind;
-import com.nodiumhosting.vaultmapper.keybinds.OpenConfigScreenKeybind;
-import com.nodiumhosting.vaultmapper.keybinds.SyncReconnectKeybind;
-import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
+import com.nodiumhosting.vaultmapper.events.KeybindEvents;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.map.RoomData;
 import com.nodiumhosting.vaultmapper.network.webmap.WebMapServer;
@@ -20,7 +17,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
@@ -41,10 +37,6 @@ public class VaultMapper {
     public VaultMapper() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(MarkRoomKeybind::register);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(OpenConfigScreenKeybind::register);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ToggleVaultMapKeybind::register);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(SyncReconnectKeybind::register);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, MODID + "-client.toml");
     }
@@ -69,6 +61,7 @@ public class VaultMapper {
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         UpdateChecker.checkForUpdates();
+        KeybindEvents.registerKeyBinds();
 
         VaultMapOverlayRenderer.prep();
 
