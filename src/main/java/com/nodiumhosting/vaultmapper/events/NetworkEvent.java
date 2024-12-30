@@ -18,9 +18,9 @@ public class NetworkEvent {
     public static void loginHandler(ClientPlayerNetworkEvent.LoggedInEvent event) {
         if (event.getPlayer().level.dimension().location().getNamespace().equals("the_vault") && VaultMapper.isVaultDimension(event.getPlayer().level.dimension().location().getPath())) {
             MapCache.readCache();
+            VaultMap.startSync(event.getPlayer().getUUID().toString(), event.getPlayer().level.dimension().location().getPath());
             VaultMap.enabled = true;
             VaultMapOverlayRenderer.enabled = true;
-            VaultMap.startSync(event.getPlayer().getUUID().toString(), event.getPlayer().level.dimension().location().getPath());
         } else {
             VaultMapOverlayRenderer.enabled = false;
             VaultMap.enabled = false;

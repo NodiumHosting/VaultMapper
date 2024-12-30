@@ -22,9 +22,9 @@ public class DimensionChangeEvent {
         VaultMap.resetMap();
 
         if (dimensionNamespace.equals("the_vault") && VaultMapper.isVaultDimension(dimensionPath)) {
+            VaultMap.startSync(event.getNewPlayer().getUUID().toString(), event.getNewPlayer().level.dimension().location().getPath());
             VaultMap.enabled = true;
             VaultMapOverlayRenderer.enabled = true;
-            VaultMap.startSync(event.getNewPlayer().getUUID().toString(), event.getNewPlayer().level.dimension().location().getPath());
         } else {
             VaultMap.enabled = false;
             VaultMapOverlayRenderer.enabled = false;

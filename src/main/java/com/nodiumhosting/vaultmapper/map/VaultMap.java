@@ -85,6 +85,10 @@ public class VaultMap {
         if (!ClientConfig.SYNC_ENABLED.get()) return;
         syncClient = new SyncClient(playerUUID, dimName);
         syncClient.connect();
+
+        cells.forEach((cell) -> {
+            syncClient.sendCellPacket(cell);
+        });
     }
 
     public static void stopSync() {
@@ -419,6 +423,7 @@ public class VaultMap {
             cells.add(newCell);
 
             sendCell(newCell);
+            if (syncClient != null) syncClient.sendCellPacket(newCell);
         });
 
         return hologramNbt;
