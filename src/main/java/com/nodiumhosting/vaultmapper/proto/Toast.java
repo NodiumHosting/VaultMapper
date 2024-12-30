@@ -6,12 +6,12 @@
 package com.nodiumhosting.vaultmapper.proto;
 
 /**
- * Protobuf type {@code Color}
+ * Protobuf type {@code Toast}
  */
-public final class Color extends
+public final class Toast extends
     com.google.protobuf.GeneratedMessage implements
-    // @@protoc_insertion_point(message_implements:Color)
-    ColorOrBuilder {
+    // @@protoc_insertion_point(message_implements:Toast)
+    ToastOrBuilder {
 private static final long serialVersionUID = 0L;
   static {
     com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
@@ -20,59 +20,66 @@ private static final long serialVersionUID = 0L;
       /* minor= */ 29,
       /* patch= */ 1,
       /* suffix= */ "",
-      Color.class.getName());
+      Toast.class.getName());
   }
-  // Use Color.newBuilder() to construct.
-  private Color(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+  // Use Toast.newBuilder() to construct.
+  private Toast(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
     super(builder);
   }
-  private Color() {
+  private Toast() {
+    message_ = "";
   }
 
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Color_descriptor;
+    return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Toast_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Color_fieldAccessorTable
+    return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Toast_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.nodiumhosting.vaultmapper.proto.Color.class, com.nodiumhosting.vaultmapper.proto.Color.Builder.class);
+            com.nodiumhosting.vaultmapper.proto.Toast.class, com.nodiumhosting.vaultmapper.proto.Toast.Builder.class);
   }
 
-  public static final int R_FIELD_NUMBER = 1;
-  private int r_ = 0;
+  public static final int MESSAGE_FIELD_NUMBER = 1;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object message_ = "";
   /**
-   * <code>uint32 r = 1;</code>
-   * @return The r.
+   * <code>string message = 1;</code>
+   * @return The message.
    */
   @java.lang.Override
-  public int getR() {
-    return r_;
+  public java.lang.String getMessage() {
+    java.lang.Object ref = message_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      message_ = s;
+      return s;
+    }
   }
-
-  public static final int G_FIELD_NUMBER = 2;
-  private int g_ = 0;
   /**
-   * <code>uint32 g = 2;</code>
-   * @return The g.
+   * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   @java.lang.Override
-  public int getG() {
-    return g_;
-  }
-
-  public static final int B_FIELD_NUMBER = 3;
-  private int b_ = 0;
-  /**
-   * <code>uint32 b = 3;</code>
-   * @return The b.
-   */
-  @java.lang.Override
-  public int getB() {
-    return b_;
+  public com.google.protobuf.ByteString
+      getMessageBytes() {
+    java.lang.Object ref = message_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      message_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -89,14 +96,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (r_ != 0) {
-      output.writeUInt32(1, r_);
-    }
-    if (g_ != 0) {
-      output.writeUInt32(2, g_);
-    }
-    if (b_ != 0) {
-      output.writeUInt32(3, b_);
+    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(message_)) {
+      com.google.protobuf.GeneratedMessage.writeString(output, 1, message_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -107,17 +108,8 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (r_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(1, r_);
-    }
-    if (g_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(2, g_);
-    }
-    if (b_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(3, b_);
+    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(message_)) {
+      size += com.google.protobuf.GeneratedMessage.computeStringSize(1, message_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -129,17 +121,13 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.nodiumhosting.vaultmapper.proto.Color)) {
+    if (!(obj instanceof com.nodiumhosting.vaultmapper.proto.Toast)) {
       return super.equals(obj);
     }
-    com.nodiumhosting.vaultmapper.proto.Color other = (com.nodiumhosting.vaultmapper.proto.Color) obj;
+    com.nodiumhosting.vaultmapper.proto.Toast other = (com.nodiumhosting.vaultmapper.proto.Toast) obj;
 
-    if (getR()
-        != other.getR()) return false;
-    if (getG()
-        != other.getG()) return false;
-    if (getB()
-        != other.getB()) return false;
+    if (!getMessage()
+        .equals(other.getMessage())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -151,55 +139,51 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + R_FIELD_NUMBER;
-    hash = (53 * hash) + getR();
-    hash = (37 * hash) + G_FIELD_NUMBER;
-    hash = (53 * hash) + getG();
-    hash = (37 * hash) + B_FIELD_NUMBER;
-    hash = (53 * hash) + getB();
+    hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+    hash = (53 * hash) + getMessage().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(byte[] data)
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(java.io.InputStream input)
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessage
         .parseWithIOException(PARSER, input);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -207,26 +191,26 @@ private static final long serialVersionUID = 0L;
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
-  public static com.nodiumhosting.vaultmapper.proto.Color parseDelimitedFrom(java.io.InputStream input)
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessage
         .parseDelimitedWithIOException(PARSER, input);
   }
 
-  public static com.nodiumhosting.vaultmapper.proto.Color parseDelimitedFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessage
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessage
         .parseWithIOException(PARSER, input);
   }
-  public static com.nodiumhosting.vaultmapper.proto.Color parseFrom(
+  public static com.nodiumhosting.vaultmapper.proto.Toast parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -239,7 +223,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.nodiumhosting.vaultmapper.proto.Color prototype) {
+  public static Builder newBuilder(com.nodiumhosting.vaultmapper.proto.Toast prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -255,26 +239,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code Color}
+   * Protobuf type {@code Toast}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:Color)
-      com.nodiumhosting.vaultmapper.proto.ColorOrBuilder {
+      // @@protoc_insertion_point(builder_implements:Toast)
+      com.nodiumhosting.vaultmapper.proto.ToastOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Color_descriptor;
+      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Toast_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Color_fieldAccessorTable
+      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Toast_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.nodiumhosting.vaultmapper.proto.Color.class, com.nodiumhosting.vaultmapper.proto.Color.Builder.class);
+              com.nodiumhosting.vaultmapper.proto.Toast.class, com.nodiumhosting.vaultmapper.proto.Toast.Builder.class);
     }
 
-    // Construct using com.nodiumhosting.vaultmapper.proto.Color.newBuilder()
+    // Construct using com.nodiumhosting.vaultmapper.proto.Toast.newBuilder()
     private Builder() {
 
     }
@@ -288,26 +272,24 @@ private static final long serialVersionUID = 0L;
     public Builder clear() {
       super.clear();
       bitField0_ = 0;
-      r_ = 0;
-      g_ = 0;
-      b_ = 0;
+      message_ = "";
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Color_descriptor;
+      return com.nodiumhosting.vaultmapper.proto.VaultMapperProto.internal_static_Toast_descriptor;
     }
 
     @java.lang.Override
-    public com.nodiumhosting.vaultmapper.proto.Color getDefaultInstanceForType() {
-      return com.nodiumhosting.vaultmapper.proto.Color.getDefaultInstance();
+    public com.nodiumhosting.vaultmapper.proto.Toast getDefaultInstanceForType() {
+      return com.nodiumhosting.vaultmapper.proto.Toast.getDefaultInstance();
     }
 
     @java.lang.Override
-    public com.nodiumhosting.vaultmapper.proto.Color build() {
-      com.nodiumhosting.vaultmapper.proto.Color result = buildPartial();
+    public com.nodiumhosting.vaultmapper.proto.Toast build() {
+      com.nodiumhosting.vaultmapper.proto.Toast result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -315,46 +297,36 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.nodiumhosting.vaultmapper.proto.Color buildPartial() {
-      com.nodiumhosting.vaultmapper.proto.Color result = new com.nodiumhosting.vaultmapper.proto.Color(this);
+    public com.nodiumhosting.vaultmapper.proto.Toast buildPartial() {
+      com.nodiumhosting.vaultmapper.proto.Toast result = new com.nodiumhosting.vaultmapper.proto.Toast(this);
       if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
     }
 
-    private void buildPartial0(com.nodiumhosting.vaultmapper.proto.Color result) {
+    private void buildPartial0(com.nodiumhosting.vaultmapper.proto.Toast result) {
       int from_bitField0_ = bitField0_;
       if (((from_bitField0_ & 0x00000001) != 0)) {
-        result.r_ = r_;
-      }
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.g_ = g_;
-      }
-      if (((from_bitField0_ & 0x00000004) != 0)) {
-        result.b_ = b_;
+        result.message_ = message_;
       }
     }
 
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.nodiumhosting.vaultmapper.proto.Color) {
-        return mergeFrom((com.nodiumhosting.vaultmapper.proto.Color)other);
+      if (other instanceof com.nodiumhosting.vaultmapper.proto.Toast) {
+        return mergeFrom((com.nodiumhosting.vaultmapper.proto.Toast)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.nodiumhosting.vaultmapper.proto.Color other) {
-      if (other == com.nodiumhosting.vaultmapper.proto.Color.getDefaultInstance()) return this;
-      if (other.getR() != 0) {
-        setR(other.getR());
-      }
-      if (other.getG() != 0) {
-        setG(other.getG());
-      }
-      if (other.getB() != 0) {
-        setB(other.getB());
+    public Builder mergeFrom(com.nodiumhosting.vaultmapper.proto.Toast other) {
+      if (other == com.nodiumhosting.vaultmapper.proto.Toast.getDefaultInstance()) return this;
+      if (!other.getMessage().isEmpty()) {
+        message_ = other.message_;
+        bitField0_ |= 0x00000001;
+        onChanged();
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -382,21 +354,11 @@ private static final long serialVersionUID = 0L;
             case 0:
               done = true;
               break;
-            case 8: {
-              r_ = input.readUInt32();
+            case 10: {
+              message_ = input.readStringRequireUtf8();
               bitField0_ |= 0x00000001;
               break;
-            } // case 8
-            case 16: {
-              g_ = input.readUInt32();
-              bitField0_ |= 0x00000002;
-              break;
-            } // case 16
-            case 24: {
-              b_ = input.readUInt32();
-              bitField0_ |= 0x00000004;
-              break;
-            } // case 24
+            } // case 10
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -414,119 +376,95 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private int r_ ;
+    private java.lang.Object message_ = "";
     /**
-     * <code>uint32 r = 1;</code>
-     * @return The r.
+     * <code>string message = 1;</code>
+     * @return The message.
      */
-    @java.lang.Override
-    public int getR() {
-      return r_;
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        message_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
-     * <code>uint32 r = 1;</code>
-     * @param value The r to set.
+     * <code>string message = 1;</code>
+     * @return The bytes for message.
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string message = 1;</code>
+     * @param value The message to set.
      * @return This builder for chaining.
      */
-    public Builder setR(int value) {
-
-      r_ = value;
+    public Builder setMessage(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      message_ = value;
       bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
     /**
-     * <code>uint32 r = 1;</code>
+     * <code>string message = 1;</code>
      * @return This builder for chaining.
      */
-    public Builder clearR() {
+    public Builder clearMessage() {
+      message_ = getDefaultInstance().getMessage();
       bitField0_ = (bitField0_ & ~0x00000001);
-      r_ = 0;
       onChanged();
       return this;
     }
-
-    private int g_ ;
     /**
-     * <code>uint32 g = 2;</code>
-     * @return The g.
-     */
-    @java.lang.Override
-    public int getG() {
-      return g_;
-    }
-    /**
-     * <code>uint32 g = 2;</code>
-     * @param value The g to set.
+     * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
      * @return This builder for chaining.
      */
-    public Builder setG(int value) {
-
-      g_ = value;
-      bitField0_ |= 0x00000002;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>uint32 g = 2;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearG() {
-      bitField0_ = (bitField0_ & ~0x00000002);
-      g_ = 0;
+    public Builder setMessageBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      message_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
 
-    private int b_ ;
-    /**
-     * <code>uint32 b = 3;</code>
-     * @return The b.
-     */
-    @java.lang.Override
-    public int getB() {
-      return b_;
-    }
-    /**
-     * <code>uint32 b = 3;</code>
-     * @param value The b to set.
-     * @return This builder for chaining.
-     */
-    public Builder setB(int value) {
-
-      b_ = value;
-      bitField0_ |= 0x00000004;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>uint32 b = 3;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearB() {
-      bitField0_ = (bitField0_ & ~0x00000004);
-      b_ = 0;
-      onChanged();
-      return this;
-    }
-
-    // @@protoc_insertion_point(builder_scope:Color)
+    // @@protoc_insertion_point(builder_scope:Toast)
   }
 
-  // @@protoc_insertion_point(class_scope:Color)
-  private static final com.nodiumhosting.vaultmapper.proto.Color DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:Toast)
+  private static final com.nodiumhosting.vaultmapper.proto.Toast DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.nodiumhosting.vaultmapper.proto.Color();
+    DEFAULT_INSTANCE = new com.nodiumhosting.vaultmapper.proto.Toast();
   }
 
-  public static com.nodiumhosting.vaultmapper.proto.Color getDefaultInstance() {
+  public static com.nodiumhosting.vaultmapper.proto.Toast getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<Color>
-      PARSER = new com.google.protobuf.AbstractParser<Color>() {
+  private static final com.google.protobuf.Parser<Toast>
+      PARSER = new com.google.protobuf.AbstractParser<Toast>() {
     @java.lang.Override
-    public Color parsePartialFrom(
+    public Toast parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -545,17 +483,17 @@ private static final long serialVersionUID = 0L;
     }
   };
 
-  public static com.google.protobuf.Parser<Color> parser() {
+  public static com.google.protobuf.Parser<Toast> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<Color> getParserForType() {
+  public com.google.protobuf.Parser<Toast> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.nodiumhosting.vaultmapper.proto.Color getDefaultInstanceForType() {
+  public com.nodiumhosting.vaultmapper.proto.Toast getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

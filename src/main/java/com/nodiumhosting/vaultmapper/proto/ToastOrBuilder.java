@@ -5,19 +5,19 @@
 
 package com.nodiumhosting.vaultmapper.proto;
 
-public interface PlayerDisconnectOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:PlayerDisconnect)
+public interface ToastOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:Toast)
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string uuid = 1;</code>
-   * @return The uuid.
+   * <code>string message = 1;</code>
+   * @return The message.
    */
-  java.lang.String getUuid();
+  java.lang.String getMessage();
   /**
-   * <code>string uuid = 1;</code>
-   * @return The bytes for uuid.
+   * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
-      getUuidBytes();
+      getMessageBytes();
 }
