@@ -3,60 +3,46 @@ package com.nodiumhosting.vaultmapper.util;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.proto.RoomName;
 
+import java.util.Map;
+
 public class Util {
+    private static final Map<String, RoomName> roomNameMap = Map.ofEntries(
+            Map.entry("Blacksmith", RoomName.ROOMNAME_BLACKSMITH),
+            Map.entry("Cove", RoomName.ROOMNAME_COVE),
+            Map.entry("Crystal Caves", RoomName.ROOMNAME_CRYSTAL_CAVES),
+            Map.entry("Dig Site", RoomName.ROOMNAME_DIG_SITE),
+            Map.entry("Dragon", RoomName.ROOMNAME_DRAGON),
+            Map.entry("Factory", RoomName.ROOMNAME_FACTORY),
+            Map.entry("Library", RoomName.ROOMNAME_LIBRARY),
+            Map.entry("Mine", RoomName.ROOMNAME_MINE),
+            Map.entry("Mush Room", RoomName.ROOMNAME_MUSH_ROOM),
+            Map.entry("Painting", RoomName.ROOMNAME_PAINTING),
+            Map.entry("Vendor", RoomName.ROOMNAME_VENDOR),
+            Map.entry("Village", RoomName.ROOMNAME_VILLAGE),
+            Map.entry("Wild West", RoomName.ROOMNAME_WILD_WEST),
+            Map.entry("X-mark", RoomName.ROOMNAME_X_MARK),
+            Map.entry("Cube", RoomName.ROOMNAME_CUBE),
+            Map.entry("Laboratory", RoomName.ROOMNAME_LAB),
+            Map.entry("Raid", RoomName.ROOMNAME_RAID)
+    );
+
     public static RoomName RoomFromName(String name) {
-        for (RoomName roomName : RoomName.values()) {
-            if (roomName.name().equals(name)) {
-                return roomName;
-            }
+        if (name == null) {
+            return RoomName.ROOMNAME_UNKNOWN;
+        }
+        if (roomNameMap.containsKey(name)) {
+            return roomNameMap.get(name);
         }
         VaultMapper.LOGGER.info("Unknown Room detected: " + name);
         return RoomName.ROOMNAME_UNKNOWN;
     }
 
     public static String NameFromRoom(RoomName name) {
-        if (name == null) {
-            return "UNKNOWN";
+        for (Map.Entry<String, RoomName> entry : roomNameMap.entrySet()) {
+            if (entry.getValue() == name) {
+                return entry.getKey();
+            }
         }
-        switch (name) {
-            case ROOMNAME_UNKNOWN:
-                return "UNKNOWN";
-            case ROOMNAME_BLACKSMITH:
-                return "Blacksmith";
-            case ROOMNAME_COVE:
-                return "Cove";
-            case ROOMNAME_CRYSTAL_CAVES:
-                return "Crystal Caves";
-            case ROOMNAME_DIG_SITE:
-                return "Dig Site";
-            case ROOMNAME_DRAGON:
-                return "Dragon";
-            case ROOMNAME_FACTORY:
-                return "Factory";
-            case ROOMNAME_LIBRARY:
-                return "Library";
-            case ROOMNAME_MINE:
-                return "Mine";
-            case ROOMNAME_MUSH_ROOM:
-                return "Mush Room";
-            case ROOMNAME_PAINTING:
-                return "Painting";
-            case ROOMNAME_VENDOR:
-                return "Vendor";
-            case ROOMNAME_VILLAGE:
-                return "Village";
-            case ROOMNAME_WILD_WEST:
-                return "Wild West";
-            case ROOMNAME_X_MARK:
-                return "X-mark";
-            case ROOMNAME_CUBE:
-                return "Cube";
-            case ROOMNAME_LAB:
-                return "Laboratory";
-            case ROOMNAME_RAID:
-                return "Raid";
-            default:
-                return "UNKNOWN";
-        }
+        return "Unknown";
     }
 }
