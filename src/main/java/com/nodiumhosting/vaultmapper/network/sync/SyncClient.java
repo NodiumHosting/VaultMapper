@@ -90,8 +90,6 @@ public class SyncClient extends WebSocketClient {
                     String paddedBlue = blue.length() == 1 ? "0" + blue : blue;
                     String hex = "#" + paddedRed + paddedGreen + paddedBlue;
 
-                    VaultMapper.LOGGER.info("hex: " + hex);
-
                     VaultMap.updatePlayerMapData(uuid, hex, x, z, yaw);
                     VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, hex);
                 }
@@ -209,8 +207,6 @@ public class SyncClient extends WebSocketClient {
         int R = Integer.parseInt(col.substring(1, 3), 16);
         int G = Integer.parseInt(col.substring(3, 5), 16);
         int B = Integer.parseInt(col.substring(5, 7), 16);
-
-        VaultMapper.LOGGER.info("R: " + R + " G: " + G + " B: " + B);
 
         return Color.newBuilder().setR(R).setG(G).setB(B).build();
     }
