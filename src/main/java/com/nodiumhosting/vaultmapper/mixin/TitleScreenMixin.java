@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
-@Mixin(value = TitleScreen.class, remap = false)
+@Mixin(value = TitleScreen.class, remap = true)
 public class TitleScreenMixin extends Screen {
     protected TitleScreenMixin(Component pTitle) {
         super(pTitle);
