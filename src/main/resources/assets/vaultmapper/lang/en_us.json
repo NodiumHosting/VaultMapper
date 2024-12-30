@@ -2,5 +2,6 @@
   "key.vaultmapper.mark": "Mark Current Room",
   "key.vaultmapper.togglemap": "Toggle Vault Map",
   "key.vaultmapper.openconfig": "Open Config Screen",
+  "key.vaultmapper.reconnectsync": "Restart VMSync (Debug)",
   "key.categories.vaultmapper": "Vault Mapper"
 }
