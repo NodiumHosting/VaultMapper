@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
+import com.nodiumhosting.vaultmapper.gui.ToastMessageManager;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -105,6 +106,10 @@ public class SyncClient extends WebSocketClient {
 
                     VaultMap.removePlayerMapData(data.getUuid());
                     VaultMapper.webMapServer.removeArrow(data.getUuid());
+                }
+                case TOAST -> {
+                    var data = msg.getToast();
+                    ToastMessageManager.displayToast(data.getMessage());
                 }
                 default -> {
                     VaultMapper.LOGGER.info("Something weird with onMessage");
