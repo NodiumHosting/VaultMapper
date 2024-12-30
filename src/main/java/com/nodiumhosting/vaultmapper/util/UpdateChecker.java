@@ -9,20 +9,19 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class UpdateChecker {
-    public static void checkForUpdates() {
-        ToastMessageManager.displayToast("Checking for updates...", 5000, 5, 5);
-
-        if (isLatestVersion()) {
-            return;
-        }
-
-        ToastMessageManager.displayToast("New version of VaultMapper available! Your version: " + CURRENT_VERSION + ", Latest version: " + LATEST_VERSION, 10000, 5, 5);
-
-        System.out.println("There is a new version of VaultMapper available! Your version: " + CURRENT_VERSION + ", Latest version: " + LATEST_VERSION);
-    }
-
     public static final String CURRENT_VERSION = VaultMapper.getVersion();
     public static final String LATEST_VERSION = getLatestVersion();
+    public static final boolean IS_RUNNING_LATEST = isLatestVersion();
+
+    public static void checkForUpdates() {
+//        ToastMessageManager.displayToast("Checking for updates...");
+//
+//        if (isLatestVersion()) {
+//            return;
+//        }
+//
+//        ToastMessageManager.displayToast("New version of VaultMapper available! Your version: " + CURRENT_VERSION + ", Latest version: " + LATEST_VERSION);
+    }
 
     private static String getLatestVersion() {
         try {
@@ -32,7 +31,11 @@ public class UpdateChecker {
                     new InputStreamReader(
                             apiCon.getInputStream()));
 
-            return in.readLine();
+            String ver = in.readLine();
+
+            VaultMapper.LOGGER.info("Latest version: " + ver);
+
+            return ver;
         } catch (Exception e) {
             VaultMapper.LOGGER.error("Error checking for updates: " + e.getMessage());
         }
@@ -40,7 +43,8 @@ public class UpdateChecker {
         return "Unknown Latest Version";
     }
 
-    public static boolean isLatestVersion() {
+    private static boolean isLatestVersion() {
+        VaultMapper.LOGGER.info("Checking whether " + CURRENT_VERSION + " is " + LATEST_VERSION);
         return CURRENT_VERSION.equals(LATEST_VERSION);
     }
 }
