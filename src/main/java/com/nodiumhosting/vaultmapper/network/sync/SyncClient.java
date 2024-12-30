@@ -196,6 +196,14 @@ public class SyncClient extends WebSocketClient {
         }
     }
 
+    private Color getSyncColor() {
+        String col = ClientConfig.SYNC_COLOR.get();
+        int R = Integer.parseInt(col.substring(1, 2));
+        int G = Integer.parseInt(col.substring(3, 4));
+        int B = Integer.parseInt(col.substring(5, 6));
+        return Color.newBuilder().setR(R).setG(G).setB(B).build();
+    }
+
     public void sendMovePacket(String name, int cellX, int cellZ, float rotation) {
         if (this.isOpen()) {
             MovePacket data = new MovePacket(name, "", cellX, cellZ, rotation); // legacy, remove and reimplement optimalization
@@ -209,11 +217,7 @@ public class SyncClient extends WebSocketClient {
                                 .setX(cellX)
                                 .setZ(cellZ)
                                 .setYaw(rotation)
-                                .setColor(Color.newBuilder()
-                                        .setR(0)
-                                        .setG(0)
-                                        .setB(0)
-                                        .build())
+                                .setColor(getSyncColor())
                                 .build())
                         .build()
                         .toByteArray()

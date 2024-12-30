@@ -82,7 +82,7 @@ public class VaultMapperConfigScreen extends Screen {
             return stringValue;
         };
 
-        Slider mapScale = new Slider(this.width / 2 + 10, getScaledY(3), "", ClientConfig.MAP_SCALE.get(),30,3, mapScaleGetter, width, elHeight, 10);
+        Slider mapScale = new Slider(this.width / 2 + 10, getScaledY(3), "", ClientConfig.MAP_SCALE.get(), 30, 3, mapScaleGetter, width, elHeight, 10);
         this.addRenderableWidget(mapScale);
 
         EditBoxReset mapXOffset = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(4), width, elHeight, new TextComponent("MAP_X_OFFSET"), "0");
@@ -232,6 +232,17 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(enableSyncButton);
 
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(8), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "#000000");
+        syncColor.setValue(ClientConfig.SYNC_COLOR.get());
+        this.addRenderableWidget(pointerColor);
+        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
+
+        }, syncColor, colorPicker);
+        this.addRenderableWidget(syncColorPicker);
+        pointerColor.setResponder((value) -> {
+            syncColorPicker.setColor(parseColor(value));
+        });
+
         Button saveButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
@@ -333,7 +344,7 @@ public class VaultMapperConfigScreen extends Screen {
 
         // labels
         int offsetY = getScaledY(1) / 8;
-        this.font.draw(pose,"Map Scale",this.width / 2 - 110,getScaledY(3) + offsetY,0xFFFFFFFF);
+        this.font.draw(pose, "Map Scale", this.width / 2 - 110, getScaledY(3) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map X Offset", this.width / 2 - 110, getScaledY(4) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map Y Offset", this.width / 2 - 110, getScaledY(5) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Map X Anchor", this.width / 2 - 110, getScaledY(6) + offsetY, 0xFFFFFFFF);
