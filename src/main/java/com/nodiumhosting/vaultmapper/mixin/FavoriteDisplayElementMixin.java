@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.UUID;
 
-@Mixin(VaultHistoricDataScreen.FavoritesDisplayElement.class)
+@Mixin(value = VaultHistoricDataScreen.FavoritesDisplayElement.class, remap = false)
 public class FavoriteDisplayElementMixin {
 
     @Shadow

@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.*;
 import java.util.function.Consumer;
 
-@Mixin(VaultEndScreen.class)
+@Mixin(value = VaultEndScreen.class, remap = false)
 public abstract class VaultEndScreenMixin extends AbstractElementScreen {
 
     @Unique

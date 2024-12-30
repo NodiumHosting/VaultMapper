@@ -172,7 +172,14 @@ dependencies {
     implementation fg.deobf("curse.maven:sophisticated-backpacks-vault-hunters-edition-696425:4287544")
     implementation fg.deobf("curse.maven:sophisticated-core-618298:4665730")
     implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:4637292")
+    implementation fg.deobf("curse.maven:alexs-mobs-426558:3853078")
+    implementation fg.deobf("curse.maven:citadel-331936:3783096")
+    implementation fg.deobf("curse.maven:auxblocks-711533:4358959")
+    implementation fg.deobf("curse.maven:vaultfaster-988487:6002380")
+    implementation fg.deobf("curse.maven:kotlin-for-forge-351264:4513187")
 
+
+    implementation fg.deobf("curse.maven:lazy-dfu-forge-460819:3544496")
     runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4074294")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
@@ -183,15 +190,15 @@ dependencies {
         jarJar.ranged(it, "[1.5.7,)")
     }
 
-    implementation(jarJar('com.google.protobuf:protobuf-java:4.29.2')) {
-        jarJar.ranged(it, "[4.29.2,)")
+    implementation(jarJar('com.google.protobuf:protobuf-java:4.29.1')) {
+        jarJar.ranged(it, "[4.29.1,)")
     }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
     implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 
-    implementation 'com.google.protobuf:protobuf-java:4.29.2'
+    implementation 'com.google.protobuf:protobuf-java:4.29.1'
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency

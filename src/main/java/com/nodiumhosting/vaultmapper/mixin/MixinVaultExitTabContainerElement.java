@@ -10,6 +10,7 @@ import iskallia.vault.client.gui.framework.ScreenTextures;
 import iskallia.vault.client.gui.framework.element.ElasticContainerElement;
 import iskallia.vault.client.gui.framework.element.RenderIndexedElement;
 import iskallia.vault.client.gui.framework.element.TextureAtlasElement;
+import iskallia.vault.client.gui.framework.element.spi.IElement;
 import iskallia.vault.client.gui.framework.element.spi.IRenderedElement;
 import iskallia.vault.client.gui.framework.spatial.Spatials;
 import iskallia.vault.client.gui.framework.spatial.spi.IPosition;
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Consumer;
 
-@Mixin(VaultExitTabContainerElement.class)
+@Mixin(value = VaultExitTabContainerElement.class, remap = false)
 public abstract class MixinVaultExitTabContainerElement<E extends VaultExitTabContainerElement<E>> extends ElasticContainerElement<E> {
     protected MixinVaultExitTabContainerElement(ISpatial spatial) {
         super(spatial);

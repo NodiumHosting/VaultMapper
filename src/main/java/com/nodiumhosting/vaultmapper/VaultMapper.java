@@ -9,6 +9,7 @@ import com.nodiumhosting.vaultmapper.keybinds.ToggleVaultMapKeybind;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.map.RoomData;
 import com.nodiumhosting.vaultmapper.network.webmap.WebMapServer;
+import com.nodiumhosting.vaultmapper.util.UpdateChecker;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -64,6 +65,8 @@ public class VaultMapper {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
+        UpdateChecker.checkForUpdates();
+
         VaultMapOverlayRenderer.prep();
 
 //        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
