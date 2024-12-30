@@ -66,7 +66,7 @@ public class ClientConfig {
 
         SYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("SYNC_SERVER", "wss://vmsync.boykiss.ing:25284");
 
-        SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "#000000");
+        SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
 
         BUILDER.pop();
         SPEC = BUILDER.build();

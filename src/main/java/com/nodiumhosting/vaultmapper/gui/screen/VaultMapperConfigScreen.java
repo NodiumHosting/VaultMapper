@@ -9,6 +9,7 @@ import com.nodiumhosting.vaultmapper.gui.component.EditBoxReset;
 import com.nodiumhosting.vaultmapper.gui.component.Slider;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.util.Clamp;
+import com.nodiumhosting.vaultmapper.util.Util;
 import it.unimi.dsi.fastutil.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -45,7 +46,7 @@ public class VaultMapperConfigScreen extends Screen {
 
     private int getScaledY(float y) {
         float height = Minecraft.getInstance().getWindow().getGuiScaledHeight(); //Minecraft.getInstance().getWindow().getHeight() / 2;
-        float piece = height / 18;
+        float piece = height / 20;
         float scaledY = piece * y;
         return (int) scaledY;
     }
@@ -232,18 +233,18 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(enableSyncButton);
 
-        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(8), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "#000000");
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(16), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "random");
         syncColor.setValue(ClientConfig.SYNC_COLOR.get());
-        this.addRenderableWidget(pointerColor);
-        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
+        this.addRenderableWidget(syncColor);
+        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(16), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
 
         }, syncColor, colorPicker);
         this.addRenderableWidget(syncColorPicker);
-        pointerColor.setResponder((value) -> {
+        syncColor.setResponder((value) -> {
             syncColorPicker.setColor(parseColor(value));
         });
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(17), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -269,6 +270,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
             ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
             ClientConfig.SYNC_SERVER.set(syncServer.getValue());
+            ClientConfig.SYNC_COLOR.set(syncColor.getValue());
 
             ClientConfig.SPEC.save();
 
@@ -279,7 +281,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(16.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(17.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
@@ -301,6 +303,10 @@ public class VaultMapperConfigScreen extends Screen {
             syncServer.setValue("wss://vmsync.boykiss.ing:25284");
             enableSyncButton.setMessage(enabledText);
 
+            String randColor = Util.RandomColor();
+
+            syncColor.setValue(randColor);
+
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
             ClientConfig.MAP_Y_OFFSET.set(0);
@@ -317,6 +323,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SHOW_ROOM_ICONS.set(true);
             ClientConfig.SYNC_SERVER.set("wss://vmsync.boykiss.ing:25284");
             ClientConfig.SYNC_ENABLED.set(true);
+            ClientConfig.SYNC_COLOR.set(randColor);
 
             ClientConfig.SPEC.save();
 
@@ -357,6 +364,7 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Omega Room Color", this.width / 2 - 110, getScaledY(13) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Challenge Room Color", this.width / 2 - 110, getScaledY(14) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "VMSync", this.width / 2 - 110, getScaledY(15) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Sync Color", this.width / 2 - 110, getScaledY(16) + offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 
