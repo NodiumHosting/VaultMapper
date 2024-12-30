@@ -49,7 +49,7 @@ public class SyncClient extends WebSocketClient {
         if (this.isClosing() || this.isClosed()) {
 //            VaultMapper.LOGGER.info("Can't send keep-alive, socket is closed.");
         }
-        //this.send("[\"keep_me_alive\"]");
+        this.send("keep_me_alive");
         //this.sendPing();
     }
 
