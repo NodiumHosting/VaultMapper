@@ -46,7 +46,7 @@ public class VaultMapperConfigScreen extends Screen {
 
     private int getScaledY(float y) {
         float height = Minecraft.getInstance().getWindow().getGuiScaledHeight(); //Minecraft.getInstance().getWindow().getHeight() / 2;
-        float piece = height / 18;
+        float piece = height / 20;
         float scaledY = piece * y;
         return (int) scaledY;
     }
@@ -221,7 +221,7 @@ public class VaultMapperConfigScreen extends Screen {
         Checkbox showRoomIcons = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, roomIconsCheckboxY, 20, 20, new TextComponent(""), ClientConfig.SHOW_ROOM_ICONS.get());
         this.addRenderableWidget(showRoomIcons);
 
-        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(15), elWidthColor + 80 - elHeight - 5, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
+        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(15), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
         syncServer.setValue(ClientConfig.SYNC_SERVER.get());
         this.addRenderableWidget(syncServer);
         MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
@@ -233,10 +233,10 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(enableSyncButton);
 
-        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(15), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "random");
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(16), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "random");
         syncColor.setValue(ClientConfig.SYNC_COLOR.get());
         this.addRenderableWidget(syncColor);
-        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
+        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(16), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
 
         }, syncColor, colorPicker);
         this.addRenderableWidget(syncColorPicker);
@@ -244,7 +244,7 @@ public class VaultMapperConfigScreen extends Screen {
             syncColorPicker.setColor(parseColor(value));
         });
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(16), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(17), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -281,7 +281,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(16.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(17.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
@@ -364,6 +364,7 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Omega Room Color", this.width / 2 - 110, getScaledY(13) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Challenge Room Color", this.width / 2 - 110, getScaledY(14) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "VMSync", this.width / 2 - 110, getScaledY(15) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Sync Color", this.width / 2 - 110, getScaledY(16) + offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 
