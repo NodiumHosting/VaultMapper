@@ -6,6 +6,7 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
+import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.proto.Color;
 import com.nodiumhosting.vaultmapper.proto.Message;
 import com.nodiumhosting.vaultmapper.proto.MessageType;
@@ -56,6 +57,7 @@ public class SyncClient extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
 //        VaultMapper.LOGGER.info("Sync WS Connected");
         keepMeOn = true;
+        VaultMapOverlayRenderer.syncErrorState = false;
     }
 
     @Override
@@ -165,6 +167,7 @@ public class SyncClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+        VaultMapOverlayRenderer.syncErrorState = true;
 //        Logger.getAnonymousLogger().info("closed");
 //        Logger.getAnonymousLogger().info(String.valueOf(code));
 //        Logger.getAnonymousLogger().info(reason);
@@ -173,6 +176,7 @@ public class SyncClient extends WebSocketClient {
 
     @Override
     public void onError(Exception ex) {
+        VaultMapOverlayRenderer.syncErrorState = true;
         VaultMapper.LOGGER.error("Sync WS Error: " + ex.toString());
     }
 

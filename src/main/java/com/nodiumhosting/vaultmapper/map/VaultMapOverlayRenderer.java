@@ -9,7 +9,9 @@ import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -35,6 +37,8 @@ public class VaultMapOverlayRenderer {
     static float mapAnchorX = 0;
     static float mapAnchorZ = 0;
 
+    public static boolean syncErrorState = false;
+
     static ResourceLocation icon = new ResourceLocation("vaultmapper", "/textures/gui/mine.png");
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -52,6 +56,16 @@ public class VaultMapOverlayRenderer {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        if (syncErrorState) {
+            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            int mapSize = (int) (w * 0.25f);
+            int baseMapRoomWidth = mapSize / 49;
+            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
+
+            TextComponent syncError = new TextComponent("Sync Error");
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
+        }
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         // Tunnel map
