@@ -82,7 +82,15 @@ public class SyncClient extends WebSocketClient {
                     var z = data.getZ();
                     var yaw = data.getYaw();
 
-                    String hex = String.format("#%02x%02x%02x", color.getR(), color.getG(), color.getB());
+                    String red = Integer.toHexString(color.getR());
+                    String green = Integer.toHexString(color.getG());
+                    String blue = Integer.toHexString(color.getB());
+                    String paddedRed = red.length() == 1 ? "0" + red : red;
+                    String paddedGreen = green.length() == 1 ? "0" + green : green;
+                    String paddedBlue = blue.length() == 1 ? "0" + blue : blue;
+                    String hex = "#" + paddedRed + paddedGreen + paddedBlue;
+
+                    VaultMapper.LOGGER.info("hex: " + hex);
 
                     VaultMap.updatePlayerMapData(uuid, hex, x, z, yaw);
                     VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, hex);
@@ -198,9 +206,12 @@ public class SyncClient extends WebSocketClient {
 
     private Color getSyncColor() {
         String col = ClientConfig.SYNC_COLOR.get();
-        int R = Integer.parseInt(col.substring(1, 2), 16);
-        int G = Integer.parseInt(col.substring(3, 4), 16);
-        int B = Integer.parseInt(col.substring(5, 6), 16);
+        int R = Integer.parseInt(col.substring(1, 3), 16);
+        int G = Integer.parseInt(col.substring(3, 5), 16);
+        int B = Integer.parseInt(col.substring(5, 7), 16);
+
+        VaultMapper.LOGGER.info("R: " + R + " G: " + G + " B: " + B);
+
         return Color.newBuilder().setR(R).setG(G).setB(B).build();
     }
 
