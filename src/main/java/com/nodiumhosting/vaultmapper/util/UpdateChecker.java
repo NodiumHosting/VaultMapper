@@ -25,7 +25,7 @@ public class UpdateChecker {
 
     private static String getLatestVersion() {
         try {
-            URL api = new URL("http://version.vaultmapper.site/");
+            URL api = new URL("https://vmver.ndmh.xyz/");
             URLConnection apiCon = api.openConnection();
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
