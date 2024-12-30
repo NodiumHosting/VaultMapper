@@ -51,12 +51,6 @@ public class VaultMapOverlayRenderer {
         int offsetX = ClientConfig.MAP_X_OFFSET.get();
         int offsetZ = ClientConfig.MAP_Y_OFFSET.get();
 
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
         if (syncErrorState) {
             int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
             int mapSize = (int) (w * 0.25f);
@@ -66,6 +60,12 @@ public class VaultMapOverlayRenderer {
             TextComponent syncError = new TextComponent("Sync Error");
             GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
         }
+
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         // Tunnel map
