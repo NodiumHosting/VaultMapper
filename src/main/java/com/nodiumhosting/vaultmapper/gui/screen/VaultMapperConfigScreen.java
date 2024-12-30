@@ -9,6 +9,7 @@ import com.nodiumhosting.vaultmapper.gui.component.EditBoxReset;
 import com.nodiumhosting.vaultmapper.gui.component.Slider;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.util.Clamp;
+import com.nodiumhosting.vaultmapper.util.Util;
 import it.unimi.dsi.fastutil.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -269,6 +270,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
             ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
             ClientConfig.SYNC_SERVER.set(syncServer.getValue());
+            ClientConfig.SYNC_COLOR.set(syncColor.getValue());
 
             ClientConfig.SPEC.save();
 
@@ -301,6 +303,10 @@ public class VaultMapperConfigScreen extends Screen {
             syncServer.setValue("wss://vmsync.boykiss.ing:25284");
             enableSyncButton.setMessage(enabledText);
 
+            String randColor = Util.RandomColor();
+
+            syncColor.setValue(randColor);
+
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
             ClientConfig.MAP_Y_OFFSET.set(0);
@@ -317,6 +323,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SHOW_ROOM_ICONS.set(true);
             ClientConfig.SYNC_SERVER.set("wss://vmsync.boykiss.ing:25284");
             ClientConfig.SYNC_ENABLED.set(true);
+            ClientConfig.SYNC_COLOR.set(randColor);
 
             ClientConfig.SPEC.save();
 

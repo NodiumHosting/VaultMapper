@@ -11,6 +11,7 @@ import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.map.RoomData;
 import com.nodiumhosting.vaultmapper.network.webmap.WebMapServer;
 import com.nodiumhosting.vaultmapper.util.UpdateChecker;
+import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -68,6 +69,10 @@ public class VaultMapper {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
+        if (ClientConfig.SYNC_COLOR.get().equals("random")) {
+            ClientConfig.SYNC_COLOR.set(Util.RandomColor());
+        }
+
         UpdateChecker.checkForUpdates();
 
         VaultMapOverlayRenderer.prep();
