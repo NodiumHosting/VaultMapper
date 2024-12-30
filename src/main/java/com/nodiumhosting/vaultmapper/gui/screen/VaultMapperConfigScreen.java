@@ -232,8 +232,8 @@ public class VaultMapperConfigScreen extends Screen {
         Checkbox showRoomIcons = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, roomIconsCheckboxY, 20, 20, new TextComponent(""), ClientConfig.SHOW_ROOM_ICONS.get());
         this.addRenderableWidget(showRoomIcons);
 
-        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(16), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
-        syncServer.setValue(ClientConfig.SYNC_SERVER.get());
+        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(16), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.ndmh.xyz");
+        syncServer.setValue(ClientConfig.VMSYNC_SERVER.get());
         this.addRenderableWidget(syncServer);
         MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
         MutableComponent disabledText = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
@@ -280,7 +280,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set(omegaRoomColor.getValue());
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
             ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
-            ClientConfig.SYNC_SERVER.set(syncServer.getValue());
+            ClientConfig.VMSYNC_SERVER.set(syncServer.getValue());
             ClientConfig.SYNC_COLOR.set(syncColor.getValue());
 
             ClientConfig.PC_CUTOFF.set(PCCutoff.sliderValue);
@@ -316,7 +316,7 @@ public class VaultMapperConfigScreen extends Screen {
             if (!showRoomIcons.selected()) {
                 showRoomIcons.onPress();
             }
-            syncServer.setValue("wss://vmsync.boykiss.ing:25284");
+            syncServer.setValue("wss://vmsync.ndmh.xyz");
             enableSyncButton.setMessage(enabledText);
 
             String randColor = Util.RandomColor();
@@ -337,7 +337,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set("#55FF55");
             ClientConfig.CHALLENGE_ROOM_COLOR.set("#F09E00");
             ClientConfig.SHOW_ROOM_ICONS.set(true);
-            ClientConfig.SYNC_SERVER.set("wss://vmsync.boykiss.ing:25284");
+            ClientConfig.VMSYNC_SERVER.set("wss://vmsync.ndmh.xyz");
             ClientConfig.SYNC_ENABLED.set(true);
             ClientConfig.SYNC_COLOR.set(randColor);
 
