@@ -7,6 +7,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec SPEC;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> MAP_ENABLED;
+
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_X_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_Y_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_X_ANCHOR;
@@ -27,6 +28,9 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SYNC_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_SERVER;
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_COLOR;
+
+    public static final ForgeConfigSpec.ConfigValue<Integer> PC_CUTOFF;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> PLAYER_CENTRIC_RENDERING;
 
     static {
         BUILDER.push("VaultMapper Client Config");
@@ -67,6 +71,9 @@ public class ClientConfig {
         SYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("SYNC_SERVER", "wss://vmsync.boykiss.ing:25284");
 
         SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
+
+        PC_CUTOFF = BUILDER.comment("Number of cells rendered around player").define("PC_CUTOFF", 10);
+        PLAYER_CENTRIC_RENDERING = BUILDER.comment("Enable player centric rendering").define("PLAYER_CENTRIC_RENDERING", true);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
