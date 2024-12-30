@@ -221,7 +221,7 @@ public class VaultMapperConfigScreen extends Screen {
         Checkbox showRoomIcons = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, roomIconsCheckboxY, 20, 20, new TextComponent(""), ClientConfig.SHOW_ROOM_ICONS.get());
         this.addRenderableWidget(showRoomIcons);
 
-        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(15), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
+        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(15), elWidthColor + 80 - elHeight - 5, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.boykiss.ing:25284");
         syncServer.setValue(ClientConfig.SYNC_SERVER.get());
         this.addRenderableWidget(syncServer);
         MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
@@ -233,14 +233,14 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(enableSyncButton);
 
-        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(8), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "#000000");
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(15), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "random");
         syncColor.setValue(ClientConfig.SYNC_COLOR.get());
-        this.addRenderableWidget(pointerColor);
+        this.addRenderableWidget(syncColor);
         ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(8), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
 
         }, syncColor, colorPicker);
         this.addRenderableWidget(syncColorPicker);
-        pointerColor.setResponder((value) -> {
+        syncColor.setResponder((value) -> {
             syncColorPicker.setColor(parseColor(value));
         });
 
