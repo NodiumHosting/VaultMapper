@@ -233,7 +233,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(enableSyncButton);
 
-        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(16), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), "random");
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(16), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), Util.RandomColor());
         syncColor.setValue(ClientConfig.SYNC_COLOR.get());
         this.addRenderableWidget(syncColor);
         ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(16), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
