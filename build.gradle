@@ -193,7 +193,6 @@ dependencies {
     implementation(jarJar('com.google.protobuf:protobuf-java:4.29.1')) {
         jarJar.ranged(it, "[4.29.1,)")
     }
-    runtimeOnly 'com.google.protobuf:protobuf-java:4.29.1'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
