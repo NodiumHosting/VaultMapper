@@ -48,49 +48,6 @@ public class RoomBlockData {
     }
 
     public static RoomBlockData getRoomBlockData(int cellX, int cellZ) {
-        Minecraft.getInstance().getProfiler().push("VaultMapper:getRoomBlockData");
-        RoomBlockData rbd = getRoomBlockDataStreams(cellX, cellZ);
-        Minecraft.getInstance().getProfiler().pop();
-        return  rbd;
-    }
-
-    public static RoomBlockData getRoomBlockDataSeq(int cellX, int cellZ){
-        int ores = 0;
-        int blocks = 0;
-        int coins = 0;
-        int chests = 0;
-        int bedrock = 0;
-        for (int y = 9; y <= 54; y++) {
-            for (int x = 0; x <= 46; x++) {
-                for (int z = 0; z <= 46; z++) {
-                    Block block = VaultMap.getCellBlock(cellX,cellZ,x,y,z);
-                    if (block == null) continue;
-                    if ((block == ModBlocks.VAULT_STONE) || (block instanceof VaultOreBlock)) {
-                        ores++;
-                    } else if (block == ModBlocks.COIN_PILE) {
-                        coins++;
-                    } else if (block instanceof VaultChestBlock) {
-                        chests++;
-                    } else if (block == ModBlocks.VAULT_BEDROCK) {
-                        bedrock++;
-                    }
-                    blocks++;
-                }
-            }
-        }
-
-
-        var rbd = new RoomBlockData();
-        rbd.blocks = blocks;
-        rbd.ores = ores;
-        rbd.coins = coins;
-        rbd.chests = chests;
-        rbd.bedrock = bedrock;
-        return rbd;
-    }
-
-
-    public static RoomBlockData getRoomBlockDataStreams(int cellX, int cellZ) {
         return IntStream.rangeClosed(9, 54).parallel().mapToObj(y ->
             IntStream.rangeClosed(0, 46).parallel().mapToObj(x ->
                 IntStream.rangeClosed(0, 46).parallel().mapToObj(z -> VaultMap.getCellBlock(cellX, cellZ, x, y, z))
