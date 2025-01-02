@@ -159,6 +159,9 @@ public class VaultMap {
         if (cell.roomType == RoomType.ROOMTYPE_CHALLENGE) {
             return ClientConfig.CHALLENGE_ROOM_COLOR.get();
         }
+        if (cell.roomType == RoomType.ROOMTYPE_ORE){
+            return ClientConfig.ORE_ROOM_COLOR.get();
+        }
         return ClientConfig.ROOM_COLOR.get();
     }
 
@@ -234,6 +237,13 @@ public class VaultMap {
                         Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
                         RoomType roomType = detectedRoom.getA();
                         RoomName roomName = detectedRoom.getB();
+                        if (roomType == RoomType.ROOMTYPE_BASIC) {
+                            RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
+                            if (rbd.ores > 300) { // TODO: configurable
+                                roomType = RoomType.ROOMTYPE_ORE;
+                                roomName = RoomName.ROOMNAME_UNKNOWN;
+                            }
+                        }
                         newCell.roomName = roomName;
                         newCell.roomType = roomType;
                     }
@@ -355,10 +365,10 @@ public class VaultMap {
             ClientConfig.MAP_ENABLED.set(false);
             player.sendMessage(new TextComponent("Vault Map rendering disabled"), player.getUUID());
         } else {
-            if (!ResearchUtil.hasResearch("Vault Compass") && !VaultMapOverlayRenderer.ignoreResearchRequirement) {
-                player.sendMessage(new TextComponent("Cannot enable. The Research \"Vault Compass\" is not unlocked."), player.getUUID());
-                return;
-            }
+//            if (!ResearchUtil.hasResearch("Vault Compass") && !VaultMapOverlayRenderer.ignoreResearchRequirement) {
+//                player.sendMessage(new TextComponent("Cannot enable. The Research \"Vault Compass\" is not unlocked."), player.getUUID());
+//                return;
+//            }
             ClientConfig.MAP_ENABLED.set(true);
             player.sendMessage(new TextComponent("Vault Map rendering enabled"), player.getUUID());
         }
