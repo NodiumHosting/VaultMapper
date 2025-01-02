@@ -16,6 +16,7 @@ public class RoomBlockData {
     public int chests;
     public int coins;
     public int bedrock;
+    public int chromaticIron;
 
     public RoomBlockData() {
     }
@@ -64,6 +65,8 @@ public class RoomBlockData {
                     data.chests++;
                 } else if (block == ModBlocks.VAULT_BEDROCK) {
                     data.bedrock++;
+                } else if (block == ModBlocks.CHROMATIC_IRON_ORE) {
+                    data.chromaticIron++;
                 }
                 data.blocks++;
             },
@@ -73,6 +76,7 @@ public class RoomBlockData {
                 data1.coins += data2.coins;
                 data1.chests += data2.chests;
                 data1.bedrock += data2.bedrock;
+                data1.chromaticIron += data2.chromaticIron;
             }
         );
     }

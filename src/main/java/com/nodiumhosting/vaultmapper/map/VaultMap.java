@@ -239,7 +239,7 @@ public class VaultMap {
                         RoomName roomName = detectedRoom.getB();
                         if (roomType == RoomType.ROOMTYPE_BASIC) {
                             RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
-                            if (rbd.ores > 300) { // TODO: configurable
+                            if (rbd.ores > 300 && rbd.chromaticIron < 10) {
                                 roomType = RoomType.ROOMTYPE_ORE;
                                 roomName = RoomName.ROOMNAME_UNKNOWN;
                             }
