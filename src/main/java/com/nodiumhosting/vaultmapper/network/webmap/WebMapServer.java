@@ -178,6 +178,7 @@ public class WebMapServer extends WebSocketServer {
         public String INSCRIPTION_ROOM_COLOR;
         public String OMEGA_ROOM_COLOR;
         public String CHALLENGE_ROOM_COLOR;
+        public String ORE_ROOM_COLOR;
         public boolean SHOW_INSCRIPTIONS;
         public boolean SHOW_ROOM_ICONS;
 
@@ -188,6 +189,7 @@ public class WebMapServer extends WebSocketServer {
             this.INSCRIPTION_ROOM_COLOR = ClientConfig.INSCRIPTION_ROOM_COLOR.get();
             this.OMEGA_ROOM_COLOR = ClientConfig.OMEGA_ROOM_COLOR.get();
             this.CHALLENGE_ROOM_COLOR = ClientConfig.CHALLENGE_ROOM_COLOR.get();
+            this.ORE_ROOM_COLOR = ClientConfig.ORE_ROOM_COLOR.get();
             this.SHOW_INSCRIPTIONS = ClientConfig.SHOW_INSCRIPTIONS.get();
             this.SHOW_ROOM_ICONS = ClientConfig.SHOW_ROOM_ICONS.get();
         }

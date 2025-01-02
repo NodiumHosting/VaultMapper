@@ -6,7 +6,6 @@ import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.proto.CellType;
 import com.nodiumhosting.vaultmapper.proto.RoomName;
-import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -20,6 +19,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
@@ -39,9 +39,11 @@ public class VaultMapOverlayRenderer {
     static int playerX;
     static int playerZ;
 
+    private static final Pattern ICON_PATH_SEPARATORS = Pattern.compile("[- ]");
+
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
-        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
+//        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
@@ -107,7 +109,7 @@ public class VaultMapOverlayRenderer {
                 if (cell.roomName == null || cell.roomName == RoomName.ROOMNAME_UNKNOWN) return;
 
                 try {
-                    String path = "/textures/icons/" + Util.NameFromRoom(cell.roomName).toLowerCase().replaceAll("[- ]", "_") + ".png"; // "/textures/gui/mine.png";
+                    String path = "/textures/icons/" + ICON_PATH_SEPARATORS.matcher(Util.NameFromRoom(cell.roomName).toLowerCase()).replaceAll("_") + ".png"; // "/textures/gui/mine.png";
                     ResourceLocation icon = new ResourceLocation("vaultmapper", path);
                     RenderSystem.setShaderTexture(0, icon);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
