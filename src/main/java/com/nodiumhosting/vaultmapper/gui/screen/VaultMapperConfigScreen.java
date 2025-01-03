@@ -341,7 +341,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SYNC_ENABLED.set(true);
             ClientConfig.SYNC_COLOR.set(randColor);
 
-            ClientConfig.PC_CUTOFF.set(10);
+            ClientConfig.PC_CUTOFF.set(20);
             ClientConfig.PLAYER_CENTRIC_RENDERING.set(false);
 
             ClientConfig.SPEC.save();

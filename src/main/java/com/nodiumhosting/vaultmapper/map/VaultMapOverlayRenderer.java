@@ -21,6 +21,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 
+import static java.lang.Math.abs;
+
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
@@ -139,7 +141,7 @@ public class VaultMapOverlayRenderer {
         //Logger.getAnonymousLogger().info(String.valueOf(VaultMap.players.size()));
         if (playerCentricRender) {
             VaultMap.players.forEach((name, data) -> {
-                if ((data.x - playerX) > cutoff || (data.y - playerZ) > cutoff) return;
+                if (abs(data.x - playerX) > cutoff || abs(data.y - playerZ) > cutoff) return;
                 float mapX = centerX + (data.x - playerX) * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
                 float mapZ = centerZ + (data.y - playerZ) * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
                 var triag = getRotatedTriangle(data.yaw);
@@ -269,8 +271,8 @@ public class VaultMapOverlayRenderer {
     public static void renderCellPC(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.cellType != CellType.CELLTYPE_UNKNOWN) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())
-                return; // VaultMap.currentRoom.x - cellx
-            if ((cell.x - playerX) > cutoff || (cell.z - playerZ) > cutoff) return;
+                return;
+            if (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff) return;
             float mapX = centerX + (cell.x - playerX) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             float mapZ = centerZ + (cell.z - playerZ) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             //float roomWidth = (float) ((mapRoomWidth / 2) * 1.5);
@@ -387,7 +389,7 @@ public class VaultMapOverlayRenderer {
     public static void renderTextureCellPC(BufferBuilder bufferBuilder, VaultCell cell) {
         if (cell.cellType == CellType.CELLTYPE_ROOM) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
-            if ((cell.x - playerX) > cutoff || (cell.z - playerZ) > cutoff) return;
+            if (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff) return;
             float mapX = centerX + (cell.x - playerX) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
             float mapZ = centerZ + (cell.z - playerZ) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
             //float roomWidth = (float) (mapRoomWidth * 1.5);

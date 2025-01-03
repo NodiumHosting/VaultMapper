@@ -72,8 +72,8 @@ public class ClientConfig {
 
         SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
 
-        PC_CUTOFF = BUILDER.comment("Number of cells rendered around player").define("PC_CUTOFF", 10);
-        PLAYER_CENTRIC_RENDERING = BUILDER.comment("Enable player centric rendering").define("PLAYER_CENTRIC_RENDERING", true);
+        PC_CUTOFF = BUILDER.comment("Number of cells rendered around player").define("PC_CUTOFF", 20);
+        PLAYER_CENTRIC_RENDERING = BUILDER.comment("Enable player centric rendering. Also greatly reduces lag(hopefully)").define("PLAYER_CENTRIC_RENDERING", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
