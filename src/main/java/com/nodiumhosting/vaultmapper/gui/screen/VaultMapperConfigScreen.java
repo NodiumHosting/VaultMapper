@@ -91,7 +91,7 @@ public class VaultMapperConfigScreen extends Screen {
         Slider mapScale = new Slider(this.width / 2 + 10, getScaledY(3), "", ClientConfig.MAP_SCALE.get(), 30, 3, mapScaleGetter, width, elHeight, 10);
         this.addRenderableWidget(mapScale);
 
-        Slider PCCutoff = new Slider(this.width / 2 + 10, getScaledY(4), "", ClientConfig.PC_CUTOFF.get(), 30, 4, PCCutoffGetter, width, elHeight, 10);
+        Slider PCCutoff = new Slider(this.width / 2 + 10, getScaledY(4), "", ClientConfig.PC_CUTOFF.get(), 30, 4, PCCutoffGetter, width, elHeight, 20);
         this.addRenderableWidget(PCCutoff);
 
         Checkbox playerCentric = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(4) - 3, 20, 20, new TextComponent(""), ClientConfig.PLAYER_CENTRIC_RENDERING.get());
@@ -285,12 +285,10 @@ public class VaultMapperConfigScreen extends Screen {
 
             ClientConfig.PC_CUTOFF.set(PCCutoff.sliderValue);
             ClientConfig.PLAYER_CENTRIC_RENDERING.set(playerCentric.selected());
-            VaultMapOverlayRenderer.playerCentricRender = playerCentric.selected();
-            VaultMapOverlayRenderer.cutoff = PCCutoff.sliderValue;
 
             ClientConfig.SPEC.save();
 
-            VaultMapOverlayRenderer.onWindowResize();
+            VaultMapOverlayRenderer.prep();
 
             // send config to webmap
             VaultMapper.webMapServer.sendConfig();

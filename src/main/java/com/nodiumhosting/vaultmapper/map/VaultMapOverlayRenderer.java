@@ -28,8 +28,8 @@ public class VaultMapOverlayRenderer {
     public static boolean enabled = false;
     public static boolean ignoreResearchRequirement = false;
     public static boolean syncErrorState = false;
-    public static boolean playerCentricRender = ClientConfig.PLAYER_CENTRIC_RENDERING.get();
-    public static int cutoff = ClientConfig.PC_CUTOFF.get();
+    static boolean playerCentricRender = ClientConfig.PLAYER_CENTRIC_RENDERING.get();
+    static int cutoff = ClientConfig.PC_CUTOFF.get();
     static float mapScaleMultiplier;
     static float mapRoomWidth;
     static boolean prepped = false;
@@ -50,7 +50,6 @@ public class VaultMapOverlayRenderer {
 
         int offsetX = ClientConfig.MAP_X_OFFSET.get();
         int offsetZ = ClientConfig.MAP_Y_OFFSET.get();
-
 
         if (VaultMap.currentRoom != null) {
             playerX = VaultMap.currentRoom.x;
@@ -77,6 +76,12 @@ public class VaultMapOverlayRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        // map border if player centric
+        if (playerCentricRender) {
+            renderMapBorderPC(bufferBuilder, 0xFFFFFFFF);
+        }
+
         // Tunnel map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z).forEach((cell) -> {
             if (playerCentricRender) {
@@ -416,6 +421,42 @@ public class VaultMapOverlayRenderer {
         }
     }
 
+    public static void renderMapBorderPC(BufferBuilder bufferBuilder, int color) {
+        float borderWidth = 5;
+        float mapSize = (VaultMap.currentMapSize * mapRoomWidth);
+        float mapX = centerX - (mapSize / 2);
+        float mapZ = centerZ - (mapSize / 2);
+        float mapWidth = mapSize + borderWidth * 2;
+        float windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        float windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+
+        VaultMapper.LOGGER.info("w: " + windowWidth + " h: " + windowHeight);
+        VaultMapper.LOGGER.info("mapX: " + mapX + " mapZ: " + mapZ + " mapWidth: " + mapWidth + " borderWidth: " + borderWidth + " color: " + color);
+
+        // top
+        bufferBuilder.vertex(mapX - borderWidth, mapZ - borderWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth, mapZ - borderWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - borderWidth, mapZ, 0).color(color).endVertex();
+
+        // bottom
+        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth + borderWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth + borderWidth, 0).color(color).endVertex();
+
+        // left
+        bufferBuilder.vertex(mapX - borderWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX, mapZ + mapWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
+
+        // right
+        bufferBuilder.vertex(mapX + mapWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth + borderWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth + borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth, 0).color(color).endVertex();
+    }
 
     public static void onWindowResize() {
         int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
@@ -493,6 +534,9 @@ public class VaultMapOverlayRenderer {
     }
 
     public static void prep() {
+        playerCentricRender = ClientConfig.PLAYER_CENTRIC_RENDERING.get();
+        cutoff = ClientConfig.PC_CUTOFF.get();
+
         onWindowResize();
         VaultMapper.LOGGER.info("prep ran");
         prepped = true;
