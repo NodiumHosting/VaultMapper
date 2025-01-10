@@ -230,7 +230,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
 
         EditBoxReset oreRoomColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(y), elWidthColor, elHeight, new TextComponent("ORE_ROOM_COLOR"), "#00FFFF");
-        oreRoomColor.setValue(ClientConfig.CHALLENGE_ROOM_COLOR.get());
+        oreRoomColor.setValue(ClientConfig.ORE_ROOM_COLOR.get());
         this.addRenderableWidget(oreRoomColor);
         ColorButton oreRoomColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(y++), elHeight, elHeight, parseColor(ClientConfig.ORE_ROOM_COLOR.get()), button -> {
 
