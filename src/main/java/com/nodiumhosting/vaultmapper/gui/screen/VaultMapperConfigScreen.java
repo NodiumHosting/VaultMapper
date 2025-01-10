@@ -291,6 +291,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SHOW_INSCRIPTIONS.set(showInscription.selected());
             ClientConfig.OMEGA_ROOM_COLOR.set(omegaRoomColor.getValue());
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
+            ClientConfig.ORE_ROOM_COLOR.set(oreRoomColor.getValue());
             ClientConfig.SHOW_ROOM_ICONS.set(showRoomIcons.selected());
             ClientConfig.VMSYNC_SERVER.set(syncServer.getValue());
             ClientConfig.SYNC_COLOR.set(syncColor.getValue());
@@ -348,6 +349,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.SHOW_INSCRIPTIONS.set(true);
             ClientConfig.OMEGA_ROOM_COLOR.set("#55FF55");
             ClientConfig.CHALLENGE_ROOM_COLOR.set("#F09E00");
+            ClientConfig.ORE_ROOM_COLOR.set("#00FFFF");
             ClientConfig.SHOW_ROOM_ICONS.set(true);
             ClientConfig.VMSYNC_SERVER.set("wss://vmsync.ndmh.xyz");
             ClientConfig.SYNC_ENABLED.set(true);
