@@ -10,6 +10,7 @@ import com.nodiumhosting.vaultmapper.proto.RoomType;
 import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.core.vault.VaultRegistry;
+import iskallia.vault.init.ModBlocks;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -129,18 +130,40 @@ public class VaultMap {
         return x >= -24 && x <= 24 && z >= -24 && z <= 24;
     }
 
-    public static CellType getCellType(int x, int z) {
-        if (abs(x) % 2 == 0 && abs(z) % 2 == 0) { // room
+    private static CellType getCellType(int x, int z) {
+        if (x == 0 && z == 0) {
             return CellType.CELLTYPE_ROOM;
-        } else if (abs(x) % 2 == 1 && abs(z) % 2 == 1) { //void
-            return CellType.CELLTYPE_UNKNOWN;
-        } else { // tunnel
-            if (abs(x) % 2 == 1 && z % 2 == 0) { // x tunnel
-                return CellType.CELLTYPE_TUNNEL_X;
-            } else { // z tunnel
-                return CellType.CELLTYPE_TUNNEL_Z;
-            }
         }
+
+        // clock wise
+        Block n = VaultMap.getCellBlock(x, z, 23, 33, 42);
+        Block e = VaultMap.getCellBlock(x, z, 42, 33, 23);
+        Block s = VaultMap.getCellBlock(x, z, 23, 33, 4);
+        Block w = VaultMap.getCellBlock(x, z, 4, 33, 23);
+
+        if (n == null || e == null || s == null || w == null) {
+            return null; // not all blocks are loaded - retry later
+        }
+
+        boolean nBed = n == ModBlocks.VAULT_BEDROCK;
+        boolean eBed = e == ModBlocks.VAULT_BEDROCK;
+        boolean sBed = s == ModBlocks.VAULT_BEDROCK;
+        boolean wBed = w == ModBlocks.VAULT_BEDROCK;
+
+        if (nBed && eBed && sBed && wBed) {
+            return CellType.CELLTYPE_UNKNOWN;
+        }
+        if (nBed && !eBed && sBed && !wBed) {
+            return CellType.CELLTYPE_TUNNEL_X;
+        }
+        if (!nBed && eBed && !sBed && wBed) {
+            return CellType.CELLTYPE_TUNNEL_Z;
+        }
+        if (!nBed && !eBed && !sBed && !wBed) {
+            return CellType.CELLTYPE_ROOM;
+        }
+        // can happen if vm receives old data from chunkcache (for example from overworld) - retry later
+        return null;
     }
 
     public static String getCellColor(VaultCell cell) {
@@ -202,6 +225,7 @@ public class VaultMap {
         int playerRelativeZ = (int) Math.abs(Math.floor(player.getZ() % 47));
 
         CellType cellType = getCellType(playerRoomX, playerRoomZ);
+        if (cellType == null) return; // not all blocks are loaded - retry later
 
         // only update tunnel if player is actually in a tunnel to prevent dungeons and doors from being detected as tunnels
         int playerY = (int) player.getY();
