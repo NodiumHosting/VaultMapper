@@ -83,6 +83,11 @@ public class VaultMap {
 
     public static void startSync(String playerUUID, String dimName) {
         if (!ClientConfig.SYNC_ENABLED.get()) return;
+        if (syncClient != null) {
+            clearPlayers();
+            syncClient.closeGracefully();
+            syncClient = null;
+        }
         syncClient = new SyncClient(playerUUID, dimName);
         syncClient.connect();
 
