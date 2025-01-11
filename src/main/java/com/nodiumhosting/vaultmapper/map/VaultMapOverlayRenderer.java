@@ -79,7 +79,7 @@ public class VaultMapOverlayRenderer {
 
         // map border if player centric
         if (playerCentricRender) {
-            renderMapBorderPC(bufferBuilder, 0xFFFFFFFF);
+            renderMapBorderPC(bufferBuilder, 0xFF808080);
         }
 
         // Tunnel map
@@ -421,43 +421,6 @@ public class VaultMapOverlayRenderer {
         }
     }
 
-    public static void renderMapBorderPC(BufferBuilder bufferBuilder, int color) {
-        float borderWidth = 5;
-        float mapSize = (VaultMap.currentMapSize * mapRoomWidth);
-        float mapX = centerX - (mapSize / 2);
-        float mapZ = centerZ - (mapSize / 2);
-        float mapWidth = mapSize + borderWidth * 2;
-        float windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-        float windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-
-        VaultMapper.LOGGER.info("w: " + windowWidth + " h: " + windowHeight);
-        VaultMapper.LOGGER.info("mapX: " + mapX + " mapZ: " + mapZ + " mapWidth: " + mapWidth + " borderWidth: " + borderWidth + " color: " + color);
-
-        // top
-        bufferBuilder.vertex(mapX - borderWidth, mapZ - borderWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth, mapZ - borderWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - borderWidth, mapZ, 0).color(color).endVertex();
-
-        // bottom
-        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth + borderWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth + borderWidth, 0).color(color).endVertex();
-
-        // left
-        bufferBuilder.vertex(mapX - borderWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX, mapZ + mapWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
-
-        // right
-        bufferBuilder.vertex(mapX + mapWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth + borderWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth + borderWidth, mapZ + mapWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapWidth, mapZ + mapWidth, 0).color(color).endVertex();
-    }
-
     public static void onWindowResize() {
         int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int h = Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -540,5 +503,37 @@ public class VaultMapOverlayRenderer {
         onWindowResize();
         VaultMapper.LOGGER.info("prep ran");
         prepped = true;
+    }
+
+    public static void renderMapBorderPC(BufferBuilder bufferBuilder, int color) {
+        float lineWidth = 1;
+        float mapSize = (float) (((cutoff + 0.5) * mapRoomWidth) * 2);
+        float mapSizeDelta = mapSize / 2;
+        float mapX = centerX - mapSizeDelta + ClientConfig.MAP_X_OFFSET.get();
+        float mapZ = centerZ - mapSizeDelta + ClientConfig.MAP_Y_OFFSET.get();
+
+        bufferBuilder.vertex(mapX - lineWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ - lineWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - lineWidth, mapZ - lineWidth, 0).color(color).endVertex();
+
+        // Bottom border
+        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize + lineWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize + lineWidth, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize, 0).color(color).endVertex();
+
+        // Left border
+        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX - lineWidth, mapZ, 0).color(color).endVertex();
+
+        // Right border
+        bufferBuilder.vertex(mapX + mapSize, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(mapX + mapSize, mapZ, 0).color(color).endVertex();
+
     }
 }
