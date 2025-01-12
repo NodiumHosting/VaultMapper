@@ -480,8 +480,8 @@ public class VaultMap {
     }
 
     static public class MapPlayer {
-        String uuid;
-        String color;
+        public String uuid;
+        public String color;
         int x;
         int y;
         float yaw;
