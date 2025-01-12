@@ -27,7 +27,7 @@ public class SyncClient extends WebSocketClient {
     private boolean keepMeOn = false;
 
     public SyncClient(String playerUUID, String vaultID) {
-        super(URI.create(ClientConfig.SYNC_SERVER.get() + "/?vaultID=" + vaultID + "&uuid=" + playerUUID)); //TODO: add check whether server is even online
+        super(URI.create(ClientConfig.VMSYNC_SERVER.get() + "/?vaultID=" + vaultID + "&uuid=" + playerUUID)); //TODO: add check whether server is even online
 
         self = this;
 

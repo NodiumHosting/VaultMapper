@@ -26,7 +26,7 @@ public class ClientConfig {
     //    public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_SCALE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SYNC_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<String> SYNC_SERVER;
+    public static final ForgeConfigSpec.ConfigValue<String> VMSYNC_SERVER;
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_COLOR;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> PC_CUTOFF;
@@ -69,7 +69,7 @@ public class ClientConfig {
 
         SYNC_ENABLED = BUILDER.comment("Enable syncing the map data between players").define("SYNC_ENABLED", true);
 
-        SYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("SYNC_SERVER", "wss://vmsync.boykiss.ing:25284");
+        VMSYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("VMSYNC_SERVER", "wss://vmsync.ndmh.xyz");
 
         SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
 
