@@ -11,6 +11,7 @@
   "client": [
     "FavoriteDisplayElementMixin",
     "OptionsScreenConfigButtonMixin",
+    "PlayerTabOverlayMixin",
     "TitleScreenMixin",
     "VaultEndScreenMixin",
     "WindowMixin"
