@@ -43,10 +43,14 @@ public class VaultMapper {
     }
 
     public static String getVersion() {
-        return ModList.get()
+        String version = ModList.get()
                 .getModContainerById(VaultMapper.MODID)
                 .map(container -> container.getModInfo().getVersion().toString())
                 .orElse("Unknown");
+        if (version.equals("0.0NONE")) {
+            version = "DEV";
+        }
+        return version;
     }
 
     public static boolean isVaultDimension(String vault_string) {
