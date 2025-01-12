@@ -30,6 +30,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_COLOR;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> PC_CUTOFF;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> PC_BORDER;
     public static final ForgeConfigSpec.ConfigValue<Boolean> PLAYER_CENTRIC_RENDERING;
 
     static {
@@ -73,6 +74,7 @@ public class ClientConfig {
         SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
 
         PC_CUTOFF = BUILDER.comment("Number of cells rendered around player").define("PC_CUTOFF", 20);
+        PC_BORDER = BUILDER.comment("Render border around the player centric rendering range").define("PC_BORDER", true);
         PLAYER_CENTRIC_RENDERING = BUILDER.comment("Enable player centric rendering. Also greatly reduces lag(hopefully)").define("PLAYER_CENTRIC_RENDERING", false);
 
         BUILDER.pop();

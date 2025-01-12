@@ -77,9 +77,9 @@ public class VaultMapOverlayRenderer {
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        // map border if player centric
-        if (playerCentricRender) {
-            renderMapBorderPC(bufferBuilder, 0xFF808080);
+        // map border if player centric render and border enabled in config
+        if (playerCentricRender && ClientConfig.PC_BORDER.get()) {
+            renderMapBorderPC(bufferBuilder, 0xDD808080);
         }
 
         // Tunnel map

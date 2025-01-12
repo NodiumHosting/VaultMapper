@@ -97,6 +97,15 @@ public class VaultMapperConfigScreen extends Screen {
         Checkbox playerCentric = new Checkbox(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(4) - 3, 20, 20, new TextComponent(""), ClientConfig.PLAYER_CENTRIC_RENDERING.get());
         this.addRenderableWidget(playerCentric);
 
+        MutableComponent enabledTextBorder = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
+        MutableComponent disabledTextBorder = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
+        Button enablePCBorderButton = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2 + 20 + 5, getScaledY(4), elHeight, elHeight, ClientConfig.SYNC_ENABLED.get() ? enabledTextBorder : disabledTextBorder, button -> {
+            ClientConfig.PC_BORDER.set(!ClientConfig.PC_BORDER.get());
+            ClientConfig.SPEC.save();
+            button.setMessage(ClientConfig.PC_BORDER.get() ? enabledTextBorder : disabledTextBorder);
+        });
+        this.addRenderableWidget(enablePCBorderButton);
+
         EditBoxReset mapXOffset = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(5), width, elHeight, new TextComponent("MAP_X_OFFSET"), "0");
         mapXOffset.setValue(ClientConfig.MAP_X_OFFSET.get().toString());
         this.addRenderableWidget(mapXOffset);
@@ -321,6 +330,12 @@ public class VaultMapperConfigScreen extends Screen {
 
             syncColor.setValue(randColor);
 
+            PCCutoff.sliderValue = 20;
+            if (!playerCentric.selected()) {
+                playerCentric.onPress();
+            }
+            enablePCBorderButton.setMessage(disabledTextBorder);
+
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
             ClientConfig.MAP_Y_OFFSET.set(0);
@@ -341,6 +356,7 @@ public class VaultMapperConfigScreen extends Screen {
 
             ClientConfig.PC_CUTOFF.set(20);
             ClientConfig.PLAYER_CENTRIC_RENDERING.set(false);
+            ClientConfig.PC_BORDER.set(true);
 
             ClientConfig.SPEC.save();
 
