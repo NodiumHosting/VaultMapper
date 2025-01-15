@@ -106,4 +106,34 @@ public interface MessageOrBuilder extends
    * <code>.Toast toast = 6;</code>
    */
   com.nodiumhosting.vaultmapper.proto.ToastOrBuilder getToastOrBuilder();
+
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   * @return Whether the viewerCodeRequest field is set.
+   */
+  boolean hasViewerCodeRequest();
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   * @return The viewerCodeRequest.
+   */
+  com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest getViewerCodeRequest();
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   */
+  com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder getViewerCodeRequestOrBuilder();
+
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   * @return Whether the viewerCode field is set.
+   */
+  boolean hasViewerCode();
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   * @return The viewerCode.
+   */
+  com.nodiumhosting.vaultmapper.proto.ViewerCode getViewerCode();
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   */
+  com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder getViewerCodeOrBuilder();
 }

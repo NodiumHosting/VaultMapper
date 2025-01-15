@@ -36,6 +36,16 @@ public final class VaultMapperProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Toast_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ViewerCodeRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ViewerCodeRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ViewerCode_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ViewerCode_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Vault_descriptor;
   static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -70,42 +80,46 @@ public final class VaultMapperProto {
   static {
     java.lang.String[] descriptorData = {
       "\n%VaultMapperProtocol/vaultmapper.proto\"" +
-      "\302\001\n\007Message\022\032\n\004type\030\001 \001(\0162\014.MessageType\022" +
+      "\222\002\n\007Message\022\032\n\004type\030\001 \001(\0162\014.MessageType\022" +
       "\025\n\005vault\030\002 \001(\0132\006.Vault\022!\n\013vaultPlayer\030\003 " +
       "\001(\0132\014.VaultPlayer\022\035\n\tvaultCell\030\004 \001(\0132\n.V" +
       "aultCell\022+\n\020playerDisconnect\030\005 \001(\0132\021.Pla" +
-      "yerDisconnect\022\025\n\005toast\030\006 \001(\0132\006.Toast\"\030\n\005" +
-      "Toast\022\017\n\007message\030\001 \001(\t\"A\n\005Vault\022\031\n\005cells" +
-      "\030\001 \003(\0132\n.VaultCell\022\035\n\007players\030\002 \003(\0132\014.Va" +
-      "ultPlayer\"U\n\013VaultPlayer\022\t\n\001x\030\001 \001(\021\022\t\n\001z" +
-      "\030\002 \001(\021\022\014\n\004uuid\030\003 \001(\t\022\025\n\005color\030\004 \001(\0132\006.Co" +
-      "lor\022\013\n\003yaw\030\005 \001(\002\"(\n\005Color\022\t\n\001r\030\001 \001(\r\022\t\n\001" +
-      "g\030\002 \001(\r\022\t\n\001b\030\003 \001(\r\"\255\001\n\tVaultCell\022\t\n\001x\030\001 " +
-      "\001(\021\022\t\n\001z\030\002 \001(\021\022\033\n\010cellType\030\003 \001(\0162\t.CellT" +
-      "ype\022\033\n\010roomType\030\004 \001(\0162\t.RoomType\022\033\n\010room" +
-      "Name\030\005 \001(\0162\t.RoomName\022\020\n\010explored\030\006 \001(\010\022" +
-      "\021\n\tinscribed\030\007 \001(\010\022\016\n\006marked\030\010 \001(\010\" \n\020Pl" +
-      "ayerDisconnect\022\014\n\004uuid\030\001 \001(\t*\\\n\013MessageT" +
-      "ype\022\t\n\005VAULT\020\000\022\020\n\014VAULT_PLAYER\020\001\022\016\n\nVAUL" +
-      "T_CELL\020\002\022\025\n\021PLAYER_DISCONNECT\020\003\022\t\n\005TOAST" +
-      "\020\004*a\n\010CellType\022\024\n\020CELLTYPE_UNKNOWN\020\000\022\021\n\r" +
-      "CELLTYPE_ROOM\020\001\022\025\n\021CELLTYPE_TUNNEL_X\020\002\022\025" +
-      "\n\021CELLTYPE_TUNNEL_Z\020\003*\206\001\n\010RoomType\022\024\n\020RO" +
-      "OMTYPE_UNKNOWN\020\000\022\022\n\016ROOMTYPE_START\020\001\022\022\n\016" +
-      "ROOMTYPE_BASIC\020\002\022\020\n\014ROOMTYPE_ORE\020\003\022\026\n\022RO" +
-      "OMTYPE_CHALLENGE\020\004\022\022\n\016ROOMTYPE_OMEGA\020\005*\222" +
-      "\003\n\010RoomName\022\024\n\020ROOMNAME_UNKNOWN\020\000\022\027\n\023ROO" +
-      "MNAME_BLACKSMITH\020\001\022\021\n\rROOMNAME_COVE\020\002\022\032\n" +
-      "\026ROOMNAME_CRYSTAL_CAVES\020\003\022\025\n\021ROOMNAME_DI" +
-      "G_SITE\020\004\022\023\n\017ROOMNAME_DRAGON\020\005\022\024\n\020ROOMNAM" +
-      "E_FACTORY\020\006\022\024\n\020ROOMNAME_LIBRARY\020\007\022\021\n\rROO" +
-      "MNAME_MINE\020\010\022\026\n\022ROOMNAME_MUSH_ROOM\020\t\022\025\n\021" +
-      "ROOMNAME_PAINTING\020\n\022\023\n\017ROOMNAME_VENDOR\020\013" +
-      "\022\024\n\020ROOMNAME_VILLAGE\020\014\022\026\n\022ROOMNAME_WILD_" +
-      "WEST\020\r\022\023\n\017ROOMNAME_X_MARK\020\016\022\021\n\rROOMNAME_" +
-      "CUBE\020\017\022\020\n\014ROOMNAME_LAB\020\020\022\021\n\rROOMNAME_RAI" +
-      "D\020\021BA\n#com.nodiumhosting.vaultmapper.pro" +
-      "toB\020VaultMapperProtoP\001Z\006/protob\006proto3"
+      "yerDisconnect\022\025\n\005toast\030\006 \001(\0132\006.Toast\022-\n\021" +
+      "viewerCodeRequest\030\007 \001(\0132\022.ViewerCodeRequ" +
+      "est\022\037\n\nviewerCode\030\010 \001(\0132\013.ViewerCode\"\030\n\005" +
+      "Toast\022\017\n\007message\030\001 \001(\t\"\023\n\021ViewerCodeRequ" +
+      "est\"\032\n\nViewerCode\022\014\n\004code\030\001 \001(\t\"A\n\005Vault" +
+      "\022\031\n\005cells\030\001 \003(\0132\n.VaultCell\022\035\n\007players\030\002" +
+      " \003(\0132\014.VaultPlayer\"U\n\013VaultPlayer\022\t\n\001x\030\001" +
+      " \001(\021\022\t\n\001z\030\002 \001(\021\022\014\n\004uuid\030\003 \001(\t\022\025\n\005color\030\004" +
+      " \001(\0132\006.Color\022\013\n\003yaw\030\005 \001(\002\"(\n\005Color\022\t\n\001r\030" +
+      "\001 \001(\r\022\t\n\001g\030\002 \001(\r\022\t\n\001b\030\003 \001(\r\"\255\001\n\tVaultCel" +
+      "l\022\t\n\001x\030\001 \001(\021\022\t\n\001z\030\002 \001(\021\022\033\n\010cellType\030\003 \001(" +
+      "\0162\t.CellType\022\033\n\010roomType\030\004 \001(\0162\t.RoomTyp" +
+      "e\022\033\n\010roomName\030\005 \001(\0162\t.RoomName\022\020\n\010explor" +
+      "ed\030\006 \001(\010\022\021\n\tinscribed\030\007 \001(\010\022\016\n\006marked\030\010 " +
+      "\001(\010\" \n\020PlayerDisconnect\022\014\n\004uuid\030\001 \001(\t*\\\n" +
+      "\013MessageType\022\t\n\005VAULT\020\000\022\020\n\014VAULT_PLAYER\020" +
+      "\001\022\016\n\nVAULT_CELL\020\002\022\025\n\021PLAYER_DISCONNECT\020\003" +
+      "\022\t\n\005TOAST\020\004*a\n\010CellType\022\024\n\020CELLTYPE_UNKN" +
+      "OWN\020\000\022\021\n\rCELLTYPE_ROOM\020\001\022\025\n\021CELLTYPE_TUN" +
+      "NEL_X\020\002\022\025\n\021CELLTYPE_TUNNEL_Z\020\003*\206\001\n\010RoomT" +
+      "ype\022\024\n\020ROOMTYPE_UNKNOWN\020\000\022\022\n\016ROOMTYPE_ST" +
+      "ART\020\001\022\022\n\016ROOMTYPE_BASIC\020\002\022\020\n\014ROOMTYPE_OR" +
+      "E\020\003\022\026\n\022ROOMTYPE_CHALLENGE\020\004\022\022\n\016ROOMTYPE_" +
+      "OMEGA\020\005*\222\003\n\010RoomName\022\024\n\020ROOMNAME_UNKNOWN" +
+      "\020\000\022\027\n\023ROOMNAME_BLACKSMITH\020\001\022\021\n\rROOMNAME_" +
+      "COVE\020\002\022\032\n\026ROOMNAME_CRYSTAL_CAVES\020\003\022\025\n\021RO" +
+      "OMNAME_DIG_SITE\020\004\022\023\n\017ROOMNAME_DRAGON\020\005\022\024" +
+      "\n\020ROOMNAME_FACTORY\020\006\022\024\n\020ROOMNAME_LIBRARY" +
+      "\020\007\022\021\n\rROOMNAME_MINE\020\010\022\026\n\022ROOMNAME_MUSH_R" +
+      "OOM\020\t\022\025\n\021ROOMNAME_PAINTING\020\n\022\023\n\017ROOMNAME" +
+      "_VENDOR\020\013\022\024\n\020ROOMNAME_VILLAGE\020\014\022\026\n\022ROOMN" +
+      "AME_WILD_WEST\020\r\022\023\n\017ROOMNAME_X_MARK\020\016\022\021\n\r" +
+      "ROOMNAME_CUBE\020\017\022\020\n\014ROOMNAME_LAB\020\020\022\021\n\rROO" +
+      "MNAME_RAID\020\021BA\n#com.nodiumhosting.vaultm" +
+      "apper.protoB\020VaultMapperProtoP\001Z\006/protob" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -116,39 +130,51 @@ public final class VaultMapperProto {
     internal_static_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Message_descriptor,
-        new java.lang.String[] { "Type", "Vault", "VaultPlayer", "VaultCell", "PlayerDisconnect", "Toast", });
+        new java.lang.String[] { "Type", "Vault", "VaultPlayer", "VaultCell", "PlayerDisconnect", "Toast", "ViewerCodeRequest", "ViewerCode", });
     internal_static_Toast_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Toast_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Toast_descriptor,
         new java.lang.String[] { "Message", });
-    internal_static_Vault_descriptor =
+    internal_static_ViewerCodeRequest_descriptor =
       getDescriptor().getMessageTypes().get(2);
+    internal_static_ViewerCodeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_ViewerCodeRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_ViewerCode_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_ViewerCode_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_ViewerCode_descriptor,
+        new java.lang.String[] { "Code", });
+    internal_static_Vault_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_Vault_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Vault_descriptor,
         new java.lang.String[] { "Cells", "Players", });
     internal_static_VaultPlayer_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_VaultPlayer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_VaultPlayer_descriptor,
         new java.lang.String[] { "X", "Z", "Uuid", "Color", "Yaw", });
     internal_static_Color_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_Color_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Color_descriptor,
         new java.lang.String[] { "R", "G", "B", });
     internal_static_VaultCell_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_VaultCell_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_VaultCell_descriptor,
         new java.lang.String[] { "X", "Z", "CellType", "RoomType", "RoomName", "Explored", "Inscribed", "Marked", });
     internal_static_PlayerDisconnect_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_PlayerDisconnect_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_PlayerDisconnect_descriptor,

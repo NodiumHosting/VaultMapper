@@ -204,6 +204,58 @@ private static final long serialVersionUID = 0L;
     return toast_ == null ? com.nodiumhosting.vaultmapper.proto.Toast.getDefaultInstance() : toast_;
   }
 
+  public static final int VIEWERCODEREQUEST_FIELD_NUMBER = 7;
+  private com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest viewerCodeRequest_;
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   * @return Whether the viewerCodeRequest field is set.
+   */
+  @java.lang.Override
+  public boolean hasViewerCodeRequest() {
+    return ((bitField0_ & 0x00000020) != 0);
+  }
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   * @return The viewerCodeRequest.
+   */
+  @java.lang.Override
+  public com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest getViewerCodeRequest() {
+    return viewerCodeRequest_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.getDefaultInstance() : viewerCodeRequest_;
+  }
+  /**
+   * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+   */
+  @java.lang.Override
+  public com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder getViewerCodeRequestOrBuilder() {
+    return viewerCodeRequest_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.getDefaultInstance() : viewerCodeRequest_;
+  }
+
+  public static final int VIEWERCODE_FIELD_NUMBER = 8;
+  private com.nodiumhosting.vaultmapper.proto.ViewerCode viewerCode_;
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   * @return Whether the viewerCode field is set.
+   */
+  @java.lang.Override
+  public boolean hasViewerCode() {
+    return ((bitField0_ & 0x00000040) != 0);
+  }
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   * @return The viewerCode.
+   */
+  @java.lang.Override
+  public com.nodiumhosting.vaultmapper.proto.ViewerCode getViewerCode() {
+    return viewerCode_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCode.getDefaultInstance() : viewerCode_;
+  }
+  /**
+   * <code>.ViewerCode viewerCode = 8;</code>
+   */
+  @java.lang.Override
+  public com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder getViewerCodeOrBuilder() {
+    return viewerCode_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCode.getDefaultInstance() : viewerCode_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -235,6 +287,12 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000010) != 0)) {
       output.writeMessage(6, getToast());
+    }
+    if (((bitField0_ & 0x00000020) != 0)) {
+      output.writeMessage(7, getViewerCodeRequest());
+    }
+    if (((bitField0_ & 0x00000040) != 0)) {
+      output.writeMessage(8, getViewerCode());
     }
     getUnknownFields().writeTo(output);
   }
@@ -268,6 +326,14 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000010) != 0)) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(6, getToast());
+    }
+    if (((bitField0_ & 0x00000020) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(7, getViewerCodeRequest());
+    }
+    if (((bitField0_ & 0x00000040) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(8, getViewerCode());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -310,6 +376,16 @@ private static final long serialVersionUID = 0L;
       if (!getToast()
           .equals(other.getToast())) return false;
     }
+    if (hasViewerCodeRequest() != other.hasViewerCodeRequest()) return false;
+    if (hasViewerCodeRequest()) {
+      if (!getViewerCodeRequest()
+          .equals(other.getViewerCodeRequest())) return false;
+    }
+    if (hasViewerCode() != other.hasViewerCode()) return false;
+    if (hasViewerCode()) {
+      if (!getViewerCode()
+          .equals(other.getViewerCode())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -342,6 +418,14 @@ private static final long serialVersionUID = 0L;
     if (hasToast()) {
       hash = (37 * hash) + TOAST_FIELD_NUMBER;
       hash = (53 * hash) + getToast().hashCode();
+    }
+    if (hasViewerCodeRequest()) {
+      hash = (37 * hash) + VIEWERCODEREQUEST_FIELD_NUMBER;
+      hash = (53 * hash) + getViewerCodeRequest().hashCode();
+    }
+    if (hasViewerCode()) {
+      hash = (37 * hash) + VIEWERCODE_FIELD_NUMBER;
+      hash = (53 * hash) + getViewerCode().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -478,6 +562,8 @@ private static final long serialVersionUID = 0L;
         getVaultCellFieldBuilder();
         getPlayerDisconnectFieldBuilder();
         getToastFieldBuilder();
+        getViewerCodeRequestFieldBuilder();
+        getViewerCodeFieldBuilder();
       }
     }
     @java.lang.Override
@@ -509,6 +595,16 @@ private static final long serialVersionUID = 0L;
       if (toastBuilder_ != null) {
         toastBuilder_.dispose();
         toastBuilder_ = null;
+      }
+      viewerCodeRequest_ = null;
+      if (viewerCodeRequestBuilder_ != null) {
+        viewerCodeRequestBuilder_.dispose();
+        viewerCodeRequestBuilder_ = null;
+      }
+      viewerCode_ = null;
+      if (viewerCodeBuilder_ != null) {
+        viewerCodeBuilder_.dispose();
+        viewerCodeBuilder_ = null;
       }
       return this;
     }
@@ -577,6 +673,18 @@ private static final long serialVersionUID = 0L;
             : toastBuilder_.build();
         to_bitField0_ |= 0x00000010;
       }
+      if (((from_bitField0_ & 0x00000040) != 0)) {
+        result.viewerCodeRequest_ = viewerCodeRequestBuilder_ == null
+            ? viewerCodeRequest_
+            : viewerCodeRequestBuilder_.build();
+        to_bitField0_ |= 0x00000020;
+      }
+      if (((from_bitField0_ & 0x00000080) != 0)) {
+        result.viewerCode_ = viewerCodeBuilder_ == null
+            ? viewerCode_
+            : viewerCodeBuilder_.build();
+        to_bitField0_ |= 0x00000040;
+      }
       result.bitField0_ |= to_bitField0_;
     }
 
@@ -609,6 +717,12 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasToast()) {
         mergeToast(other.getToast());
+      }
+      if (other.hasViewerCodeRequest()) {
+        mergeViewerCodeRequest(other.getViewerCodeRequest());
+      }
+      if (other.hasViewerCode()) {
+        mergeViewerCode(other.getViewerCode());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -676,6 +790,20 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000020;
               break;
             } // case 50
+            case 58: {
+              input.readMessage(
+                  getViewerCodeRequestFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000040;
+              break;
+            } // case 58
+            case 66: {
+              input.readMessage(
+                  getViewerCodeFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000080;
+              break;
+            } // case 66
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1385,6 +1513,248 @@ private static final long serialVersionUID = 0L;
         toast_ = null;
       }
       return toastBuilder_;
+    }
+
+    private com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest viewerCodeRequest_;
+    private com.google.protobuf.SingleFieldBuilder<
+        com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder> viewerCodeRequestBuilder_;
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     * @return Whether the viewerCodeRequest field is set.
+     */
+    public boolean hasViewerCodeRequest() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     * @return The viewerCodeRequest.
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest getViewerCodeRequest() {
+      if (viewerCodeRequestBuilder_ == null) {
+        return viewerCodeRequest_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.getDefaultInstance() : viewerCodeRequest_;
+      } else {
+        return viewerCodeRequestBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public Builder setViewerCodeRequest(com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest value) {
+      if (viewerCodeRequestBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        viewerCodeRequest_ = value;
+      } else {
+        viewerCodeRequestBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000040;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public Builder setViewerCodeRequest(
+        com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.Builder builderForValue) {
+      if (viewerCodeRequestBuilder_ == null) {
+        viewerCodeRequest_ = builderForValue.build();
+      } else {
+        viewerCodeRequestBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000040;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public Builder mergeViewerCodeRequest(com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest value) {
+      if (viewerCodeRequestBuilder_ == null) {
+        if (((bitField0_ & 0x00000040) != 0) &&
+          viewerCodeRequest_ != null &&
+          viewerCodeRequest_ != com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.getDefaultInstance()) {
+          getViewerCodeRequestBuilder().mergeFrom(value);
+        } else {
+          viewerCodeRequest_ = value;
+        }
+      } else {
+        viewerCodeRequestBuilder_.mergeFrom(value);
+      }
+      if (viewerCodeRequest_ != null) {
+        bitField0_ |= 0x00000040;
+        onChanged();
+      }
+      return this;
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public Builder clearViewerCodeRequest() {
+      bitField0_ = (bitField0_ & ~0x00000040);
+      viewerCodeRequest_ = null;
+      if (viewerCodeRequestBuilder_ != null) {
+        viewerCodeRequestBuilder_.dispose();
+        viewerCodeRequestBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.Builder getViewerCodeRequestBuilder() {
+      bitField0_ |= 0x00000040;
+      onChanged();
+      return getViewerCodeRequestFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder getViewerCodeRequestOrBuilder() {
+      if (viewerCodeRequestBuilder_ != null) {
+        return viewerCodeRequestBuilder_.getMessageOrBuilder();
+      } else {
+        return viewerCodeRequest_ == null ?
+            com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.getDefaultInstance() : viewerCodeRequest_;
+      }
+    }
+    /**
+     * <code>.ViewerCodeRequest viewerCodeRequest = 7;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilder<
+        com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder> 
+        getViewerCodeRequestFieldBuilder() {
+      if (viewerCodeRequestBuilder_ == null) {
+        viewerCodeRequestBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+            com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequest.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeRequestOrBuilder>(
+                getViewerCodeRequest(),
+                getParentForChildren(),
+                isClean());
+        viewerCodeRequest_ = null;
+      }
+      return viewerCodeRequestBuilder_;
+    }
+
+    private com.nodiumhosting.vaultmapper.proto.ViewerCode viewerCode_;
+    private com.google.protobuf.SingleFieldBuilder<
+        com.nodiumhosting.vaultmapper.proto.ViewerCode, com.nodiumhosting.vaultmapper.proto.ViewerCode.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder> viewerCodeBuilder_;
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     * @return Whether the viewerCode field is set.
+     */
+    public boolean hasViewerCode() {
+      return ((bitField0_ & 0x00000080) != 0);
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     * @return The viewerCode.
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCode getViewerCode() {
+      if (viewerCodeBuilder_ == null) {
+        return viewerCode_ == null ? com.nodiumhosting.vaultmapper.proto.ViewerCode.getDefaultInstance() : viewerCode_;
+      } else {
+        return viewerCodeBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public Builder setViewerCode(com.nodiumhosting.vaultmapper.proto.ViewerCode value) {
+      if (viewerCodeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        viewerCode_ = value;
+      } else {
+        viewerCodeBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000080;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public Builder setViewerCode(
+        com.nodiumhosting.vaultmapper.proto.ViewerCode.Builder builderForValue) {
+      if (viewerCodeBuilder_ == null) {
+        viewerCode_ = builderForValue.build();
+      } else {
+        viewerCodeBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000080;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public Builder mergeViewerCode(com.nodiumhosting.vaultmapper.proto.ViewerCode value) {
+      if (viewerCodeBuilder_ == null) {
+        if (((bitField0_ & 0x00000080) != 0) &&
+          viewerCode_ != null &&
+          viewerCode_ != com.nodiumhosting.vaultmapper.proto.ViewerCode.getDefaultInstance()) {
+          getViewerCodeBuilder().mergeFrom(value);
+        } else {
+          viewerCode_ = value;
+        }
+      } else {
+        viewerCodeBuilder_.mergeFrom(value);
+      }
+      if (viewerCode_ != null) {
+        bitField0_ |= 0x00000080;
+        onChanged();
+      }
+      return this;
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public Builder clearViewerCode() {
+      bitField0_ = (bitField0_ & ~0x00000080);
+      viewerCode_ = null;
+      if (viewerCodeBuilder_ != null) {
+        viewerCodeBuilder_.dispose();
+        viewerCodeBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCode.Builder getViewerCodeBuilder() {
+      bitField0_ |= 0x00000080;
+      onChanged();
+      return getViewerCodeFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    public com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder getViewerCodeOrBuilder() {
+      if (viewerCodeBuilder_ != null) {
+        return viewerCodeBuilder_.getMessageOrBuilder();
+      } else {
+        return viewerCode_ == null ?
+            com.nodiumhosting.vaultmapper.proto.ViewerCode.getDefaultInstance() : viewerCode_;
+      }
+    }
+    /**
+     * <code>.ViewerCode viewerCode = 8;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilder<
+        com.nodiumhosting.vaultmapper.proto.ViewerCode, com.nodiumhosting.vaultmapper.proto.ViewerCode.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder> 
+        getViewerCodeFieldBuilder() {
+      if (viewerCodeBuilder_ == null) {
+        viewerCodeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+            com.nodiumhosting.vaultmapper.proto.ViewerCode, com.nodiumhosting.vaultmapper.proto.ViewerCode.Builder, com.nodiumhosting.vaultmapper.proto.ViewerCodeOrBuilder>(
+                getViewerCode(),
+                getParentForChildren(),
+                isClean());
+        viewerCode_ = null;
+      }
+      return viewerCodeBuilder_;
     }
 
     // @@protoc_insertion_point(builder_scope:Message)
