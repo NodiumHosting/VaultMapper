@@ -7,7 +7,6 @@ import com.nodiumhosting.vaultmapper.network.sync.SyncClient;
 import com.nodiumhosting.vaultmapper.proto.CellType;
 import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.proto.RoomType;
-import com.nodiumhosting.vaultmapper.util.ResearchUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.core.vault.VaultRegistry;
 import iskallia.vault.init.ModConfigs;
@@ -42,6 +41,7 @@ import static java.lang.Math.abs;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMap {
+    public static String viewerCode = "";
     public static boolean enabled;
     public static boolean debug;
     public static SyncClient syncClient;
@@ -88,6 +88,7 @@ public class VaultMap {
             syncClient.closeGracefully();
             syncClient = null;
         }
+        VaultMap.viewerCode = "";
         syncClient = new SyncClient(playerUUID, dimName);
         syncClient.connect();
 
@@ -164,7 +165,7 @@ public class VaultMap {
         if (cell.roomType == RoomType.ROOMTYPE_CHALLENGE) {
             return ClientConfig.CHALLENGE_ROOM_COLOR.get();
         }
-        if (cell.roomType == RoomType.ROOMTYPE_ORE){
+        if (cell.roomType == RoomType.ROOMTYPE_ORE) {
             return ClientConfig.ORE_ROOM_COLOR.get();
         }
         return ClientConfig.ROOM_COLOR.get();

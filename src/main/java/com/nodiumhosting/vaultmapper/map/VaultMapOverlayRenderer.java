@@ -25,6 +25,7 @@ import static java.lang.Math.abs;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
+    private static final Pattern ICON_PATH_SEPARATORS = Pattern.compile("[- ]");
     public static boolean enabled = false;
     public static boolean ignoreResearchRequirement = false;
     public static boolean syncErrorState = false;
@@ -40,8 +41,6 @@ public class VaultMapOverlayRenderer {
     static ResourceLocation icon = new ResourceLocation("vaultmapper", "/textures/gui/mine.png");
     static int playerX;
     static int playerZ;
-
-    private static final Pattern ICON_PATH_SEPARATORS = Pattern.compile("[- ]");
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
@@ -68,6 +67,14 @@ public class VaultMapOverlayRenderer {
             int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
 
             TextComponent syncError = new TextComponent("Sync Error");
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
+        } else {
+            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            int mapSize = (int) (w * 0.25f);
+            int baseMapRoomWidth = mapSize / 49;
+            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
+
+            TextComponent syncError = new TextComponent(VaultMap.viewerCode);
             GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
         }
 

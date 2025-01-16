@@ -111,6 +111,10 @@ public class SyncClient extends WebSocketClient {
                     var data = msg.getToast();
                     ToastMessageManager.displayToast(data.getMessage());
                 }
+                case VIEWER_CODE -> {
+                    var data = msg.getViewerCode();
+                    VaultMap.viewerCode = data.getCode();
+                }
                 default -> {
                     VaultMapper.LOGGER.info("Something weird with onMessage");
                 }
