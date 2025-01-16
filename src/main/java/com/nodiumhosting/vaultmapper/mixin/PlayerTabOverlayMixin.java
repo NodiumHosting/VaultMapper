@@ -35,6 +35,12 @@ public class PlayerTabOverlayMixin {
     private Minecraft minecraft;
 
     @Shadow
+    private Component header;
+
+    @Shadow
+    private Component footer;
+
+    @Shadow
     public Component getNameForDisplay(PlayerInfo pPlayerInfo) {
         return new TextComponent("thing");
     }
