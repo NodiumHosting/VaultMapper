@@ -459,10 +459,10 @@ public class VaultMapOverlayRenderer {
                 mapAnchorX = (float) width / 2;
             }
             case 3 -> {
-                mapAnchorX = width - (float) width / 4 - mapSize;
+                mapAnchorX = width - ((float) width / 4) - (mapSize / 2);
             }
             case 4 -> {
-                mapAnchorX = width - (mapSize / 3) * 2 - mapSize;
+                mapAnchorX = width - ((mapSize / 3) * 2) - (mapSize / 2);
             }
         }
 
@@ -477,10 +477,10 @@ public class VaultMapOverlayRenderer {
                 mapAnchorZ = (float) height / 2;
             }
             case 3 -> {
-                mapAnchorZ = height - (float) height / 4 - mapSize;
+                mapAnchorZ = height - ((float) height / 4) - (mapSize / 2);
             }
             case 4 -> {
-                mapAnchorZ = height - (mapSize / 3) * 2 - mapSize;
+                mapAnchorZ = height - ((mapSize / 3) * 2) - (mapSize / 2);
             }
         }
 
