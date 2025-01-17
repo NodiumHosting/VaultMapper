@@ -45,6 +45,7 @@ public class VaultMapOverlayRenderer {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
 //        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
+        if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
@@ -68,15 +69,14 @@ public class VaultMapOverlayRenderer {
 
             TextComponent syncError = new TextComponent("Sync Error");
             GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
-        } else {
-            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-            int mapSize = (int) (w * 0.25f);
-            int baseMapRoomWidth = mapSize / 49;
-            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
-
-            TextComponent syncError = new TextComponent(VaultMap.viewerCode);
-            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
-        }
+        } //else {
+//            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+//            int mapSize = (int) (w * 0.25f);
+//            int baseMapRoomWidth = mapSize / 49;
+//            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
+//
+//            TextComponent syncError = new TextComponent(VaultMap.viewerCode);
+//            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF)}
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
