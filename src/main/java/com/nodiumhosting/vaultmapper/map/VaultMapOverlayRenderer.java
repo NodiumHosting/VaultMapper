@@ -45,6 +45,7 @@ public class VaultMapOverlayRenderer {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
 //        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
+        if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
         if (!prepped) prep();
