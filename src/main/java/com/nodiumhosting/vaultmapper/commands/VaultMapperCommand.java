@@ -55,6 +55,8 @@ public class VaultMapperCommand {
                 .then(Commands.literal("clearCell")
                         .requires((source) -> source.hasPermission(2))
                         .executes(VaultMapperCommand::execute)
+                ).then(Commands.literal("viewerCode")
+                        .executes(VaultMapperCommand::execute)
                 )
         );
     }
@@ -130,11 +132,13 @@ public class VaultMapperCommand {
                     Gson gson = new Gson();
                     String json = gson.toJson(middleColumn);
                     Minecraft.getInstance().keyboardHandler.setClipboard(json);
+                } else if (args[1].equals("viewerCode")) {
+                    player.sendMessage(new TextComponent("Current Vault Viewer Code: " + VaultMap.viewerCode), player.getUUID());
                 } else {
-                    player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn>"), player.getUUID());
+                    player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn|viewerCode>"), player.getUUID());
                 }
             } else {
-                player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn>"), player.getUUID());
+                player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn|viewerCode>"), player.getUUID());
             }
         }
         return Command.SINGLE_SUCCESS;
