@@ -208,8 +208,6 @@ public class VaultMapOverlayRenderer {
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-
-
     }
 
     private static ArrayList<Float> getRotatedTriangle(float yaw) { // returns three points that make a rotated triangle when added with mapx,z

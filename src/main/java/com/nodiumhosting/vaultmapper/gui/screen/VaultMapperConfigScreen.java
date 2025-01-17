@@ -3,10 +3,8 @@ package com.nodiumhosting.vaultmapper.gui.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
-import com.nodiumhosting.vaultmapper.gui.component.ColorButton;
-import com.nodiumhosting.vaultmapper.gui.component.ColorPicker;
-import com.nodiumhosting.vaultmapper.gui.component.EditBoxReset;
-import com.nodiumhosting.vaultmapper.gui.component.Slider;
+import com.nodiumhosting.vaultmapper.gui.component.*;
+import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.util.Clamp;
 import com.nodiumhosting.vaultmapper.util.Util;
@@ -380,6 +378,9 @@ public class VaultMapperConfigScreen extends Screen {
             VaultMapper.webMapServer.sendConfig();
         });
         this.addRenderableWidget(resetButton);
+
+        //DEBUG
+//        this.addRenderableOnly(new MapComponent(0, 0, 384, 384, VaultMap.getCells()));
     }
 
     @Override
