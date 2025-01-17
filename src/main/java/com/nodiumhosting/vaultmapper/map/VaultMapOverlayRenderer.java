@@ -450,7 +450,7 @@ public class VaultMapOverlayRenderer {
 
         switch (ClientConfig.MAP_X_ANCHOR.get()) {
             case 0 -> {
-                mapAnchorX = (mapSize / 3) * 2;
+                mapAnchorX = (mapSize / 2) * 3;
             }
             case 1 -> {
                 mapAnchorX = (float) width / 4;
@@ -462,13 +462,13 @@ public class VaultMapOverlayRenderer {
                 mapAnchorX = width - (float) width / 4;
             }
             case 4 -> {
-                mapAnchorX = width - (mapSize / 3) * 2;
+                mapAnchorX = width - (mapSize / 2) * 3;
             }
         }
 
         switch (ClientConfig.MAP_Y_ANCHOR.get()) {
             case 0 -> {
-                mapAnchorZ = (mapSize / 3) * 2;
+                mapAnchorZ = (mapSize / 2) * 3;
             }
             case 1 -> {
                 mapAnchorZ = (float) height / 4;
@@ -480,7 +480,7 @@ public class VaultMapOverlayRenderer {
                 mapAnchorZ = height - (float) height / 4;
             }
             case 4 -> {
-                mapAnchorZ = height - (mapSize / 3) * 2;
+                mapAnchorZ = height - (mapSize / 2) * 3;
             }
         }
 
