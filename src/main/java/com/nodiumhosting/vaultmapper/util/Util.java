@@ -23,7 +23,13 @@ public class Util {
             Map.entry("X-mark", RoomName.ROOMNAME_X_MARK),
             Map.entry("Cube", RoomName.ROOMNAME_CUBE),
             Map.entry("Laboratory", RoomName.ROOMNAME_LAB),
-            Map.entry("Raid", RoomName.ROOMNAME_RAID)
+            Map.entry("Raid", RoomName.ROOMNAME_RAID),
+            Map.entry("Pirate Cave", RoomName.ROOMNAME_PIRATE_CAVE),
+            Map.entry("Woldian Garden", RoomName.ROOMNAME_GARDEN),
+            Map.entry("Arcade", RoomName.ROOMNAME_ARCADE),
+            Map.entry("Comet Observatory", RoomName.ROOMNAME_COMET),
+            Map.entry("Playzone", RoomName.ROOMNAME_PLAYZONE),
+            Map.entry("Hellish Digsite", RoomName.ROOMNAME_HELLISH_DIG_SITE)
     );
 
     public static RoomName RoomFromName(String name) {
