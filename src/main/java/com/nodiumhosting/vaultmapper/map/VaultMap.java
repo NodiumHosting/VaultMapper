@@ -50,10 +50,11 @@ public class VaultMap {
     public static CopyOnWriteArrayList<VaultCell> cells = new CopyOnWriteArrayList<>();
     static VaultCell startRoom = new VaultCell(0, 0, CellType.CELLTYPE_ROOM, RoomType.ROOMTYPE_START);
     static VaultCell currentRoom; // might not be needed
-    static int defaultMapSize = 21; // map size in cells
-    static int defaultCoordLimit = 10; // limit for coords, so a cell at -6 on x or z would be considered out of bounds and trigger action
-    static int currentMapSize = defaultMapSize;
-    static int currentCoordLimit = defaultCoordLimit; // initialize to default values, will change and reset
+    static int defaultMapSize = 10; // map size in cells
+    static int northSize = defaultMapSize;
+    static int eastSize = defaultMapSize;
+    static int southSize = defaultMapSize;
+    static int westSize = defaultMapSize;
     static CompoundTag hologramData;
     static boolean hologramChecked;
     // TODO: do this properly
@@ -117,8 +118,10 @@ public class VaultMap {
         hologramChecked = false;
         hologramData = null;
 
-        currentMapSize = defaultMapSize;
-        currentCoordLimit = defaultCoordLimit;
+        northSize = defaultMapSize;
+        eastSize = defaultMapSize;
+        southSize = defaultMapSize;
+        westSize = defaultMapSize;
 
         VaultMapper.webMapServer.sendReset();
     }
@@ -213,11 +216,19 @@ public class VaultMap {
     public static void addOrReplaceCell(VaultCell cell) {
         cells.removeIf((c) -> c.x == cell.x && c.z == cell.z);
         cells.add(cell);
-        if (abs(cell.x) > currentCoordLimit || abs(cell.z) > currentCoordLimit) { // resize map
-            currentMapSize += 4;
-            currentCoordLimit += 2;
-            VaultMapOverlayRenderer.updateAnchor();
+        if (cell.x > eastSize){
+            eastSize = cell.x;
         }
+        if (cell.x < 0 && abs(cell.x) > westSize){
+            westSize = abs(cell.x);
+        }
+        if (cell.z > southSize){
+            southSize = cell.z;
+        }
+        if (cell.z < 0 && abs(cell.z) > northSize ){
+            northSize = abs(cell.z);
+        }
+        VaultMapOverlayRenderer.updateAnchor();
     }
 
     /**
@@ -253,14 +264,7 @@ public class VaultMap {
         if (playerRoomX == 0 && playerRoomZ == 0) {
             newCell.roomType = RoomType.ROOMTYPE_START;
         }
-
         if (isNewCell(newCell, cells)) {
-            if (abs(currentRoom.x) > currentCoordLimit || abs(currentRoom.z) > currentCoordLimit) { // resize map
-                currentMapSize += 4;
-                currentCoordLimit += 2;
-                VaultMapOverlayRenderer.updateAnchor();
-            }
-
             if (cellType != CellType.CELLTYPE_UNKNOWN) {
                 if (!(playerRoomX == 0 && playerRoomZ == 0)) { //dont detect start room
                     if (cellType == CellType.CELLTYPE_ROOM) {

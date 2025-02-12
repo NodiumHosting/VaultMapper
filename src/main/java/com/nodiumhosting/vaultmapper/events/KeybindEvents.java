@@ -1,6 +1,7 @@
 package com.nodiumhosting.vaultmapper.events;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
+import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.gui.screen.VaultMapperConfigScreen;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import net.minecraft.client.KeyMapping;
@@ -21,12 +22,14 @@ public class KeybindEvents {
     public static KeyMapping openConfigKey;
     public static KeyMapping syncReconnectKey;
     public static KeyMapping toggleMapKey;
+    public static KeyMapping toggleViewerCode;
 
     public static void registerKeyBinds() {
         markKey = registerKeyMapping("mark", GLFW.GLFW_KEY_MINUS);
         openConfigKey = registerKeyMapping("openconfig", GLFW.GLFW_KEY_F7);
         syncReconnectKey = registerKeyMapping("reconnectsync", GLFW.GLFW_KEY_UNKNOWN);
         toggleMapKey = registerKeyMapping("togglemap", GLFW.GLFW_KEY_EQUAL);
+        toggleViewerCode = registerKeyMapping("toggleviewercode", GLFW.GLFW_KEY_UNKNOWN);
     }
 
     // Helper method to register KeyMappings
@@ -64,6 +67,11 @@ public class KeybindEvents {
         // Toggle rendering of the VaultMap
         if(toggleMapKey.consumeClick()) {
             VaultMap.toggleRendering();
+        }
+
+        // Toggle rendering of the viewer code
+        if(toggleViewerCode.consumeClick()) {
+            ClientConfig.SHOW_VIEWER_CODE.set(!ClientConfig.SHOW_VIEWER_CODE.get());
         }
     }
 }

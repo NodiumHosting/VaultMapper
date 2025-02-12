@@ -59,25 +59,16 @@ public class VaultMapOverlayRenderer {
             playerX = 0;
             playerZ = 0;
         }
-
         if (syncErrorState) {
-            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-            int mapSize = (int) (w * 0.25f);
-            int baseMapRoomWidth = mapSize / 49;
-            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
-
+            float offset = playerCentricRender ?  (cutoff + 1) * mapRoomWidth : (VaultMap.northSize + 1) * mapRoomWidth;
             TextComponent syncError = new TextComponent("Sync Error");
-            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - offset - 10, 0xFFFFFF);
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - (int) offset - 9, 0xFFFFFF);
         }
 
-        if (VaultMap.viewerCode != null) {
-            int w = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-            int mapSize = (int) (w * 0.25f);
-            int baseMapRoomWidth = mapSize / 49;
-            int offset = baseMapRoomWidth * VaultMap.currentMapSize / 2;
-
+        if (VaultMap.viewerCode != null && ClientConfig.SHOW_VIEWER_CODE.get()) {
+            float offset = playerCentricRender ? (cutoff + 1) * mapRoomWidth : (VaultMap.southSize + 1) * mapRoomWidth;
             TextComponent syncError = new TextComponent(VaultMap.viewerCode);
-            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ + offset + 10, 0xFFFFFF);
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ + (int) offset, 0xFFFFFF);
         }
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
@@ -446,11 +437,14 @@ public class VaultMapOverlayRenderer {
         int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
-        float mapSize = (VaultMap.currentMapSize * mapRoomWidth);
-
+        int sideMargin = 2*(int)mapRoomWidth + Minecraft.getInstance().font.lineHeight;
         switch (ClientConfig.MAP_X_ANCHOR.get()) {
             case 0 -> {
-                mapAnchorX = (mapSize / 2) + 20;
+                if (playerCentricRender){
+                    mapAnchorX = mapRoomWidth * cutoff + sideMargin;
+                } else {
+                    mapAnchorX = VaultMap.westSize * mapRoomWidth + mapRoomWidth + sideMargin;
+                }
             }
             case 1 -> {
                 mapAnchorX = (float) width / 4;
@@ -462,13 +456,21 @@ public class VaultMapOverlayRenderer {
                 mapAnchorX = width - ((float) width / 4);
             }
             case 4 -> {
-                mapAnchorX = width - (mapSize / 2) - 20;
+                if (playerCentricRender){
+                    mapAnchorX = width - mapRoomWidth * cutoff - sideMargin;
+                } else {
+                    mapAnchorX = width - VaultMap.eastSize * mapRoomWidth + mapRoomWidth - sideMargin;
+                }
             }
         }
 
         switch (ClientConfig.MAP_Y_ANCHOR.get()) {
             case 0 -> {
-                mapAnchorZ = (mapSize / 2) + 20;
+                if (playerCentricRender){
+                    mapAnchorZ = mapRoomWidth * cutoff + sideMargin;
+                } else {
+                    mapAnchorZ = VaultMap.northSize * mapRoomWidth + mapRoomWidth + sideMargin;
+                }
             }
             case 1 -> {
                 mapAnchorZ = (float) height / 4;
@@ -480,7 +482,11 @@ public class VaultMapOverlayRenderer {
                 mapAnchorZ = height - ((float) height / 4);
             }
             case 4 -> {
-                mapAnchorZ = height - (mapSize / 2) - 20;
+                if (playerCentricRender){
+                    mapAnchorZ = height - mapRoomWidth * cutoff - sideMargin;
+                } else {
+                    mapAnchorZ = height - VaultMap.southSize * mapRoomWidth + mapRoomWidth - sideMargin;
+                }
             }
         }
 
