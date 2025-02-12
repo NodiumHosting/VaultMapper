@@ -148,6 +148,26 @@ public class RoomData {
 
             return true;
         }));
+
+        // try to get hellish digsite, but silently fail if it doesn't exist - wold's might not be loaded
+        TemplatePoolKey hellishRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/hellish_rooms");
+        if (hellishRef != null && hellishRef.supports(Version.latest())) {
+            TemplatePool hellish = hellishRef.get(Version.latest());
+            hellish.iterate((entry -> {
+                if (entry instanceof IndirectTemplateEntry roomBatchRef) {
+                    if (!roomBatchRef.getReference().supports(Version.latest())) {
+                        return true;
+                    }
+                    String simpleName = roomBatchRef.getReference().getName();
+                    if (!simpleName.equals("Hellish Digsite")) {
+                        return true;
+                    }
+                    iterateRooms(omegaRooms, "omega", simpleName, roomBatchRef);
+                }
+
+                return true;
+            }));
+        }
     }
 
     public static void iterateRooms(List<RoomData> listToAdd, String type, String simpleName, IndirectTemplateEntry roomBatchRef) {
