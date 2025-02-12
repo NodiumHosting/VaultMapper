@@ -29,6 +29,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SYNC_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<String> VMSYNC_SERVER;
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_COLOR;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_VIEWER_CODE;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> PC_CUTOFF;
     public static final ForgeConfigSpec.ConfigValue<Boolean> PC_BORDER;
@@ -74,6 +75,8 @@ public class ClientConfig {
         VMSYNC_SERVER = BUILDER.comment("The IP of the Vault Mapper Sync Server to sync through").define("VMSYNC_SERVER", "wss://vmsync.ndmh.xyz");
 
         SYNC_COLOR = BUILDER.comment("Your color for other players in the vault").define("SYNC_COLOR", "random");
+
+        SHOW_VIEWER_CODE = BUILDER.comment("Show viewer code below the vault map").define("SHOW_VIEWER_CODE", false);
 
         PC_CUTOFF = BUILDER.comment("Number of cells rendered around player").define("PC_CUTOFF", 20);
         PC_BORDER = BUILDER.comment("Render border around the player centric rendering range").define("PC_BORDER", true);
