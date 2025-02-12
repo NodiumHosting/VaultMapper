@@ -91,23 +91,23 @@ public class VaultMapperConfigScreen extends Screen {
         Slider PCCutoff = new Slider(this.width / 2 + 10, getScaledY(4), "", ClientConfig.PC_CUTOFF.get(), 30, 4, PCCutoffGetter, width, elHeight, 20);
         this.addRenderableWidget(PCCutoff);
 
-        MutableComponent enabledTextBorder = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
-        MutableComponent disabledTextBorder = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
+        MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
+        MutableComponent disabledText = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
 
-        Button playerCentric = new Button(this.width / 2 + width + 15, getScaledY(4), elHeight, Math.min(elHeight, 20),  ClientConfig.PLAYER_CENTRIC_RENDERING.get() ? enabledTextBorder : disabledTextBorder, button -> {
+        Button playerCentric = new Button(this.width / 2 + width + 15, getScaledY(4), elHeight, Math.min(elHeight, 20),  ClientConfig.PLAYER_CENTRIC_RENDERING.get() ? enabledText : disabledText, button -> {
             ClientConfig.PLAYER_CENTRIC_RENDERING.set(!ClientConfig.PLAYER_CENTRIC_RENDERING.get());
             ClientConfig.SPEC.save();
-            button.setMessage(ClientConfig.PLAYER_CENTRIC_RENDERING.get() ? enabledTextBorder : disabledTextBorder);
+            button.setMessage(ClientConfig.PLAYER_CENTRIC_RENDERING.get() ? enabledText : disabledText);
             },
             (pButton, pPoseStack, pMouseX, pMouseY) -> {
                 renderTooltip(pPoseStack, new TextComponent("Player Centric Rendering"), pMouseX, pMouseY);
             });
         this.addRenderableWidget(playerCentric);
 
-        Button enablePCBorderButton = new Button(this.width / 2 + width + 15 + 2 + elHeight, getScaledY(4), elHeight, Math.min(elHeight, 20), ClientConfig.SYNC_ENABLED.get() ? enabledTextBorder : disabledTextBorder, button -> {
+        Button enablePCBorderButton = new Button(this.width / 2 + width + 15 + 2 + elHeight, getScaledY(4), elHeight, Math.min(elHeight, 20), ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
             ClientConfig.PC_BORDER.set(!ClientConfig.PC_BORDER.get());
             ClientConfig.SPEC.save();
-            button.setMessage(ClientConfig.PC_BORDER.get() ? enabledTextBorder : disabledTextBorder);
+            button.setMessage(ClientConfig.PC_BORDER.get() ? enabledText : disabledText);
             },
             (pButton, pPoseStack, pMouseX, pMouseY) -> {
                 renderTooltip(pPoseStack, new TextComponent("Player Centric Border"), pMouseX, pMouseY);
@@ -220,10 +220,10 @@ public class VaultMapperConfigScreen extends Screen {
         inscriptionRoomColor.setResponder((value) -> {
             inscriptionRoomColorPicker.setColor(parseColor(value));
         });
-        Button showInscription = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(13), elHeight, Math.min(elHeight, 20),  ClientConfig.SHOW_INSCRIPTIONS.get() ? enabledTextBorder : disabledTextBorder, button -> {
+        Button showInscription = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(13), elHeight, Math.min(elHeight, 20),  ClientConfig.SHOW_INSCRIPTIONS.get() ? enabledText : disabledText, button -> {
             ClientConfig.SHOW_INSCRIPTIONS.set(!ClientConfig.SHOW_INSCRIPTIONS.get());
             ClientConfig.SPEC.save();
-            button.setMessage(ClientConfig.SHOW_INSCRIPTIONS.get() ? enabledTextBorder : disabledTextBorder);
+            button.setMessage(ClientConfig.SHOW_INSCRIPTIONS.get() ? enabledText : disabledText);
         },
             (pButton, pPoseStack, pMouseX, pMouseY) -> {
                 renderTooltip(pPoseStack, new TextComponent("Show Inscriptions"), pMouseX, pMouseY);
@@ -263,10 +263,10 @@ public class VaultMapperConfigScreen extends Screen {
             oreRoomColorPicker.setColor(parseColor(value));
         });
 
-        Button showRoomIcons = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(14), elHeight, Math.min(elHeight, 20),  ClientConfig.SHOW_ROOM_ICONS.get() ? enabledTextBorder : disabledTextBorder, button -> {
+        Button showRoomIcons = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(14), elHeight, Math.min(elHeight, 20),  ClientConfig.SHOW_ROOM_ICONS.get() ? enabledText : disabledText, button -> {
             ClientConfig.SHOW_ROOM_ICONS.set(!ClientConfig.SHOW_ROOM_ICONS.get());
             ClientConfig.SPEC.save();
-            button.setMessage(ClientConfig.SHOW_ROOM_ICONS.get() ? enabledTextBorder : disabledTextBorder);
+            button.setMessage(ClientConfig.SHOW_ROOM_ICONS.get() ? enabledText : disabledText);
             },
             (pButton, pPoseStack, pMouseX, pMouseY) -> {
                 renderTooltip(pPoseStack, new TextComponent("Room Icons"), pMouseX, pMouseY);
@@ -276,8 +276,7 @@ public class VaultMapperConfigScreen extends Screen {
         EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(17), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.ndmh.xyz");
         syncServer.setValue(ClientConfig.VMSYNC_SERVER.get());
         this.addRenderableWidget(syncServer);
-        MutableComponent enabledText = new TextComponent("✔").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN);
-        MutableComponent disabledText = new TextComponent("❌").withStyle(ChatFormatting.BOLD, ChatFormatting.RED);
+
         Button enableSyncButton = new Button(this.width / 2 + elWidthColor + 5 + 10, getScaledY(17), elHeight, elHeight, ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
             ClientConfig.SYNC_ENABLED.set(!ClientConfig.SYNC_ENABLED.get());
             ClientConfig.SPEC.save();
@@ -357,22 +356,22 @@ public class VaultMapperConfigScreen extends Screen {
             startRoomColor.setValue("#FF0000");
             markedRoomColor.setValue("#FF00FF");
             inscriptionRoomColor.setValue("#FFFF00");
-            enableSyncButton.setMessage(enabledText);
+            showRoomIcons.setMessage(enabledText);
 
             omegaRoomColor.setValue("#55FF55");
             challengeRoomColor.setValue("#F09E00");
             oreRoomColor.setValue("#00FFFF");
             showInscription.setMessage(enabledText);
             syncServer.setValue("wss://vmsync.ndmh.xyz");
-            enableSyncButton.setMessage(disabledText);
-
+            enableSyncButton.setMessage(enabledText);
+            showViewerCodeButton.setMessage(disabledText);
             String randColor = Util.RandomColor();
 
             syncColor.setValue(randColor);
 
             PCCutoff.sliderValue = 20;
-            enableSyncButton.setMessage(enabledText);
-            enablePCBorderButton.setMessage(disabledTextBorder);
+            playerCentric.setMessage(disabledText);
+            enablePCBorderButton.setMessage(enabledText);
 
             ClientConfig.MAP_SCALE.set(10);
             ClientConfig.MAP_X_OFFSET.set(0);
@@ -392,6 +391,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.VMSYNC_SERVER.set("wss://vmsync.ndmh.xyz");
             ClientConfig.SYNC_ENABLED.set(true);
             ClientConfig.SYNC_COLOR.set(randColor);
+            ClientConfig.SHOW_VIEWER_CODE.set(false);
 
             ClientConfig.PC_CUTOFF.set(20);
             ClientConfig.PLAYER_CENTRIC_RENDERING.set(false);
