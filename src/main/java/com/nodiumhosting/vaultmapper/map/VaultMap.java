@@ -194,6 +194,9 @@ public class VaultMap {
         if (cell.roomType == RoomType.ROOMTYPE_ORE) {
             return ClientConfig.ORE_ROOM_COLOR.get();
         }
+        if (cell.roomType == RoomType.ROOMTYPE_RESOURCE) {
+            return ClientConfig.RESOURCE_ROOM_COLOR.get();
+        }
         return ClientConfig.ROOM_COLOR.get();
     }
 
@@ -273,9 +276,17 @@ public class VaultMap {
                         RoomName roomName = detectedRoom.getB();
                         if (roomType == RoomType.ROOMTYPE_BASIC) {
                             RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
-                            if (rbd.ores > 300 && rbd.chromaticIron < 10) {
+                            if ((rbd.ores > 300 && rbd.chromaticIron < 10)
+                                || ((rbd.ores > 100 && rbd.chromaticIron < 10) && (rbd.chests + rbd.coins < 10))) {
                                 roomType = RoomType.ROOMTYPE_ORE;
                                 roomName = RoomName.ROOMNAME_UNKNOWN;
+                            }
+                        }
+                        if (roomName == RoomName.ROOMNAME_CHROMATIC_CAVES) {
+                            RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
+                            if (rbd.chromaticIron < 50) {
+                                roomType = RoomType.ROOMTYPE_RESOURCE;
+                                roomName = RoomName.ROOMNAME_MODDED_CAVES;
                             }
                         }
                         newCell.roomName = roomName;
@@ -512,7 +523,9 @@ public class VaultMap {
         if (room.getPath().contains("omega")) {
             type = RoomType.ROOMTYPE_OMEGA;
         } else if (room.getPath().contains("challenge")) {
-            type = RoomType.ROOMTYPE_OMEGA;
+            type = RoomType.ROOMTYPE_CHALLENGE;
+        } else if (room.getPath().contains("raw") || room.getPath().contains("resource")) {
+            type = RoomType.ROOMTYPE_RESOURCE;
         }
         RoomName name = Util.RoomFromName((VaultRegistry.TEMPLATE_POOL.getKey(room).getName()));
         return new Tuple<RoomType, RoomName>(type, name);

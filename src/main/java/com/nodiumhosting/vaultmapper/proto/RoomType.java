@@ -34,6 +34,10 @@ public enum RoomType
    * <code>ROOMTYPE_OMEGA = 5;</code>
    */
   ROOMTYPE_OMEGA(5),
+  /**
+   * <code>ROOMTYPE_RESOURCE = 6;</code>
+   */
+  ROOMTYPE_RESOURCE(6),
   UNRECOGNIZED(-1),
   ;
 
@@ -70,6 +74,10 @@ public enum RoomType
    * <code>ROOMTYPE_OMEGA = 5;</code>
    */
   public static final int ROOMTYPE_OMEGA_VALUE = 5;
+  /**
+   * <code>ROOMTYPE_RESOURCE = 6;</code>
+   */
+  public static final int ROOMTYPE_RESOURCE_VALUE = 6;
 
 
   public final int getNumber() {
@@ -102,6 +110,7 @@ public enum RoomType
       case 3: return ROOMTYPE_ORE;
       case 4: return ROOMTYPE_CHALLENGE;
       case 5: return ROOMTYPE_OMEGA;
+      case 6: return ROOMTYPE_RESOURCE;
       default: return null;
     }
   }
