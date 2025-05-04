@@ -194,6 +194,22 @@ public class RoomData {
             return true;
         }));
 
+        TemplatePoolKey diamondRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/raw/diamond_caves");
+        if (diamondRef != null && diamondRef.supports(Version.latest())) {
+            TemplatePool diamond = diamondRef.get(Version.latest());
+            diamond.iterate((entry -> {
+                if (entry instanceof DirectTemplateEntry roomFileRef) {
+                    if (!roomFileRef.getTemplate().supports(Version.latest())) {
+                        return true;
+                    }
+                    Template roomFile = roomFileRef.getTemplate().get(Version.latest());
+                    String name = roomFileRef.getTemplate().getName();
+                    resourceRooms.add(new RoomData("resource", "Diamond Caves", name, roomFile));
+                }
+                return true;
+            }));
+        }
+
         // try to get hellish digsite, but silently fail if it doesn't exist - wold's might not be loaded
         TemplatePoolKey hellishRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/hellish_rooms");
         if (hellishRef != null && hellishRef.supports(Version.latest())) {
