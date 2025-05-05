@@ -104,7 +104,7 @@ public class VaultMapperConfigScreen extends Screen {
             });
         this.addRenderableWidget(playerCentric);
 
-        Button enablePCBorderButton = new Button(this.width / 2 + width + 15 + 2 + elHeight, getScaledY(4), elHeight, Math.min(elHeight, 20), ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
+        Button enablePCBorderButton = new Button(this.width / 2 + width + 15 + 2 + elHeight, getScaledY(4), elHeight, Math.min(elHeight, 20), ClientConfig.PC_BORDER.get() ? enabledText : disabledText, button -> {
             ClientConfig.PC_BORDER.set(!ClientConfig.PC_BORDER.get());
             ClientConfig.SPEC.save();
             button.setMessage(ClientConfig.PC_BORDER.get() ? enabledText : disabledText);

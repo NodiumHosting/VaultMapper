@@ -15,7 +15,11 @@ public class MapRoomIconUtil {
 
         ROOM_RAW("the_vault:textures/gui/map/raw.png"),
         ROOM_ORE("the_vault:textures/gui/map/ore.png"),
-        ROOM_BOSS("the_vault:textures/gui/map/boss.png");
+        ROOM_BOSS("the_vault:textures/gui/map/boss.png"),
+        ROOM_RAID("the_vault:textures/gui/map/raid.png"),
+        ROOM_FARM("the_vault:textures/gui/map/farm.png"),
+        ROOM_EMERALD_CAVES("the_vault:textures/gui/map/emerald_caves.png"),
+        ROOM_DIAMOND_CAVES("the_vault:textures/gui/map/diamond_caves.png");
 
         private final ResourceLocation resourceLocation;
         BaseIcons(String path) {
@@ -48,6 +52,14 @@ public class MapRoomIconUtil {
                 icon = BaseIcons.ROOM_RAW.getResourceLocation();
             } else if (path.contains("boss")) {
                 icon = BaseIcons.ROOM_BOSS.getResourceLocation();
+            } else if (path.contains("raid")) {
+                icon = BaseIcons.ROOM_RAID.getResourceLocation();
+            } else if (path.contains("farm")) {
+                icon = BaseIcons.ROOM_FARM.getResourceLocation();
+            } else if (path.contains("emerald_cave")) {
+                icon = BaseIcons.ROOM_EMERALD_CAVES.getResourceLocation();
+            } else if (path.contains("diamond_cave")) {
+                icon = BaseIcons.ROOM_DIAMOND_CAVES.getResourceLocation();
             } else if (path.contains("ore")) {
                 icon = BaseIcons.ROOM_ORE.getResourceLocation();
             } else {

@@ -14,7 +14,9 @@ import iskallia.vault.core.world.template.data.DirectTemplateEntry;
 import iskallia.vault.core.world.template.data.IndirectTemplateEntry;
 import iskallia.vault.core.world.template.data.TemplatePool;
 import iskallia.vault.init.ModBlocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -359,12 +361,12 @@ public class RoomData {
                 return false;
             }
         }
-        if (roomData.name.contains("raid_room")) {
+        if (roomData.name.contains("raid")) {
             if (raidOption == ModBlocks.RAID_CONTROLLER) {
                 return true;
             }
         }
-        if (roomData.name.contains("boss_room")) {
+        if (roomData.name.contains("boss")) {
             if (raidOption == ModBlocks.RUNE_PILLAR) {
                 return true; // variant 1 has pillar in same pos as raid controller
             }

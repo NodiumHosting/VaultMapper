@@ -281,7 +281,7 @@ public class VaultMap {
                                 roomName = "";
                             }
                         }
-                        if (roomName.equals("chromatic_caves" )) {
+                        if (roomName.equals("chromatic_caves")) {
                             RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
                             if (rbd.chromaticIron < 50) {
                                 roomType = RoomType.ROOMTYPE_RESOURCE;
@@ -526,7 +526,7 @@ public class VaultMap {
         } else if (room.getPath().contains("raw") || room.getPath().contains("resource")) {
             type = RoomType.ROOMTYPE_RESOURCE;
         }
-        String name = VaultRegistry.TEMPLATE_POOL.getKey(room).getId().toString();
+        String name = room.toString();
         return new Tuple<RoomType, String>(type, name);
     }
 
