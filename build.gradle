@@ -190,8 +190,8 @@ dependencies {
         jarJar.ranged(it, "[1.5.7,)")
     }
 
-    implementation(jarJar('com.google.protobuf:protobuf-java:4.29.1')) {
-        jarJar.ranged(it, "[4.29.1,)")
+    implementation(jarJar('com.google.protobuf:protobuf-java:4.30.1')) {
+        jarJar.ranged(it, "[4.30.1,)")
     }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
@@ -199,8 +199,8 @@ dependencies {
     implementation 'org.java-websocket:Java-WebSocket:1.5.7'
     minecraftLibrary 'org.java-websocket:Java-WebSocket:1.5.7'
 
-    implementation 'com.google.protobuf:protobuf-java:4.29.1'
-    minecraftLibrary 'com.google.protobuf:protobuf-java:4.29.1'
+    implementation 'com.google.protobuf:protobuf-java:4.30.1'
+    minecraftLibrary 'com.google.protobuf:protobuf-java:4.30.1'
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency

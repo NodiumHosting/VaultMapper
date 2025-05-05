@@ -5,7 +5,8 @@ import com.mojang.blaze3d.vertex.*;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.proto.CellType;
-import com.nodiumhosting.vaultmapper.proto.RoomName;
+import com.nodiumhosting.vaultmapper.proto.RoomType;
+import com.nodiumhosting.vaultmapper.util.MapRoomIconUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -25,7 +26,6 @@ import static java.lang.Math.abs;
 
 @Mod.EventBusSubscriber({Dist.CLIENT})
 public class VaultMapOverlayRenderer {
-    private static final Pattern ICON_PATH_SEPARATORS = Pattern.compile("[- ]");
     public static boolean enabled = false;
     public static boolean ignoreResearchRequirement = false;
     public static boolean syncErrorState = false;
@@ -60,15 +60,15 @@ public class VaultMapOverlayRenderer {
             playerZ = 0;
         }
         if (syncErrorState) {
-            float offset = playerCentricRender ?  (cutoff + 1) * mapRoomWidth : (VaultMap.northSize + 1) * mapRoomWidth;
+            float offset = playerCentricRender ? (cutoff + 1) * mapRoomWidth : (VaultMap.northSize + 1) * mapRoomWidth;
             TextComponent syncError = new TextComponent("Sync Error");
-            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ - (int) offset - 9, 0xFFFFFF);
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX + offsetX, (int) mapAnchorZ + offsetZ - (int) offset - 9, 0xFFFFFF);
         }
 
         if (VaultMap.viewerCode != null && ClientConfig.SHOW_VIEWER_CODE.get()) {
             float offset = playerCentricRender ? (cutoff + 1) * mapRoomWidth : (VaultMap.southSize + 1) * mapRoomWidth;
-            TextComponent syncError = new TextComponent(VaultMap.viewerCode);
-            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX, (int) mapAnchorZ + (int) offset, 0xFFFFFF);
+            TextComponent syncError = new TextComponent("Viewer Code: " + VaultMap.viewerCode);
+            GuiComponent.drawCenteredString(event.getMatrixStack(), Minecraft.getInstance().font, syncError, (int) centerX + offsetX, (int) mapAnchorZ + offsetZ + (int) offset, 0xFFFFFF);
         }
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
@@ -113,13 +113,14 @@ public class VaultMapOverlayRenderer {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.disableBlend();
             VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM).forEach((cell) -> {
-                if (cell.roomName == null || cell.roomName == RoomName.ROOMNAME_UNKNOWN) return;
+                if (cell.roomName == null || cell.roomName.equals("")) {
+                    cell.roomName = cell.roomType.name();
+                }
 
                 try {
-                    String path = "/textures/icons/" + ICON_PATH_SEPARATORS.matcher(Util.NameFromRoom(cell.roomName).toLowerCase()).replaceAll("_") + ".png"; // "/textures/gui/mine.png";
-                    ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                    ResourceLocation icon = MapRoomIconUtil.getIconForRoom(cell.roomName);
                     if (!Minecraft.getInstance().getResourceManager().hasResource(icon)) {
-                        VaultMapper.LOGGER.error("Icon {} not found for room: {}", icon, Util.NameFromRoom(cell.roomName));
+                        VaultMapper.LOGGER.error("Icon {} not found for room: {}", icon, cell.roomName);
                     }
                     RenderSystem.setShaderTexture(0, icon);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
@@ -132,7 +133,7 @@ public class VaultMapOverlayRenderer {
                         renderTextureCell(bufferBuilder, cell);
                     }
                 } catch (Exception e) {
-                    VaultMapper.LOGGER.error("Failed to render icon for room: " + Util.NameFromRoom(cell.roomName));
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName);
                 }
 
                 bufferBuilder.end();
@@ -314,6 +315,13 @@ public class VaultMapOverlayRenderer {
             var minZ = Math.min(startZ, endZ);
             var maxZ = Math.max(startZ, endZ);
 
+            if (cell.marked && ClientConfig.SHOW_ROOM_ICONS.get()) {
+                minX -= (float) (mapRoomWidth * 0.5);
+                maxX += (float) (mapRoomWidth * 0.5);
+                minZ -= (float) (mapRoomWidth * 0.5);
+                maxZ += (float) (mapRoomWidth * 0.5);
+            }
+
             bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
@@ -335,6 +343,7 @@ public class VaultMapOverlayRenderer {
             float startZ;
             float endX;
             float endZ;
+
             if (cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z) {
                 if (cell.cellType == CellType.CELLTYPE_TUNNEL_X) { // X facing
                     startX = mapX - tunnelLen;
@@ -357,6 +366,13 @@ public class VaultMapOverlayRenderer {
             var maxX = Math.max(startX, endX);
             var minZ = Math.min(startZ, endZ);
             var maxZ = Math.max(startZ, endZ);
+
+            if (cell.marked && ClientConfig.SHOW_ROOM_ICONS.get()) {
+                minX -= (float) (mapRoomWidth * 0.5);
+                maxX += (float) (mapRoomWidth * 0.5);
+                minZ -= (float) (mapRoomWidth * 0.5);
+                maxZ += (float) (mapRoomWidth * 0.5);
+            }
 
             bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();

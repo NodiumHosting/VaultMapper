@@ -8,8 +8,8 @@ import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.snapshots.MapSnapshot;
 import com.nodiumhosting.vaultmapper.proto.CellType;
-import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.proto.RoomType;
+import com.nodiumhosting.vaultmapper.util.MapRoomIconUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.client.gui.framework.element.ElasticContainerElement;
 import iskallia.vault.client.gui.framework.element.LabelElement;
@@ -249,17 +249,18 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
             cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM).forEach((cell) -> {
-                if (cell.roomName == null || cell.roomName == RoomName.ROOMNAME_UNKNOWN) return;
+                if (cell.roomName == null || cell.roomName.equals("")) {
+                    cell.roomName = cell.roomType.name();
+                }
 
-                String path = "/textures/icons/" + Util.NameFromRoom(cell.roomName).toLowerCase().replace(" ", "_").replace("-", "_") + ".png";
-                ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+                ResourceLocation icon = MapRoomIconUtil.getIconForRoom(cell.roomName);
                 RenderSystem.setShaderTexture(0, icon);
                 bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
                 try {
                     renderTextureCell(bufferBuilder, cell, (float) (w / 2 + window.mapCenterX), (float) (125 + window.mapCenterZ), mapRoomWidth * 2);
                 } catch (Exception e) {
-                    VaultMapper.LOGGER.error("Failed to render icon for room: " + Util.NameFromRoom(cell.roomName));
+                    VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName);
                 }
                 bufferBuilder.end();
                 BufferUploader.end(bufferBuilder);

@@ -6,6 +6,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.nodiumhosting.vaultmapper.map.RoomData;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
@@ -52,8 +53,10 @@ public class VaultMapperCommand {
                                 .executes(VaultMapperCommand::execute)
                         )
                 )
-                .then(Commands.literal("clearCell")
-                        .requires((source) -> source.hasPermission(2))
+                .then(Commands.literal("dumpMapCellData")
+                        .executes(VaultMapperCommand::execute)
+                )
+                .then(Commands.literal("captureRoomData")
                         .executes(VaultMapperCommand::execute)
                 )
         );
@@ -130,6 +133,24 @@ public class VaultMapperCommand {
                     Gson gson = new Gson();
                     String json = gson.toJson(middleColumn);
                     Minecraft.getInstance().keyboardHandler.setClipboard(json);
+                } else if (args[1].equals("dumpMapCellData")) {
+                    if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return 0;
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(VaultMap.getCells());
+                    Minecraft.getInstance().keyboardHandler.setClipboard(json);
+                    player.sendMessage(new TextComponent(json), player.getUUID());
+                } else if (args[1].equals("captureRoomData")) {
+                    if (!player.getLevel().dimension().location().getNamespace().equals("the_vault")) return 0;
+
+                    RoomData roomData = RoomData.captureRoom(VaultMap.getCurrentCell().x, VaultMap.getCurrentCell().z);
+                    String data =
+                            "Mine Option 1 " + roomData.mineOption1.getRegistryName() + "\n" +
+                            "Mine Option 2 " + roomData.mineOption2.getRegistryName() + "\n" +
+                            "Raid Option " + roomData.raidOption.getRegistryName() + "\n" +
+                            "Rune Option " + roomData.runeOption.getRegistryName();
+                    Minecraft.getInstance().keyboardHandler.setClipboard(data);
+                    player.sendMessage(new TextComponent(data), player.getUUID());
                 } else {
                     player.sendMessage(new TextComponent("Usage: /vaultmapper <enable|disable|reset|enabledebug|disabledebug|openByVaultId|dumpColumn>"), player.getUUID());
                 }

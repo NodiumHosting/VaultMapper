@@ -6,7 +6,7 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.VaultCell;
 import com.nodiumhosting.vaultmapper.map.VaultMap;
 import com.nodiumhosting.vaultmapper.proto.CellType;
-import com.nodiumhosting.vaultmapper.proto.RoomName;
+import com.nodiumhosting.vaultmapper.util.MapRoomIconUtil;
 import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Widget;
@@ -26,8 +26,6 @@ public class MapComponent extends GuiComponent implements Widget {
     private final int height;
     private final int centerX;
     private final int centerZ;
-
-    private static final Pattern ICON_PATH_SEPARATORS = Pattern.compile("[- ]");
 
     public final List<VaultCell> cells;
 
@@ -106,11 +104,11 @@ public class MapComponent extends GuiComponent implements Widget {
     }
 
     private void renderCellIcon(PoseStack poseStack, VaultCell cell) {
-        if (cell.roomName == null || cell.roomName == RoomName.ROOMNAME_UNKNOWN) return;
+        if (cell.roomName == null || cell.roomName.equals("")) {
+            cell.roomName = cell.roomType.name();
+        }
 
-        String roomName = Util.NameFromRoom(cell.roomName).toLowerCase();
-        String path = "/textures/icons/" + ICON_PATH_SEPARATORS.matcher(roomName).replaceAll("_") + ".png";
-        ResourceLocation icon = new ResourceLocation("vaultmapper", path);
+        ResourceLocation icon = MapRoomIconUtil.getIconForRoom(cell.roomName);
 
         RenderSystem.setShaderTexture(0, icon);
         this.blit(poseStack, (centerX + cell.x * mapRoomWidth), (centerZ + cell.z * mapRoomWidth), 0, 0, 16, 16);

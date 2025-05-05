@@ -1,9 +1,7 @@
 package com.nodiumhosting.vaultmapper.map;
 
 import com.nodiumhosting.vaultmapper.VaultMapper;
-import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.proto.RoomType;
-import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.block.CoinPileBlock;
 import iskallia.vault.block.VaultChestBlock;
 import iskallia.vault.block.VaultOreBlock;
@@ -30,7 +28,6 @@ public class RoomData {
     public static List<RoomData> resourceRooms;
     public String type;
     public String name;
-    public String simpleName;
     public Template room;
     public List<Map<Integer, Block>> columnList = new ArrayList<>();
     public Block mineOption1;
@@ -40,14 +37,12 @@ public class RoomData {
 
     public RoomData() {
         this.type = "current";
-        this.simpleName = "current";
         this.name = "current";
         this.room = null;
     }
 
-    public RoomData(String type, String simpleName, String name, Template room) {
+    public RoomData(String type, String name, Template room) {
         this.type = type;
-        this.simpleName = simpleName;
         this.name = name;
         this.room = room;
         Iterator<PartialTile> tiles = room.getTiles(Template.ALL_TILES);
@@ -151,8 +146,8 @@ public class RoomData {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
                     return true;
                 }
-                String simpleName = roomBatchRef.getReference().getName();
-                iterateRooms(challengeRooms, "challenge", simpleName, roomBatchRef);
+                String name = roomBatchRef.getReference().getId().toString();
+                iterateRooms(challengeRooms, "challenge", name, roomBatchRef);
             }
 
             return true;
@@ -164,8 +159,8 @@ public class RoomData {
                     return true;
                 }
                 Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-                String name = roomFileRef.getTemplate().getName();
-                challengeRooms.add(new RoomData("challenge", "Boss Room", name, roomFile));
+                String name = roomFileRef.getTemplate().getId().toString();
+                challengeRooms.add(new RoomData("challenge", name, roomFile));
                 return true;
             }
             return true;
@@ -176,8 +171,8 @@ public class RoomData {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
                     return true;
                 }
-                String simpleName = roomBatchRef.getReference().getName();
-                iterateRooms(omegaRooms, "omega", simpleName, roomBatchRef);
+                String name = roomBatchRef.getReference().getId().toString();
+                iterateRooms(omegaRooms, "omega", name, roomBatchRef);
             }
 
             return true;
@@ -187,8 +182,8 @@ public class RoomData {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
                     return true;
                 }
-                String simpleName = roomBatchRef.getReference().getName();
-                iterateRooms(resourceRooms, "resource", simpleName, roomBatchRef);
+                String name = roomBatchRef.getReference().getId().toString();
+                iterateRooms(resourceRooms, "resource", name, roomBatchRef);
             }
 
             return true;
@@ -203,8 +198,8 @@ public class RoomData {
                         return true;
                     }
                     Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-                    String name = roomFileRef.getTemplate().getName();
-                    resourceRooms.add(new RoomData("resource", "Diamond Caves", name, roomFile));
+                    String name = roomFileRef.getTemplate().getId().toString();
+                    resourceRooms.add(new RoomData("resource", name, roomFile));
                 }
                 return true;
             }));
@@ -219,11 +214,11 @@ public class RoomData {
                     if (!roomBatchRef.getReference().supports(Version.latest())) {
                         return true;
                     }
-                    String simpleName = roomBatchRef.getReference().getName();
-                    if (!simpleName.equals("Hellish Digsite")) {
+                    String name = roomBatchRef.getReference().getId().toString();
+                    if (!name.equals("hellish_digsite")) {
                         return true;
                     }
-                    iterateRooms(omegaRooms, "omega", simpleName, roomBatchRef);
+                    iterateRooms(omegaRooms, "omega", name, roomBatchRef);
                 }
 
                 return true;
@@ -231,7 +226,7 @@ public class RoomData {
         }
     }
 
-    public static void iterateRooms(List<RoomData> listToAdd, String type, String simpleName, IndirectTemplateEntry roomBatchRef) {
+    public static void iterateRooms(List<RoomData> listToAdd, String type, String name, IndirectTemplateEntry roomBatchRef) {
         TemplatePool roomBatch = roomBatchRef.getReference().get(Version.latest());
         roomBatch.iterate((inner) -> {
             if (inner instanceof DirectTemplateEntry roomFileRef) {
@@ -239,13 +234,13 @@ public class RoomData {
                     return true;
                 }
                 Template roomFile = roomFileRef.getTemplate().get(Version.latest());
-                String name = roomFileRef.getTemplate().getName();
+                String roomName = roomFileRef.getTemplate().getId().toString();
                 //VaultMapper.LOGGER.info("Room File name: " + name);
-                listToAdd.add(new RoomData(type, simpleName, name, roomFile));
+                listToAdd.add(new RoomData(type, roomName, roomFile));
                 return true;
             }
             if (inner instanceof IndirectTemplateEntry batchRef) {
-                iterateRooms(listToAdd, type, simpleName, batchRef);
+                iterateRooms(listToAdd, type, name, batchRef);
             }
             return true;
         });
@@ -353,10 +348,10 @@ public class RoomData {
         //roomData is omega/challenge
         //this is current
         int yLevel = 0;
-        if (roomData.simpleName.equals("Village") || roomData.simpleName.equals("Raid Room")) {
+        if (roomData.name.contains("village") || roomData.name.contains("raid_room")) {
             yLevel = 19;
         }
-        if (roomData.simpleName.equals("Mine")) {
+        if (roomData.name.contains("mine")) {
             //if (!compareColumnPercentageRequired(centerColumn, roomData.centerColumn,yLevel,0.15f)) {
             //return false;
             //}
@@ -364,12 +359,12 @@ public class RoomData {
                 return false;
             }
         }
-        if (roomData.simpleName.equals("Raid Room")) {
+        if (roomData.name.contains("raid_room")) {
             if (raidOption == ModBlocks.RAID_CONTROLLER) {
                 return true;
             }
         }
-        if (roomData.simpleName.equals("Boss Room")) {
+        if (roomData.name.contains("boss_room")) {
             if (raidOption == ModBlocks.RUNE_PILLAR) {
                 return true; // variant 1 has pillar in same pos as raid controller
             }
@@ -395,24 +390,24 @@ public class RoomData {
         return true;
     }
 
-    public Tuple<RoomType, RoomName> findRoom() {
+    public Tuple<RoomType, String> findRoom() {
         for (RoomData omegaRoom : omegaRooms) {
             if (this.compareRoom(omegaRoom)) {
-                return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_OMEGA, Util.RoomFromName(omegaRoom.simpleName));
+                return new Tuple<RoomType, String>(RoomType.ROOMTYPE_OMEGA, omegaRoom.name);
             }
         }
         for (RoomData challengeRoom : challengeRooms) {
             if (this.compareRoom(challengeRoom)) {
-                return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_CHALLENGE, Util.RoomFromName(challengeRoom.simpleName));
+                return new Tuple<RoomType, String>(RoomType.ROOMTYPE_CHALLENGE, challengeRoom.name);
             }
         }
         for (RoomData resourceRoom : resourceRooms) {
             if (this.compareRoom(resourceRoom)) {
-                return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_RESOURCE, Util.RoomFromName(resourceRoom.simpleName));
+                return new Tuple<RoomType, String>(RoomType.ROOMTYPE_RESOURCE, resourceRoom.name);
             }
         }
         // TODO: need to add support for vendor rooms
 
-        return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_BASIC, RoomName.ROOMNAME_UNKNOWN);
+        return new Tuple<RoomType, String>(RoomType.ROOMTYPE_BASIC, "");
     }
 }

@@ -5,7 +5,6 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.map.snapshots.MapCache;
 import com.nodiumhosting.vaultmapper.network.sync.SyncClient;
 import com.nodiumhosting.vaultmapper.proto.CellType;
-import com.nodiumhosting.vaultmapper.proto.RoomName;
 import com.nodiumhosting.vaultmapper.proto.RoomType;
 import com.nodiumhosting.vaultmapper.util.Util;
 import iskallia.vault.core.vault.VaultRegistry;
@@ -271,22 +270,22 @@ public class VaultMap {
             if (cellType != CellType.CELLTYPE_UNKNOWN) {
                 if (!(playerRoomX == 0 && playerRoomZ == 0)) { //dont detect start room
                     if (cellType == CellType.CELLTYPE_ROOM) {
-                        Tuple<RoomType, RoomName> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
+                        Tuple<RoomType, String> detectedRoom = RoomData.captureRoom(playerRoomX, playerRoomZ).findRoom();
                         RoomType roomType = detectedRoom.getA();
-                        RoomName roomName = detectedRoom.getB();
+                        String roomName = detectedRoom.getB();
                         if (roomType == RoomType.ROOMTYPE_BASIC) {
                             RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
                             if ((rbd.ores > 300 && rbd.chromaticIron < 10)
                                 || ((rbd.ores > 100 && rbd.chromaticIron < 10) && (rbd.chests + rbd.coins < 10))) {
                                 roomType = RoomType.ROOMTYPE_ORE;
-                                roomName = RoomName.ROOMNAME_UNKNOWN;
+                                roomName = "";
                             }
                         }
-                        if (roomName == RoomName.ROOMNAME_CHROMATIC_CAVES) {
+                        if (roomName.equals("chromatic_caves" )) {
                             RoomBlockData rbd = RoomBlockData.getRoomBlockData(playerRoomX, playerRoomZ);
                             if (rbd.chromaticIron < 50) {
                                 roomType = RoomType.ROOMTYPE_RESOURCE;
-                                roomName = RoomName.ROOMNAME_MODDED_CAVES;
+                                roomName = "raw_modded_caves";
                             }
                         }
                         newCell.roomName = roomName;
@@ -463,7 +462,7 @@ public class VaultMap {
             CompoundTag stack = compound.getCompound("stack");
             String id = stack.getString("id");
             int model = stack.getCompound("tag").getCompound("data").getInt("model");
-            Tuple<RoomType, RoomName> room = roomFromModel(model);
+            Tuple<RoomType, String> room = roomFromModel(model);
             CompoundTag translation = compound.getCompound("translation");
             byte translationX = translation.getByte("x");
             byte translationY = translation.getByte("y");
@@ -508,7 +507,7 @@ public class VaultMap {
         return player.level.getBlockState(new BlockPos(xCoord, blockY, zCoord)).getBlock();
     }
 
-    public static Tuple<RoomType, RoomName> roomFromModel(int model) {
+    public static Tuple<RoomType, String> roomFromModel(int model) {
         ResourceLocation room = null;
         for (Map.Entry<ResourceLocation, Integer> entry : ModConfigs.INSCRIPTION.poolToModel.entrySet()) {
             if (entry.getValue() == model) {
@@ -517,7 +516,7 @@ public class VaultMap {
             }
         }
         if (room == null) {
-            return new Tuple<>(RoomType.ROOMTYPE_BASIC, RoomName.ROOMNAME_UNKNOWN);
+            return new Tuple<>(RoomType.ROOMTYPE_BASIC, "");
         }
         RoomType type = RoomType.ROOMTYPE_BASIC;
         if (room.getPath().contains("omega")) {
@@ -527,8 +526,8 @@ public class VaultMap {
         } else if (room.getPath().contains("raw") || room.getPath().contains("resource")) {
             type = RoomType.ROOMTYPE_RESOURCE;
         }
-        RoomName name = Util.RoomFromName((VaultRegistry.TEMPLATE_POOL.getKey(room).getName()));
-        return new Tuple<RoomType, RoomName>(type, name);
+        String name = VaultRegistry.TEMPLATE_POOL.getKey(room).getId().toString();
+        return new Tuple<RoomType, String>(type, name);
     }
 
     static public class MapPlayer {
