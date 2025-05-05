@@ -20,7 +20,14 @@ public class MapRoomIconUtil {
         ROOM_FARM("the_vault:textures/gui/map/farm.png"),
         ROOM_EMERALD_CAVES("the_vault:textures/gui/map/emerald_caves.png"),
         ROOM_DIAMOND_CAVES("the_vault:textures/gui/map/diamond_caves.png"),
-        ROOM_CHROMATIC_CAVES("the_vault:textures/gui/map/chromatic_caves.png");
+        ROOM_CHROMATIC_CAVES("the_vault:textures/gui/map/chromatic_caves.png"),
+
+        ROOM_MODDED_CAVES("vaultmapper:textures/gui/icons/modded_caves.png"),
+        ROOM_WILD_WEST("vaultmapper:textures/gui/icons/wild_west.png"),
+        ROOM_CUBE("vaultmapper:textures/gui/icons/cube.png"),
+        ROOM_END("vaultmapper:textures/gui/icons/end.png"),
+        ROOM_NETHER("vaultmapper:textures/gui/icons/nether.png"),
+        ROOM_QUARRY("vaultmapper:textures/gui/icons/quarry.png");
 
         private final ResourceLocation resourceLocation;
         BaseIcons(String path) {
@@ -45,27 +52,56 @@ public class MapRoomIconUtil {
                 String iconPath = customIcon.get().getPath();
 
                 icon = new ResourceLocation(iconNamespace, "textures/" + iconPath + ".png");
-            } else if (path.contains("boss")) {
+            }
+            else if (path.contains("boss")) {
                 icon = BaseIcons.ROOM_BOSS.getResourceLocation();
-            } else if (path.contains("raid")) {
+            }
+            else if (path.contains("raid")) {
                 icon = BaseIcons.ROOM_RAID.getResourceLocation();
-            } else if (path.contains("farm")) {
+            }
+            else if (path.contains("farm")) {
                 icon = BaseIcons.ROOM_FARM.getResourceLocation();
-            } else if (path.contains("emerald_cave")) {
+            }
+            else if (path.contains("emerald_cave")) {
                 icon = BaseIcons.ROOM_EMERALD_CAVES.getResourceLocation();
-            } else if (path.contains("diamond_cave")) {
+            }
+            else if (path.contains("diamond_cave")) {
                 icon = BaseIcons.ROOM_DIAMOND_CAVES.getResourceLocation();
-            } else if (path.contains("chromatic_cave")) {
+            }
+            else if (path.contains("chromatic_cave")) {
                 icon = BaseIcons.ROOM_CHROMATIC_CAVES.getResourceLocation();
-            } else if (path.contains("omega")) {
+            }
+            else if (path.contains("modded_cave")) {
+                icon = BaseIcons.ROOM_MODDED_CAVES.getResourceLocation();
+            }
+            else if (path.contains("wild_west")) {
+                icon = BaseIcons.ROOM_WILD_WEST.getResourceLocation();
+            }
+            else if (path.contains("cube")) {
+                icon = BaseIcons.ROOM_CUBE.getResourceLocation();
+            }
+            else if (path.contains("end")) {
+                icon = BaseIcons.ROOM_END.getResourceLocation();
+            }
+            else if (path.contains("nether")) {
+                icon = BaseIcons.ROOM_NETHER.getResourceLocation();
+            }
+            else if (path.contains("quarry")) {
+                icon = BaseIcons.ROOM_QUARRY.getResourceLocation();
+            }
+            else if (path.contains("omega")) {
                 icon = BaseIcons.ROOM_OMEGA.getResourceLocation();
-            } else if (path.contains("challenge")) {
+            }
+            else if (path.contains("challenge")) {
                 icon = BaseIcons.ROOM_CHALLENGE.getResourceLocation();
-            } else if (path.contains("raw")) {
+            }
+            else if (path.contains("raw")) {
                 icon = BaseIcons.ROOM_RAW.getResourceLocation();
-            } else if (path.contains("ore")) {
+            }
+            else if (path.contains("ore")) {
                 icon = BaseIcons.ROOM_ORE.getResourceLocation();
-            } else {
+            }
+            else {
                 icon = BaseIcons.ROOM_COMMON.getResourceLocation();
             }
         }
