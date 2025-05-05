@@ -526,7 +526,8 @@ public class VaultMap {
         } else if (room.getPath().contains("raw") || room.getPath().contains("resource")) {
             type = RoomType.ROOMTYPE_RESOURCE;
         }
-        String name = room.toString();
+//        String name = VaultRegistry.TEMPLATE_POOL.getKey(room).getId().toString();
+        String name = room.toString(); //TODO: instead we should get an actual template from the pool
         return new Tuple<RoomType, String>(type, name);
     }
 
