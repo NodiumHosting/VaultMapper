@@ -197,6 +197,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             int omegaRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.ROOMTYPE_OMEGA).toArray().length;
             int challengeRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.ROOMTYPE_CHALLENGE).toArray().length;
             int oreRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.ROOMTYPE_ORE).toArray().length;
+            int resourceRoomCount = cells.stream().filter(cell -> cell.roomType == RoomType.ROOMTYPE_RESOURCE).toArray().length;
 
             // x was -35
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(5), new TextComponent("Explored Rooms: " + cellCount), new LabelTextStyle.Builder()));
@@ -205,6 +206,7 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(35), new TextComponent("Omega Rooms: " + omegaRoomCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(45), new TextComponent("Challenge Rooms: " + challengeRoomCount), new LabelTextStyle.Builder()));
             this.addElement(new LabelElement(spatial.positionX(-55).positionY(55), new TextComponent("Ore Rooms: " + oreRoomCount), new LabelTextStyle.Builder()));
+            this.addElement(new LabelElement(spatial.positionX(-55).positionY(65), new TextComponent("Resource Rooms: " + resourceRoomCount), new LabelTextStyle.Builder()));
         }
 
 

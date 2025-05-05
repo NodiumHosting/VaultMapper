@@ -106,6 +106,42 @@ public enum RoomName
    * <code>ROOMNAME_HELLISH_DIG_SITE = 23;</code>
    */
   ROOMNAME_HELLISH_DIG_SITE(23),
+  /**
+   * <code>ROOMNAME_FARM = 24;</code>
+   */
+  ROOMNAME_FARM(24),
+  /**
+   * <code>ROOMNAME_QUARRY = 25;</code>
+   */
+  ROOMNAME_QUARRY(25),
+  /**
+   * <code>ROOMNAME_CHROMATIC_CAVES = 26;</code>
+   */
+  ROOMNAME_CHROMATIC_CAVES(26),
+  /**
+   * <code>ROOMNAME_MODDED_CAVES = 27;</code>
+   */
+  ROOMNAME_MODDED_CAVES(27),
+  /**
+   * <code>ROOMNAME_NETHER = 28;</code>
+   */
+  ROOMNAME_NETHER(28),
+  /**
+   * <code>ROOMNAME_END = 29;</code>
+   */
+  ROOMNAME_END(29),
+  /**
+   * <code>ROOMNAME_EMERALD_CAVES = 30;</code>
+   */
+  ROOMNAME_EMERALD_CAVES(30),
+  /**
+   * <code>ROOMNAME_DIAMOND_CAVES = 31;</code>
+   */
+  ROOMNAME_DIAMOND_CAVES(31),
+  /**
+   * <code>ROOMNAME_BOSS = 32;</code>
+   */
+  ROOMNAME_BOSS(32),
   UNRECOGNIZED(-1),
   ;
 
@@ -214,6 +250,42 @@ public enum RoomName
    * <code>ROOMNAME_HELLISH_DIG_SITE = 23;</code>
    */
   public static final int ROOMNAME_HELLISH_DIG_SITE_VALUE = 23;
+  /**
+   * <code>ROOMNAME_FARM = 24;</code>
+   */
+  public static final int ROOMNAME_FARM_VALUE = 24;
+  /**
+   * <code>ROOMNAME_QUARRY = 25;</code>
+   */
+  public static final int ROOMNAME_QUARRY_VALUE = 25;
+  /**
+   * <code>ROOMNAME_CHROMATIC_CAVES = 26;</code>
+   */
+  public static final int ROOMNAME_CHROMATIC_CAVES_VALUE = 26;
+  /**
+   * <code>ROOMNAME_MODDED_CAVES = 27;</code>
+   */
+  public static final int ROOMNAME_MODDED_CAVES_VALUE = 27;
+  /**
+   * <code>ROOMNAME_NETHER = 28;</code>
+   */
+  public static final int ROOMNAME_NETHER_VALUE = 28;
+  /**
+   * <code>ROOMNAME_END = 29;</code>
+   */
+  public static final int ROOMNAME_END_VALUE = 29;
+  /**
+   * <code>ROOMNAME_EMERALD_CAVES = 30;</code>
+   */
+  public static final int ROOMNAME_EMERALD_CAVES_VALUE = 30;
+  /**
+   * <code>ROOMNAME_DIAMOND_CAVES = 31;</code>
+   */
+  public static final int ROOMNAME_DIAMOND_CAVES_VALUE = 31;
+  /**
+   * <code>ROOMNAME_BOSS = 32;</code>
+   */
+  public static final int ROOMNAME_BOSS_VALUE = 32;
 
 
   public final int getNumber() {
@@ -264,6 +336,15 @@ public enum RoomName
       case 21: return ROOMNAME_COMET;
       case 22: return ROOMNAME_PLAYZONE;
       case 23: return ROOMNAME_HELLISH_DIG_SITE;
+      case 24: return ROOMNAME_FARM;
+      case 25: return ROOMNAME_QUARRY;
+      case 26: return ROOMNAME_CHROMATIC_CAVES;
+      case 27: return ROOMNAME_MODDED_CAVES;
+      case 28: return ROOMNAME_NETHER;
+      case 29: return ROOMNAME_END;
+      case 30: return ROOMNAME_EMERALD_CAVES;
+      case 31: return ROOMNAME_DIAMOND_CAVES;
+      case 32: return ROOMNAME_BOSS;
       default: return null;
     }
   }

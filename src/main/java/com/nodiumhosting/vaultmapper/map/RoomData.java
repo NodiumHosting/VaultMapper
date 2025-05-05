@@ -27,6 +27,7 @@ public class RoomData {
 
     public static List<RoomData> omegaRooms;
     public static List<RoomData> challengeRooms;
+    public static List<RoomData> resourceRooms;
     public String type;
     public String name;
     public String simpleName;
@@ -35,6 +36,7 @@ public class RoomData {
     public Block mineOption1;
     public Block mineOption2;
     public Block raidOption;
+    public Block runeOption;
 
     public RoomData() {
         this.type = "current";
@@ -100,14 +102,22 @@ public class RoomData {
     public static void initRooms() {
         omegaRooms = new ArrayList<>();
         challengeRooms = new ArrayList<>();
+        resourceRooms = new ArrayList<>();
         TemplatePoolKey challengeRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/challenge_rooms");
         TemplatePoolKey omegaRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/omega_rooms");
+        TemplatePoolKey resourceRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/raw/resources_lvl30");
+        TemplatePoolKey bossRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/special/boss");
+
         if (challengeRef == null) {
             VaultMapper.LOGGER.info("challengeRef is null");
             return;
         }
         if (omegaRef == null) {
             VaultMapper.LOGGER.info("omegaRef is null");
+            return;
+        }
+        if (resourceRef == null) {
+            VaultMapper.LOGGER.info("resourceRef is null");
             return;
         }
         if (!challengeRef.supports(Version.latest())) {
@@ -118,8 +128,19 @@ public class RoomData {
             VaultMapper.LOGGER.info("omegaRef doesnt support version");
             return;
         }
+        if (!resourceRef.supports(Version.latest())) {
+            VaultMapper.LOGGER.info("resourceRef doesnt support version");
+            return;
+        }
+        if (!bossRef.supports(Version.latest())) {
+            VaultMapper.LOGGER.info("bossRef doesnt support version");
+            return;
+        }
         TemplatePool challenge = challengeRef.get(Version.latest());
         TemplatePool omega = omegaRef.get(Version.latest());
+        TemplatePool resource = resourceRef.get(Version.latest());
+        TemplatePool boss = bossRef.get(Version.latest());
+
         if (!challengeRef.supports(Version.latest()))
             if (challenge == null) {
                 VaultMapper.LOGGER.info("Cant find challenge rooms");
@@ -137,6 +158,19 @@ public class RoomData {
             return true;
         }));
 
+        boss.iterate((entry -> {
+            if (entry instanceof DirectTemplateEntry roomFileRef) {
+                if (!roomFileRef.getTemplate().supports(Version.latest())) {
+                    return true;
+                }
+                Template roomFile = roomFileRef.getTemplate().get(Version.latest());
+                String name = roomFileRef.getTemplate().getName();
+                challengeRooms.add(new RoomData("challenge", "Boss Room", name, roomFile));
+                return true;
+            }
+            return true;
+        }));
+
         omega.iterate((entry -> {
             if (entry instanceof IndirectTemplateEntry roomBatchRef) {
                 if (!roomBatchRef.getReference().supports(Version.latest())) {
@@ -148,6 +182,33 @@ public class RoomData {
 
             return true;
         }));
+        resource.iterate((entry -> {
+            if (entry instanceof IndirectTemplateEntry roomBatchRef) {
+                if (!roomBatchRef.getReference().supports(Version.latest())) {
+                    return true;
+                }
+                String simpleName = roomBatchRef.getReference().getName();
+                iterateRooms(resourceRooms, "resource", simpleName, roomBatchRef);
+            }
+
+            return true;
+        }));
+
+        TemplatePoolKey diamondRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/raw/diamond_caves");
+        if (diamondRef != null && diamondRef.supports(Version.latest())) {
+            TemplatePool diamond = diamondRef.get(Version.latest());
+            diamond.iterate((entry -> {
+                if (entry instanceof DirectTemplateEntry roomFileRef) {
+                    if (!roomFileRef.getTemplate().supports(Version.latest())) {
+                        return true;
+                    }
+                    Template roomFile = roomFileRef.getTemplate().get(Version.latest());
+                    String name = roomFileRef.getTemplate().getName();
+                    resourceRooms.add(new RoomData("resource", "Diamond Caves", name, roomFile));
+                }
+                return true;
+            }));
+        }
 
         // try to get hellish digsite, but silently fail if it doesn't exist - wold's might not be loaded
         TemplatePoolKey hellishRef = VaultRegistry.TEMPLATE_POOL.getKey("the_vault:vault/rooms/hellish_rooms");
@@ -273,6 +334,8 @@ public class RoomData {
         currentRoom.columnList.add(captureColumn(cellX, cellZ, 46, 46));
         currentRoom.mineOption1 = VaultMap.getCellBlock(cellX, cellZ, 23, 32 + 9, 23);
         currentRoom.mineOption2 = VaultMap.getCellBlock(cellX, cellZ, 23, 31 + 9, 23);
+        currentRoom.raidOption = VaultMap.getCellBlock(cellX, cellZ, 23, 20 + 9, 23);
+        currentRoom.runeOption = VaultMap.getCellBlock(cellX, cellZ, 23, 18 + 9, 23);
         //currentRoom.centerColumn = captureColumn(cellX,cellZ,23,23);
         return currentRoom;
     }
@@ -290,7 +353,7 @@ public class RoomData {
         //roomData is omega/challenge
         //this is current
         int yLevel = 0;
-        if (roomData.simpleName.equals("Village") || roomData.simpleName.equals("Raid")) {
+        if (roomData.simpleName.equals("Village") || roomData.simpleName.equals("Raid Room")) {
             yLevel = 19;
         }
         if (roomData.simpleName.equals("Mine")) {
@@ -301,8 +364,16 @@ public class RoomData {
                 return false;
             }
         }
-        if (roomData.simpleName.equals("Raid")) {
+        if (roomData.simpleName.equals("Raid Room")) {
             if (raidOption == ModBlocks.RAID_CONTROLLER) {
+                return true;
+            }
+        }
+        if (roomData.simpleName.equals("Boss Room")) {
+            if (raidOption == ModBlocks.RUNE_PILLAR) {
+                return true; // variant 1 has pillar in same pos as raid controller
+            }
+            if (runeOption == ModBlocks.RUNE_PILLAR) {
                 return true;
             }
         }
@@ -333,6 +404,11 @@ public class RoomData {
         for (RoomData challengeRoom : challengeRooms) {
             if (this.compareRoom(challengeRoom)) {
                 return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_CHALLENGE, Util.RoomFromName(challengeRoom.simpleName));
+            }
+        }
+        for (RoomData resourceRoom : resourceRooms) {
+            if (this.compareRoom(resourceRoom)) {
+                return new Tuple<RoomType, RoomName>(RoomType.ROOMTYPE_RESOURCE, Util.RoomFromName(resourceRoom.simpleName));
             }
         }
         // TODO: need to add support for vendor rooms

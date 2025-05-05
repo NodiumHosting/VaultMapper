@@ -43,7 +43,7 @@ public class VaultMapperConfigScreen extends Screen {
 
     private int getScaledY(float y) {
         float height = Minecraft.getInstance().getWindow().getGuiScaledHeight(); //Minecraft.getInstance().getWindow().getHeight() / 2;
-        float piece = height / 21;
+        float piece = height / 22;
         float scaledY = piece * y;
         return (int) scaledY;
     }
@@ -263,6 +263,17 @@ public class VaultMapperConfigScreen extends Screen {
             oreRoomColorPicker.setColor(parseColor(value));
         });
 
+        EditBoxReset resourceRoomColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(17), elWidthColor, elHeight, new TextComponent("RESOURCE_ROOM_COLOR"), "#FFFFFF");
+        resourceRoomColor.setValue(ClientConfig.RESOURCE_ROOM_COLOR.get());
+        this.addRenderableWidget(resourceRoomColor);
+        ColorButton resourceRoomColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(17), elHeight, elHeight, parseColor(ClientConfig.RESOURCE_ROOM_COLOR.get()), button -> {
+
+        }, resourceRoomColor, colorPicker);
+        this.addRenderableWidget(resourceRoomColorPicker);
+        resourceRoomColor.setResponder((value) -> {
+            resourceRoomColorPicker.setColor(parseColor(value));
+        });
+
         Button showRoomIcons = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5 - 2, getScaledY(14), elHeight, Math.min(elHeight, 20),  ClientConfig.SHOW_ROOM_ICONS.get() ? enabledText : disabledText, button -> {
             ClientConfig.SHOW_ROOM_ICONS.set(!ClientConfig.SHOW_ROOM_ICONS.get());
             ClientConfig.SPEC.save();
@@ -273,11 +284,11 @@ public class VaultMapperConfigScreen extends Screen {
             });
         this.addRenderableWidget(showRoomIcons);
 
-        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(17), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.ndmh.xyz");
+        EditBoxReset syncServer = new EditBoxReset(this.font, this.width / 2 - 70, getScaledY(18), elWidthColor + 80, elHeight, new TextComponent("SYNC_SERVER"), "wss://vmsync.ndmh.xyz");
         syncServer.setValue(ClientConfig.VMSYNC_SERVER.get());
         this.addRenderableWidget(syncServer);
 
-        Button enableSyncButton = new Button(this.width / 2 + elWidthColor + 5 + 10, getScaledY(17), elHeight, elHeight, ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
+        Button enableSyncButton = new Button(this.width / 2 + elWidthColor + 5 + 10, getScaledY(18), elHeight, elHeight, ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText, button -> {
             ClientConfig.SYNC_ENABLED.set(!ClientConfig.SYNC_ENABLED.get());
             ClientConfig.SPEC.save();
             button.setMessage(ClientConfig.SYNC_ENABLED.get() ? enabledText : disabledText);
@@ -287,7 +298,7 @@ public class VaultMapperConfigScreen extends Screen {
             });
         this.addRenderableWidget(enableSyncButton);
 
-        Button showViewerCodeButton = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5, getScaledY(17), elHeight, elHeight, ClientConfig.SHOW_VIEWER_CODE.get() ? enabledText : disabledText, button -> {
+        Button showViewerCodeButton = new Button(this.width / 2 + elWidthColor + 5 + 10 + elHeight + 5, getScaledY(18), elHeight, elHeight, ClientConfig.SHOW_VIEWER_CODE.get() ? enabledText : disabledText, button -> {
             ClientConfig.SHOW_VIEWER_CODE.set(!ClientConfig.SHOW_VIEWER_CODE.get());
             ClientConfig.SPEC.save();
             button.setMessage(ClientConfig.SHOW_VIEWER_CODE.get() ? enabledText : disabledText);
@@ -297,10 +308,10 @@ public class VaultMapperConfigScreen extends Screen {
             });
         this.addRenderableWidget(showViewerCodeButton);
 
-        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(18), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), Util.RandomColor());
+        EditBoxReset syncColor = new EditBoxReset(this.font, this.width / 2 + 10, getScaledY(19), elWidthColor, elHeight, new TextComponent("SYNC_COLOR"), Util.RandomColor());
         syncColor.setValue(ClientConfig.SYNC_COLOR.get());
         this.addRenderableWidget(syncColor);
-        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(18), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
+        ColorButton syncColorPicker = new ColorButton(this.width / 2 + elWidthColor + 5 + 10, getScaledY(19), elHeight, elHeight, parseColor(ClientConfig.SYNC_COLOR.get()), button -> {
 
         }, syncColor, colorPicker);
         this.addRenderableWidget(syncColorPicker);
@@ -308,7 +319,7 @@ public class VaultMapperConfigScreen extends Screen {
             syncColorPicker.setColor(parseColor(value));
         });
 
-        Button saveButton = new Button(this.width / 2 - 100, getScaledY(19), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
+        Button saveButton = new Button(this.width / 2 - 100, getScaledY(20), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Save"), button -> {
             try {
                 ClientConfig.MAP_X_OFFSET.set(Integer.parseInt(mapXOffset.getValue()));
             } catch (NumberFormatException e) {
@@ -332,6 +343,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set(omegaRoomColor.getValue());
             ClientConfig.CHALLENGE_ROOM_COLOR.set(challengeRoomColor.getValue());
             ClientConfig.ORE_ROOM_COLOR.set(oreRoomColor.getValue());
+            ClientConfig.RESOURCE_ROOM_COLOR.set(resourceRoomColor.getValue());
             ClientConfig.VMSYNC_SERVER.set(syncServer.getValue());
             ClientConfig.SYNC_COLOR.set(syncColor.getValue());
 
@@ -345,7 +357,7 @@ public class VaultMapperConfigScreen extends Screen {
         });
         this.addRenderableWidget(saveButton);
 
-        Button resetButton = new Button(this.width / 2 - 100, getScaledY(19.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
+        Button resetButton = new Button(this.width / 2 - 100, getScaledY(20.75f), 200, Math.min((getScaledY(1) / 3) * 2, 20), new TextComponent("Reset"), button -> {
             mapScale.sliderValue = 10;
             mapXOffset.setValue("0");
             mapYOffset.setValue("0");
@@ -361,6 +373,7 @@ public class VaultMapperConfigScreen extends Screen {
             omegaRoomColor.setValue("#55FF55");
             challengeRoomColor.setValue("#F09E00");
             oreRoomColor.setValue("#00FFFF");
+            resourceRoomColor.setValue("#FFFFFF");
             showInscription.setMessage(enabledText);
             syncServer.setValue("wss://vmsync.ndmh.xyz");
             enableSyncButton.setMessage(enabledText);
@@ -387,6 +400,7 @@ public class VaultMapperConfigScreen extends Screen {
             ClientConfig.OMEGA_ROOM_COLOR.set("#55FF55");
             ClientConfig.CHALLENGE_ROOM_COLOR.set("#F09E00");
             ClientConfig.ORE_ROOM_COLOR.set("#00FFFF");
+            ClientConfig.RESOURCE_ROOM_COLOR.set("#FFFFFF");
             ClientConfig.SHOW_ROOM_ICONS.set(true);
             ClientConfig.VMSYNC_SERVER.set("wss://vmsync.ndmh.xyz");
             ClientConfig.SYNC_ENABLED.set(true);
@@ -440,8 +454,9 @@ public class VaultMapperConfigScreen extends Screen {
         this.font.draw(pose, "Omega Room Color", this.width / 2 - 110, getScaledY(14) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Challenge Room Color", this.width / 2 - 110, getScaledY(15) + offsetY, 0xFFFFFFFF);
         this.font.draw(pose, "Ore Room Color", this.width / 2 - 110, getScaledY(16) + offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "VMSync", this.width / 2 - 110, getScaledY(17) + offsetY, 0xFFFFFFFF);
-        this.font.draw(pose, "Sync Color", this.width / 2 - 110, getScaledY(18) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Resource Room Color", this.width / 2 - 110, getScaledY(17) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "VMSync", this.width / 2 - 110, getScaledY(18) + offsetY, 0xFFFFFFFF);
+        this.font.draw(pose, "Sync Color", this.width / 2 - 110, getScaledY(19) + offsetY, 0xFFFFFFFF);
 
         super.render(pose, mouseX, mouseY, partialTick);
 

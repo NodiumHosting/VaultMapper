@@ -23,13 +23,23 @@ public class Util {
             Map.entry("X-mark", RoomName.ROOMNAME_X_MARK),
             Map.entry("Cube", RoomName.ROOMNAME_CUBE),
             Map.entry("Laboratory", RoomName.ROOMNAME_LAB),
-            Map.entry("Raid", RoomName.ROOMNAME_RAID),
+            Map.entry("Raid Room", RoomName.ROOMNAME_RAID),
             Map.entry("Pirate Cave", RoomName.ROOMNAME_PIRATE_CAVE),
             Map.entry("Woldian Garden", RoomName.ROOMNAME_GARDEN),
             Map.entry("Arcade", RoomName.ROOMNAME_ARCADE),
             Map.entry("Comet Observatory", RoomName.ROOMNAME_COMET),
             Map.entry("Playzone", RoomName.ROOMNAME_PLAYZONE),
-            Map.entry("Hellish Digsite", RoomName.ROOMNAME_HELLISH_DIG_SITE)
+            Map.entry("Hellish Digsite", RoomName.ROOMNAME_HELLISH_DIG_SITE),
+            Map.entry("The Farm", RoomName.ROOMNAME_FARM),
+            Map.entry("Raw Quarry", RoomName.ROOMNAME_QUARRY),
+            Map.entry("Chromatic Caves", RoomName.ROOMNAME_CHROMATIC_CAVES),
+            Map.entry("Raw Modded Caves", RoomName.ROOMNAME_MODDED_CAVES),
+            Map.entry("Raw Nether", RoomName.ROOMNAME_NETHER),
+            Map.entry("Raw End", RoomName.ROOMNAME_END),
+            Map.entry("Emerald Caves", RoomName.ROOMNAME_EMERALD_CAVES),
+            Map.entry("Diamond Caves", RoomName.ROOMNAME_DIAMOND_CAVES),
+            Map.entry("Boss Room", RoomName.ROOMNAME_BOSS)
+
     );
 
     public static RoomName RoomFromName(String name) {

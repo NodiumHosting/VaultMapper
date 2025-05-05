@@ -82,7 +82,7 @@ public class VaultMapper {
         if (ClientConfig.WEBMAP_ENABLED.get()) {
             webMapServer.start();
         }
-        if (RoomData.omegaRooms == null || RoomData.challengeRooms == null) {
+        if (RoomData.omegaRooms == null || RoomData.challengeRooms == null || RoomData.resourceRooms == null) {
             RoomData.initRooms();
         }
     }
