@@ -315,7 +315,7 @@ public class VaultMapOverlayRenderer {
             var minZ = Math.min(startZ, endZ);
             var maxZ = Math.max(startZ, endZ);
 
-            if (cell.marked && ClientConfig.SHOW_ROOM_ICONS.get()) {
+            if ((cell.marked || cell.inscripted) && ClientConfig.SHOW_ROOM_ICONS.get()) {
                 minX -= (float) (mapRoomWidth * 0.5);
                 maxX += (float) (mapRoomWidth * 0.5);
                 minZ -= (float) (mapRoomWidth * 0.5);
@@ -367,7 +367,7 @@ public class VaultMapOverlayRenderer {
             var minZ = Math.min(startZ, endZ);
             var maxZ = Math.max(startZ, endZ);
 
-            if (cell.marked && ClientConfig.SHOW_ROOM_ICONS.get()) {
+            if ((cell.marked || cell.inscripted) && ClientConfig.SHOW_ROOM_ICONS.get()) {
                 minX -= (float) (mapRoomWidth * 0.5);
                 maxX += (float) (mapRoomWidth * 0.5);
                 minZ -= (float) (mapRoomWidth * 0.5);
@@ -466,19 +466,27 @@ public class VaultMapOverlayRenderer {
                 }
             }
             case 1 -> {
-                mapAnchorX = (float) width / 4;
+                if (playerCentricRender){
+                    mapAnchorX = Math.max((float) width / 4, mapRoomWidth * cutoff + sideMargin);
+                } else {
+                    mapAnchorX = Math.max((float) width / 4, VaultMap.westSize * mapRoomWidth + mapRoomWidth + sideMargin);
+                }
             }
             case 2 -> {
                 mapAnchorX = (float) width / 2;
             }
             case 3 -> {
-                mapAnchorX = width - ((float) width / 4);
+                if (playerCentricRender){
+                    mapAnchorX = Math.min(width - ((float) width / 4), width - (mapRoomWidth * cutoff + sideMargin));
+                } else {
+                    mapAnchorX = Math.min(width - ((float) width / 4), width - (VaultMap.eastSize * mapRoomWidth + mapRoomWidth + sideMargin));
+                }
             }
             case 4 -> {
                 if (playerCentricRender){
-                    mapAnchorX = width - mapRoomWidth * cutoff - sideMargin;
+                    mapAnchorX = width - (mapRoomWidth * cutoff + sideMargin);
                 } else {
-                    mapAnchorX = width - VaultMap.eastSize * mapRoomWidth + mapRoomWidth - sideMargin;
+                    mapAnchorX = width - (VaultMap.eastSize * mapRoomWidth + mapRoomWidth + sideMargin);
                 }
             }
         }
@@ -492,19 +500,27 @@ public class VaultMapOverlayRenderer {
                 }
             }
             case 1 -> {
-                mapAnchorZ = (float) height / 4;
+                if (playerCentricRender){
+                    mapAnchorZ = Math.max((float) height / 4, mapRoomWidth * cutoff + sideMargin);
+                } else {
+                    mapAnchorZ = Math.max((float) height / 4, VaultMap.northSize * mapRoomWidth + mapRoomWidth + sideMargin);
+                }
             }
             case 2 -> {
                 mapAnchorZ = (float) height / 2;
             }
             case 3 -> {
-                mapAnchorZ = height - ((float) height / 4);
+                if (playerCentricRender){
+                    mapAnchorZ = Math.min(height - ((float) height / 4), height - (mapRoomWidth * cutoff + sideMargin));
+                } else {
+                    mapAnchorZ = Math.min(height - ((float) height / 4), height - (VaultMap.southSize * mapRoomWidth + mapRoomWidth + sideMargin));
+                }
             }
             case 4 -> {
                 if (playerCentricRender){
-                    mapAnchorZ = height - mapRoomWidth * cutoff - sideMargin;
+                    mapAnchorZ = height - (mapRoomWidth * cutoff + sideMargin);
                 } else {
-                    mapAnchorZ = height - VaultMap.southSize * mapRoomWidth + mapRoomWidth - sideMargin;
+                    mapAnchorZ = height - (VaultMap.southSize * mapRoomWidth + mapRoomWidth + sideMargin);
                 }
             }
         }

@@ -91,6 +91,13 @@ public class MapComponent extends GuiComponent implements Widget {
         var minZ = Math.min(startZ, endZ);
         var maxZ = Math.max(startZ, endZ);
 
+        if ((cell.marked || cell.inscripted) && ClientConfig.SHOW_ROOM_ICONS.get()) {
+            minX -= (float) (mapRoomWidth * 0.5);
+            maxX += (float) (mapRoomWidth * 0.5);
+            minZ -= (float) (mapRoomWidth * 0.5);
+            maxZ += (float) (mapRoomWidth * 0.5);
+        }
+
         int color = parseColor(VaultMap.getCellColor(cell));
         this.fillGradient(poseStack, (int) minX, (int) minZ, (int) maxX, (int) maxZ, color, color);
 

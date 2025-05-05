@@ -119,6 +119,13 @@ public class MapContainerElement extends VerticalScrollClipContainer<MapContaine
             var minZ = Math.min(startZ, endZ);
             var maxZ = Math.max(startZ, endZ);
 
+            if ((cell.marked || cell.inscripted) && ClientConfig.SHOW_ROOM_ICONS.get()) {
+                minX -= (float) (width * 0.5);
+                maxX += (float) (width * 0.5);
+                minZ -= (float) (width * 0.5);
+                maxZ += (float) (width * 0.5);
+            }
+
             bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
             bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
