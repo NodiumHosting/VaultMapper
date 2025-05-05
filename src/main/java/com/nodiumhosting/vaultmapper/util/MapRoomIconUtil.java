@@ -19,7 +19,8 @@ public class MapRoomIconUtil {
         ROOM_RAID("the_vault:textures/gui/map/raid.png"),
         ROOM_FARM("the_vault:textures/gui/map/farm.png"),
         ROOM_EMERALD_CAVES("the_vault:textures/gui/map/emerald_caves.png"),
-        ROOM_DIAMOND_CAVES("the_vault:textures/gui/map/diamond_caves.png");
+        ROOM_DIAMOND_CAVES("the_vault:textures/gui/map/diamond_caves.png"),
+        ROOM_CHROMATIC_CAVES("the_vault:textures/gui/map/chromatic_caves.png");
 
         private final ResourceLocation resourceLocation;
         BaseIcons(String path) {
@@ -44,12 +45,6 @@ public class MapRoomIconUtil {
                 String iconPath = customIcon.get().getPath();
 
                 icon = new ResourceLocation(iconNamespace, "textures/" + iconPath + ".png");
-            } else if (path.contains("omega")) {
-                icon = BaseIcons.ROOM_OMEGA.getResourceLocation();
-            } else if (path.contains("challenge")) {
-                icon = BaseIcons.ROOM_CHALLENGE.getResourceLocation();
-            } else if (path.contains("raw")) {
-                icon = BaseIcons.ROOM_RAW.getResourceLocation();
             } else if (path.contains("boss")) {
                 icon = BaseIcons.ROOM_BOSS.getResourceLocation();
             } else if (path.contains("raid")) {
@@ -60,6 +55,14 @@ public class MapRoomIconUtil {
                 icon = BaseIcons.ROOM_EMERALD_CAVES.getResourceLocation();
             } else if (path.contains("diamond_cave")) {
                 icon = BaseIcons.ROOM_DIAMOND_CAVES.getResourceLocation();
+            } else if (path.contains("chromatic_cave")) {
+                icon = BaseIcons.ROOM_CHROMATIC_CAVES.getResourceLocation();
+            } else if (path.contains("omega")) {
+                icon = BaseIcons.ROOM_OMEGA.getResourceLocation();
+            } else if (path.contains("challenge")) {
+                icon = BaseIcons.ROOM_CHALLENGE.getResourceLocation();
+            } else if (path.contains("raw")) {
+                icon = BaseIcons.ROOM_RAW.getResourceLocation();
             } else if (path.contains("ore")) {
                 icon = BaseIcons.ROOM_ORE.getResourceLocation();
             } else {
