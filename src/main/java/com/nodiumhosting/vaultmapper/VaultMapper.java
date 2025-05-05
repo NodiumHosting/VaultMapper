@@ -6,7 +6,6 @@ import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.events.KeybindEvents;
 import com.nodiumhosting.vaultmapper.map.VaultMapOverlayRenderer;
 import com.nodiumhosting.vaultmapper.map.RoomData;
-import com.nodiumhosting.vaultmapper.network.webmap.WebMapServer;
 import com.nodiumhosting.vaultmapper.util.UpdateChecker;
 import com.nodiumhosting.vaultmapper.util.Util;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -30,8 +29,6 @@ public class VaultMapper {
     public static final String MODID = "vaultmapper";
 
     public static final Logger LOGGER = LogUtils.getLogger();
-
-    public static WebMapServer webMapServer;
 
     public static Pattern vault_regex = Pattern.compile("vault_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
 
@@ -76,12 +73,7 @@ public class VaultMapper {
 
 //        VaultMapOverlayRenderer.ignoreResearchRequirement = ClientConfig.IGNORE_RESEARCH_REQUIREMENT.get();
         VaultMapOverlayRenderer.ignoreResearchRequirement = true; // removed the research requirement for now because people were confused why their map wasn't working
-        InetSocketAddress addr = new InetSocketAddress("0.0.0.0", 58008);
-        webMapServer = new WebMapServer(addr);
 
-        if (ClientConfig.WEBMAP_ENABLED.get()) {
-            webMapServer.start();
-        }
         if (RoomData.omegaRooms == null || RoomData.challengeRooms == null || RoomData.resourceRooms == null) {
             RoomData.initRooms();
         }

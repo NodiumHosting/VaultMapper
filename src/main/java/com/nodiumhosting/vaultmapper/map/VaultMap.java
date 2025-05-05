@@ -121,8 +121,6 @@ public class VaultMap {
         eastSize = defaultMapSize;
         southSize = defaultMapSize;
         westSize = defaultMapSize;
-
-        VaultMapper.webMapServer.sendReset();
     }
 
     public static VaultCell getCurrentCell() {
@@ -297,20 +295,6 @@ public class VaultMap {
         }
         addOrReplaceCell(newCell);
         MapCache.updateCache();
-        sendCell(newCell);
-        sendCell(cells.stream().filter((cell) -> cell.x == playerRoomX && cell.z == playerRoomZ).findFirst().orElseThrow());
-    }
-
-    public static void sendCell(VaultCell cell) {
-        VaultMapper.webMapServer.sendCell(cell);
-    }
-
-    public static void sendMap() {
-        VaultMap.cells.forEach((cell) -> {
-            if (!(cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())) {
-                VaultMapper.webMapServer.sendCell(cell);
-            }
-        });
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -336,8 +320,6 @@ public class VaultMap {
         String username = player.getName().getString();
         String uuid = player.getUUID().toString();
 
-        VaultMapper.webMapServer.sendArrow(playerRoomX, playerRoomZ, yaw, username, ClientConfig.POINTER_COLOR.get());
-
         if (syncClient != null) syncClient.sendMovePacket(uuid, playerRoomX, playerRoomZ, yaw);
 
         if (debug) {
@@ -352,9 +334,6 @@ public class VaultMap {
             oldYaw = yaw;
             oldRoomX = playerRoomX;
             oldRoomZ = playerRoomZ;
-
-            if (currentRoom != null)
-                VaultMapper.webMapServer.sendArrow(currentRoom.x, currentRoom.z, yaw, username, ClientConfig.POINTER_COLOR.get());
         }
     }
 
@@ -393,7 +372,6 @@ public class VaultMap {
 
         VaultCell c = cells.stream().filter((ce) -> ce.x == playerRoomX && ce.z == playerRoomZ).findFirst().orElseThrow();
 
-        sendCell(c);
         if (syncClient != null) syncClient.sendCellPacket(c);
     }
 
@@ -476,7 +454,6 @@ public class VaultMap {
             newCell.inscripted = true;
             cells.add(newCell);
 
-            sendCell(newCell);
             if (syncClient != null) syncClient.sendCellPacket(newCell);
         });
 

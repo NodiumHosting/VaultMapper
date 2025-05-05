@@ -23,7 +23,6 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> RESOURCE_ROOM_COLOR;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_INSCRIPTIONS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SHOW_ROOM_ICONS;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WEBMAP_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
     //    public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_SCALE;
@@ -60,8 +59,6 @@ public class ClientConfig {
         RESOURCE_ROOM_COLOR = BUILDER.comment("Color for an explored Resource Room").define("RESOURCE_ROOM_COLOR", "#FFFFFF");
         SHOW_INSCRIPTIONS = BUILDER.comment("Show Inscripted Rooms on the Map").define("SHOW_INSCRIPTIONS", true);
         SHOW_ROOM_ICONS = BUILDER.comment("Show Room Icons on the Map").define("SHOW_ROOM_ICONS", true);
-
-        WEBMAP_ENABLED = BUILDER.comment("Enable the WebMap Server").define("WEBMAP_ENABLED", false);
 
         MAX_MAPS_SAVED = BUILDER.comment("The maximum amount of map history snapshots that can be saved on file.\n" +
                 "Favorites will be saved forever regardless of this number.\n" +

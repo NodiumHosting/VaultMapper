@@ -72,7 +72,6 @@ public class SyncClient extends WebSocketClient {
                         VaultCell vaultCell = CellFromPacket(cell);
 
                         VaultMap.addOrReplaceCell(vaultCell);
-                        VaultMapper.webMapServer.sendCell(vaultCell);
                     }
                 }
                 case VAULT_PLAYER -> {
@@ -92,20 +91,17 @@ public class SyncClient extends WebSocketClient {
                     String hex = "#" + paddedRed + paddedGreen + paddedBlue;
 
                     VaultMap.updatePlayerMapData(uuid, hex, x, z, yaw);
-                    VaultMapper.webMapServer.sendArrow(x, z, yaw, uuid, hex);
                 }
                 case VAULT_CELL -> {
                     var data = msg.getVaultCell();
                     VaultCell cell = CellFromPacket(data);
 
                     VaultMap.addOrReplaceCell(cell);
-                    VaultMapper.webMapServer.sendCell(cell);
                 }
                 case PLAYER_DISCONNECT -> {
                     var data = msg.getPlayerDisconnect();
 
                     VaultMap.removePlayerMapData(data.getUuid());
-                    VaultMapper.webMapServer.removeArrow(data.getUuid());
                 }
                 case TOAST -> {
                     var data = msg.getToast();
@@ -163,17 +159,14 @@ public class SyncClient extends WebSocketClient {
                 MovePacket movePacket = new GsonBuilder().create().fromJson(dataCapsule.data, MovePacket.class);
 
                 VaultMap.updatePlayerMapData(movePacket.uuid, movePacket.color, movePacket.x, movePacket.z, movePacket.yaw);
-                VaultMapper.webMapServer.sendArrow(movePacket.x, movePacket.z, movePacket.yaw, movePacket.uuid, movePacket.color);
             } else if (dataCapsule.type.equals(String.valueOf(PacketType.CELL.getValue()))) {
                 VaultCell cellPacket = new GsonBuilder().create().fromJson(dataCapsule.data, VaultCell.class); //have to change maybe
 
                 VaultMap.addOrReplaceCell(cellPacket);
-                VaultMapper.webMapServer.sendCell(cellPacket);
             } else if (dataCapsule.type.equals(String.valueOf(PacketType.LEAVE.getValue()))) {
                 LeavePacket leavePacket = new GsonBuilder().create().fromJson(dataCapsule.data, LeavePacket.class);
 
                 VaultMap.removePlayerMapData(leavePacket.uuid);
-                VaultMapper.webMapServer.removeArrow(leavePacket.uuid);
             }
         } catch (Exception e) {
             VaultMapper.LOGGER.error("Sync WS Error: " + e);
