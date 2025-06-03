@@ -210,8 +210,13 @@ public class VaultMapOverlayRenderer {
         } catch (IllegalArgumentException e) {
             return;
         }
-        GuiComponent.drawCenteredString(posestack, Minecraft.getInstance().font, name, (int) (arrowX + offsetX), (int) (arrowZ + offsetZ + 10), parseColor(data.color));
+        posestack.pushPose();
+        float scale = ClientConfig.MAP_SCALE.get() * 0.1f * (float)(1/Minecraft.getInstance().getWindow().getGuiScale());
+        posestack.translate((1 - scale) * arrowX, (1 - scale) * arrowZ, 0);
+        posestack.scale(scale, scale, scale);
 
+        GuiComponent.drawCenteredString(posestack, Minecraft.getInstance().font, name, (int) (arrowX + offsetX), (int) (arrowZ + offsetZ + 10), parseColor(data.color));
+        posestack.popPose();
     }
 
     private static void renderPlayerArrow(BufferBuilder bufferBuilder, VaultMap.MapPlayer data) {
