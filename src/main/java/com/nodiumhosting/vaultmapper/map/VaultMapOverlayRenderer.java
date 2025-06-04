@@ -1,26 +1,35 @@
 package com.nodiumhosting.vaultmapper.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.nodiumhosting.vaultmapper.VaultMapper;
 import com.nodiumhosting.vaultmapper.config.ClientConfig;
 import com.nodiumhosting.vaultmapper.proto.CellType;
-import com.nodiumhosting.vaultmapper.proto.RoomType;
 import com.nodiumhosting.vaultmapper.util.MapRoomIconUtil;
-import com.nodiumhosting.vaultmapper.util.Util;
+import iskallia.vault.core.vault.ClientVaults;
+import iskallia.vault.core.vault.Vault;
+import iskallia.vault.core.vault.objective.HeraldObjective;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.lang.Math.abs;
 
@@ -43,10 +52,16 @@ public class VaultMapOverlayRenderer {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void eventHandler(RenderGameOverlayEvent.Post event) {
-//        if (!ResearchUtil.hasResearch("Vault Compass") && !ignoreResearchRequirement) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         if (!enabled) return;
         if (!ClientConfig.MAP_ENABLED.get()) return;
+        Optional<Vault> vaultOpt = ClientVaults.getActive();
+        if (vaultOpt.isPresent()) {
+            Vault vault = vaultOpt.get();
+            if (!vault.get(Vault.OBJECTIVES).getAll(HeraldObjective.class).isEmpty()) {
+                return;
+            }
+        }
         if (!prepped) prep();
 
         int offsetX = ClientConfig.MAP_X_OFFSET.get();
@@ -86,20 +101,12 @@ public class VaultMapOverlayRenderer {
 
         // Tunnel map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z).forEach((cell) -> {
-            if (playerCentricRender) {
-                renderCellPC(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
-            } else {
-                renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
-            }
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
 
         // cell map
         VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM).forEach((cell) -> {
-            if (playerCentricRender) {
-                renderCellPC(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
-            } else {
-                renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
-            }
+            renderCell(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
         });
 
         bufferBuilder.end();
@@ -127,11 +134,7 @@ public class VaultMapOverlayRenderer {
 
                     //Gui.blit(event.getMatrixStack(), (int) (centerX + cell.x * mapRoomWidth + offsetX), (int) (centerZ + cell.z * mapRoomWidth + offsetZ), 0, 0, (int) mapRoomWidth, (int) mapRoomWidth, 16, 16);
                     //VaultMapper.LOGGER.info(String.valueOf(mapRoomWidth));
-                    if (playerCentricRender) {
-                        renderTextureCellPC(bufferBuilder, cell);
-                    } else {
-                        renderTextureCell(bufferBuilder, cell);
-                    }
+                    renderTextureCell(bufferBuilder, cell);
                 } catch (Exception e) {
                     VaultMapper.LOGGER.error("Failed to render icon for room: " + cell.roomName);
                 }
@@ -144,77 +147,109 @@ public class VaultMapOverlayRenderer {
             RenderSystem.disableTexture();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        }
 
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+            // cell map
+            VaultMap.cells.stream().filter((cell) -> cell.cellType == CellType.CELLTYPE_ROOM && (cell.inscripted || cell.marked)).forEach((cell) -> {
+                renderCellBorder(bufferBuilder, cell, parseColor(VaultMap.getCellColor(cell)));
+            });
+
+            bufferBuilder.end();
+            BufferUploader.end(bufferBuilder); // render the map
+        }
 
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         // player thingies
-        //Logger.getAnonymousLogger().info(String.valueOf(VaultMap.players.size()));
-        if (playerCentricRender) {
-            VaultMap.players.forEach((name, data) -> {
-                if (abs(data.x - playerX) > cutoff || abs(data.y - playerZ) > cutoff) return;
-                float mapX = centerX + (data.x - playerX) * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-                float mapZ = centerZ + (data.y - playerZ) * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
-                var triag = getRotatedTriangle(data.yaw);
-                bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(data.color)).endVertex();
-                bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(data.color)).endVertex();
-                bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(data.color)).endVertex();
-            });
-        } else {
-            VaultMap.players.forEach((name, data) -> {
-                float mapX = centerX + data.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-                float mapZ = centerZ + data.y * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
-                var triag = getRotatedTriangle(data.yaw);
-                bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(data.color)).endVertex();
-                bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(data.color)).endVertex();
-                bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(data.color)).endVertex();
-            });
-        }
+        VaultMap.players.forEach((name, data) -> renderPlayerArrow(bufferBuilder, data));
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder);
 
-
         // player thingy TODO: Might need to adjust this thing as the previous loop handles it
-        if (playerCentricRender) {
-            if (VaultMap.currentRoom != null) {
-                float mapX = centerX + offsetX; //breaks with certain high values, god knows why
-                float mapZ = centerZ + offsetZ; //breaks with certain high values, god knows why
-                var triag = getRotatedTriangle();
-                bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-                bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.end();
-                BufferUploader.end(bufferBuilder);
-            }
-        } else {
-            if (VaultMap.currentRoom != null) {
-                float mapX = centerX + VaultMap.currentRoom.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
-                float mapZ = centerZ + VaultMap.currentRoom.z * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
-                var triag = getRotatedTriangle();
-                bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-                bufferBuilder.vertex(triag.get(0) + mapX + (3 * mapScaleMultiplier), triag.get(1) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.vertex(triag.get(2) + mapX + (3 * mapScaleMultiplier), triag.get(3) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.vertex(triag.get(4) + mapX + (3 * mapScaleMultiplier), triag.get(5) + mapZ, 0).color(parseColor(ClientConfig.POINTER_COLOR.get())).endVertex();
-                bufferBuilder.end();
-                BufferUploader.end(bufferBuilder);
-            }
-        }
+        var currentPlayer = new VaultMap.MapPlayer();
+        currentPlayer.x = playerX;
+        currentPlayer.y = playerZ;
+        currentPlayer.yaw = Minecraft.getInstance().player.getYHeadRot();
+        currentPlayer.color = ClientConfig.POINTER_COLOR.get();
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        renderPlayerArrow(bufferBuilder, currentPlayer);
+
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder);
 
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+
+        if (Minecraft.getInstance().options.keyPlayerList.isDown()) {
+            VaultMap.players.forEach((name, data) -> renderPlayerName(event.getMatrixStack(), name, data));
+        }
+    }
+
+    private static void renderPlayerName(PoseStack posestack, String name, VaultMap.MapPlayer data) {
+        int offsetX = ClientConfig.MAP_X_OFFSET.get();
+        int offsetZ = ClientConfig.MAP_Y_OFFSET.get();
+        float arrowX;
+        float arrowZ;
+        if (playerCentricRender) {
+            if (abs(data.x - playerX) > cutoff || abs(data.y - playerZ) > cutoff) return;
+            arrowX = centerX + (data.x - playerX) * mapRoomWidth + offsetX;
+            arrowZ = centerZ + (data.y - playerZ) * mapRoomWidth + offsetZ;
+        } else {
+            arrowX = centerX + data.x * mapRoomWidth + offsetX;
+            arrowZ = centerZ + data.y * mapRoomWidth + offsetZ;
+        }
+
+        try {
+            var id = UUID.fromString(name);
+            String username = UsernameCache.getLastKnownUsername(id);
+            if (username == null || username.isEmpty()) {
+                return;
+            }
+            name = username;
+
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+        posestack.pushPose();
+        float scale = ClientConfig.MAP_SCALE.get() * 0.1f * (float)(1/Minecraft.getInstance().getWindow().getGuiScale());
+        posestack.translate((1 - scale) * arrowX, (1 - scale) * arrowZ, 0);
+        posestack.scale(scale, scale, scale);
+
+        GuiComponent.drawCenteredString(posestack, Minecraft.getInstance().font, name, (int) (arrowX + offsetX), (int) (arrowZ + offsetZ + 10), parseColor(data.color));
+        posestack.popPose();
+    }
+
+    private static void renderPlayerArrow(BufferBuilder bufferBuilder, VaultMap.MapPlayer data) {
+        int offsetX = ClientConfig.MAP_X_OFFSET.get();
+        int offsetZ = ClientConfig.MAP_Y_OFFSET.get();
+        float arrowX;
+        float arrowZ;
+        if (playerCentricRender) {
+            if (abs(data.x - playerX) > cutoff || abs(data.y - playerZ) > cutoff) return;
+            arrowX = centerX + (data.x - playerX) * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            arrowZ = centerZ + (data.y - playerZ) * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+        } else {
+            arrowX = centerX + data.x * mapRoomWidth + offsetX; //breaks with certain high values, god knows why
+            arrowZ = centerZ + data.y * mapRoomWidth + offsetZ; //breaks with certain high values, god knows why
+        }
+        var triag = getRotatedTriangle(data.yaw);
+        int color = parseColor(data.color);
+        bufferBuilder.vertex(triag.get(0) + arrowX, triag.get(1) + arrowZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(triag.get(2) + arrowX, triag.get(3) + arrowZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(triag.get(4) + arrowX, triag.get(5) + arrowZ, 0).color(color).endVertex();
     }
 
     private static ArrayList<Float> getRotatedTriangle(float yaw) { // returns three points that make a rotated triangle when added with mapx,z
-        double x1 = -3 * mapScaleMultiplier;
-        double y1 = -2 * mapScaleMultiplier;
-        double x2 = -3 * mapScaleMultiplier;
-        double y2 = 2 * mapScaleMultiplier;
-        double x3 = 3 * mapScaleMultiplier;
-        double y3 = 0 * mapScaleMultiplier;
+        double arrowScale = ClientConfig.ARROW_SCALE.get() * 0.03f;
+        double x1 = -3 * mapRoomWidth * arrowScale + mapRoomWidth / 2;
+        double y1 = -2 * mapRoomWidth * arrowScale;
+        double x2 = -3 * mapRoomWidth * arrowScale + mapRoomWidth / 2;
+        double y2 = 2 * mapRoomWidth * arrowScale;
+        double x3 = 3 * mapRoomWidth * arrowScale + mapRoomWidth / 2;
+        double y3 = 0 * mapRoomWidth * arrowScale;
 
-        double cx = -3 * mapScaleMultiplier; // centers to rotate about
-        double cy = 0;
+        double cx = (x1 + x2) / 2; // centers to rotate about
+        double cy = (y1 + y2) / 2;
         float radangle = (float) Math.toRadians(yaw + 90);
 
         double[] rotatedVert1 = rotatePoint(x1, y1, cx, cy, radangle);
@@ -222,39 +257,12 @@ public class VaultMapOverlayRenderer {
         double[] rotatedVert3 = rotatePoint(x3, y3, cx, cy, radangle);
 
         var retlist = new ArrayList<Float>();
-        retlist.add((float) rotatedVert1[0]);
-        retlist.add((float) rotatedVert1[1]);
-        retlist.add((float) rotatedVert2[0]);
-        retlist.add((float) rotatedVert2[1]);
-        retlist.add((float) rotatedVert3[0]);
-        retlist.add((float) rotatedVert3[1]);
-        return retlist;
-    }
-
-    private static ArrayList<Float> getRotatedTriangle() { // returns three points that make a rotated triangle when added with mapx,z
-        double x1 = -3 * mapScaleMultiplier;
-        double y1 = -2 * mapScaleMultiplier;
-        double x2 = -3 * mapScaleMultiplier;
-        double y2 = 2 * mapScaleMultiplier;
-        double x3 = 3 * mapScaleMultiplier;
-        double y3 = 0/* * mapScaleMultiplier*/;
-
-        double cx = -3 * mapScaleMultiplier; // centers to rotate about
-        double cy = 0/*  * mapScaleMultiplier*/;
-        float playerYaw = Minecraft.getInstance().player.getYHeadRot();
-        float radangle = (float) Math.toRadians(playerYaw + 90);
-
-        double[] rotatedVert1 = rotatePoint(x1, y1, cx, cy, radangle);
-        double[] rotatedVert2 = rotatePoint(x2, y2, cx, cy, radangle);
-        double[] rotatedVert3 = rotatePoint(x3, y3, cx, cy, radangle);
-
-        var retlist = new ArrayList<Float>();
-        retlist.add((float) rotatedVert1[0]);
-        retlist.add((float) rotatedVert1[1]);
-        retlist.add((float) rotatedVert2[0]);
-        retlist.add((float) rotatedVert2[1]);
-        retlist.add((float) rotatedVert3[0]);
-        retlist.add((float) rotatedVert3[1]);
+        retlist.add((float) rotatedVert1[0] - (float)cx);
+        retlist.add((float) rotatedVert1[1] - (float)cy);
+        retlist.add((float) rotatedVert2[0] - (float)cx);
+        retlist.add((float) rotatedVert2[1] - (float)cy);
+        retlist.add((float) rotatedVert3[0] - (float)cx);
+        retlist.add((float) rotatedVert3[1] - (float)cy);
         return retlist;
     }
 
@@ -277,73 +285,20 @@ public class VaultMapOverlayRenderer {
         return new double[]{finalX, finalY};
     }
 
-    public static void renderCellPC(BufferBuilder bufferBuilder, VaultCell cell, int color) {
-        if (cell.cellType != CellType.CELLTYPE_UNKNOWN) {
-            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())
-                return;
-            if (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff) return;
-            float mapX = centerX + (cell.x - playerX) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            float mapZ = centerZ + (cell.z - playerZ) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
-            //float roomWidth = (float) ((mapRoomWidth / 2) * 1.5);
-            //float tunnelLen = (float) ((mapRoomWidth / 2) * 0.5);
-            float roomWidth = mapRoomWidth / 2;
-            float tunnelLen = mapRoomWidth / 2;
-            float startX;
-            float startZ;
-            float endX;
-            float endZ;
-            if (cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z) {
-                if (cell.cellType == CellType.CELLTYPE_TUNNEL_X) { // X facing
-                    startX = mapX - tunnelLen;
-                    startZ = mapZ - roomWidth / 2;
-                    endX = mapX + tunnelLen;
-                    endZ = mapZ + roomWidth / 2;
-                } else { // Z facing
-                    startX = mapX - roomWidth / 2;
-                    startZ = mapZ - tunnelLen;
-                    endX = mapX + roomWidth / 2;
-                    endZ = mapZ + tunnelLen;
-                }
-            } else { // square
-                startX = mapX - roomWidth;
-                startZ = mapZ - roomWidth;
-                endX = mapX + roomWidth;
-                endZ = mapZ + roomWidth;
-            }
-            var minX = Math.min(startX, endX);
-            var maxX = Math.max(startX, endX);
-            var minZ = Math.min(startZ, endZ);
-            var maxZ = Math.max(startZ, endZ);
-
-            if ((cell.marked || cell.inscripted) && ClientConfig.SHOW_ROOM_ICONS.get()) {
-                minX -= (float) (mapRoomWidth * 0.5);
-                maxX += (float) (mapRoomWidth * 0.5);
-                minZ -= (float) (mapRoomWidth * 0.5);
-                maxZ += (float) (mapRoomWidth * 0.5);
-            }
-
-            bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
-            bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
-            bufferBuilder.vertex(maxX, minZ, 0).color(color).endVertex();
-            bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
-        }
-    }
-
     public static void renderCell(BufferBuilder bufferBuilder, VaultCell cell, int color) {
         if (cell.cellType != CellType.CELLTYPE_UNKNOWN) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())
-                return; // VaultMap.currentRoom.x - cellx
-            float mapX = centerX + (cell.x) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            float mapZ = centerZ + (cell.z) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
-            //float roomWidth = (float) ((mapRoomWidth / 2) * 1.5);
-            //float tunnelLen = (float) ((mapRoomWidth / 2) * 0.5);
+                return;
+            if (playerCentricRender && (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff)) return;
+            var cellCenter = getCellCenter(cell);
+            float mapX = cellCenter.x;
+            float mapZ = cellCenter.y;
             float roomWidth = mapRoomWidth / 2;
             float tunnelLen = mapRoomWidth / 2;
             float startX;
             float startZ;
             float endX;
             float endZ;
-
             if (cell.cellType == CellType.CELLTYPE_TUNNEL_X || cell.cellType == CellType.CELLTYPE_TUNNEL_Z) {
                 if (cell.cellType == CellType.CELLTYPE_TUNNEL_X) { // X facing
                     startX = mapX - tunnelLen;
@@ -380,42 +335,36 @@ public class VaultMapOverlayRenderer {
             bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
         }
     }
+
+    public static void renderCellBorder(BufferBuilder bufferBuilder, VaultCell cell, int color) {
+        if (cell.cellType != CellType.CELLTYPE_ROOM) {
+            return;
+        }
+
+        if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get())
+            return;
+
+        if (playerCentricRender && (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff)) return;
+        var cellCenter = getCellCenter(cell);
+        float mapX = cellCenter.x;
+        float mapZ = cellCenter.y;
+
+        float startX = mapX - mapRoomWidth;
+        float startZ = mapZ - mapRoomWidth;
+        float endX = mapX + mapRoomWidth;
+        float endZ  = mapZ + mapRoomWidth;
+
+        renderBorder(bufferBuilder,color, startX, startZ, endX, endZ, 1/8f*mapRoomWidth);
+    }
+
 
     public static void renderTextureCell(BufferBuilder bufferBuilder, VaultCell cell) {
         if (cell.cellType == CellType.CELLTYPE_ROOM) {
             if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
-            float mapX = centerX + cell.x * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            float mapZ = centerZ + cell.z * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
-            //float roomWidth = (float) (mapRoomWidth * 1.5);
-            float roomWidth = mapRoomWidth;
-            float startX;
-            float startZ;
-            float endX;
-            float endZ;
-
-            startX = mapX - roomWidth;
-            startZ = mapZ - roomWidth;
-            endX = mapX + roomWidth;
-            endZ = mapZ + roomWidth;
-
-            var minX = Math.min(startX, endX);
-            var maxX = Math.max(startX, endX);
-            var minZ = Math.min(startZ, endZ);
-            var maxZ = Math.max(startZ, endZ);
-
-            bufferBuilder.vertex(minX, maxZ, 0).uv(0.0F, 1.0F).endVertex();
-            bufferBuilder.vertex(maxX, maxZ, 0).uv(1.0F, 1.0F).endVertex();
-            bufferBuilder.vertex(maxX, minZ, 0).uv(1.0F, 0.0F).endVertex();
-            bufferBuilder.vertex(minX, minZ, 0).uv(0.0F, 0.0F).endVertex();
-        }
-    }
-
-    public static void renderTextureCellPC(BufferBuilder bufferBuilder, VaultCell cell) {
-        if (cell.cellType == CellType.CELLTYPE_ROOM) {
-            if (cell.inscripted && !cell.explored && !ClientConfig.SHOW_INSCRIPTIONS.get()) return;
-            if (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff) return;
-            float mapX = centerX + (cell.x - playerX) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get();
-            float mapZ = centerZ + (cell.z - playerZ) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get();
+            if (playerCentricRender && (abs(cell.x - playerX) > cutoff || abs(cell.z - playerZ) > cutoff)) return;
+            var cellCenter = getCellCenter(cell);
+            float mapX = cellCenter.x;
+            float mapZ = cellCenter.y;
             //float roomWidth = (float) (mapRoomWidth * 1.5);
             float roomWidth = mapRoomWidth;
             float startX;
@@ -556,34 +505,70 @@ public class VaultMapOverlayRenderer {
     }
 
     public static void renderMapBorderPC(BufferBuilder bufferBuilder, int color) {
-        float lineWidth = 1;
+        if (!playerCentricRender || !ClientConfig.PC_BORDER.get()) return;
         float mapSize = (float) (((cutoff + 0.5) * mapRoomWidth) * 2);
         float mapSizeDelta = mapSize / 2;
-        float mapX = centerX - mapSizeDelta + ClientConfig.MAP_X_OFFSET.get();
-        float mapZ = centerZ - mapSizeDelta + ClientConfig.MAP_Y_OFFSET.get();
 
-        bufferBuilder.vertex(mapX - lineWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ - lineWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - lineWidth, mapZ - lineWidth, 0).color(color).endVertex();
+        float startX = centerX - mapSizeDelta;
+        float startZ = centerZ - mapSizeDelta;
+        float endX = centerX + mapSizeDelta;
+        float endZ  = centerZ + mapSizeDelta;
+
+        renderBorder(bufferBuilder,color, startX, startZ, endX, endZ);
+    }
+
+    public static void renderBorder(BufferBuilder bufferBuilder, int color, float startX, float startZ, float endX, float endZ) {
+        renderBorder(bufferBuilder, color, startX, startZ, endX, endZ, 1.0f);
+    }
+
+    public static void renderBorder(BufferBuilder bufferBuilder, int color, float startX, float startZ, float endX, float endZ, float lineWidth) {
+
+        var minX = Math.min(startX, endX);
+        var minXL = Math.min(startX, endX) + lineWidth;
+        var minZ = Math.min(startZ, endZ);
+        var minZL = Math.min(startZ, endZ) + lineWidth;
+
+        var maxX = Math.max(startX, endX) - lineWidth;
+        var maxXL = Math.max(startX, endX);
+        var maxZ = Math.max(startZ, endZ) - lineWidth;
+        var maxZL = Math.max(startZ, endZ);
+
+        // Top border
+        bufferBuilder.vertex(minX, minZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, minZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, minZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(minX, minZ, 0).color(color).endVertex();
 
         // Bottom border
-        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize + lineWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize + lineWidth, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize, 0).color(color).endVertex();
+        bufferBuilder.vertex(minX, maxZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, maxZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, maxZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
 
         // Left border
-        bufferBuilder.vertex(mapX - lineWidth, mapZ + mapSize, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX, mapZ + mapSize, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX - lineWidth, mapZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(minX, maxZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(minXL, maxZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(minXL, minZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(minX, minZL, 0).color(color).endVertex();
 
         // Right border
-        bufferBuilder.vertex(mapX + mapSize, mapZ + mapSize, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ + mapSize, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize + lineWidth, mapZ, 0).color(color).endVertex();
-        bufferBuilder.vertex(mapX + mapSize, mapZ, 0).color(color).endVertex();
-
+        bufferBuilder.vertex(maxX, maxZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, maxZ, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxXL, minZL, 0).color(color).endVertex();
+        bufferBuilder.vertex(maxX, minZL, 0).color(color).endVertex();
     }
+
+    public static Vec2 getCellCenter(VaultCell cell) {
+        if (playerCentricRender){
+            return new Vec2(
+                centerX + (cell.x - playerX) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get(),
+                centerZ + (cell.z - playerZ) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get()
+            );
+        }
+        return new Vec2(
+            centerX + (cell.x) * mapRoomWidth + ClientConfig.MAP_X_OFFSET.get(),
+                centerZ + (cell.z) * mapRoomWidth + ClientConfig.MAP_Y_OFFSET.get()
+        );
+    }
+
 }

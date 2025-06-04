@@ -12,6 +12,7 @@ import com.nodiumhosting.vaultmapper.proto.Color;
 import com.nodiumhosting.vaultmapper.proto.Message;
 import com.nodiumhosting.vaultmapper.proto.MessageType;
 import com.nodiumhosting.vaultmapper.proto.VaultPlayer;
+import com.nodiumhosting.vaultmapper.util.Util;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -206,6 +207,10 @@ public class SyncClient extends WebSocketClient {
 
     private Color getSyncColor() {
         String col = ClientConfig.SYNC_COLOR.get();
+        if (col.equals("random")) {
+            col = Util.RandomColor();
+            ClientConfig.SYNC_COLOR.set(col);
+        }
         int R = Integer.parseInt(col.substring(1, 3), 16);
         int G = Integer.parseInt(col.substring(3, 5), 16);
         int B = Integer.parseInt(col.substring(5, 7), 16);

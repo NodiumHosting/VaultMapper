@@ -26,6 +26,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> MAX_MAPS_SAVED;
     //    public static final ForgeConfigSpec.ConfigValue<Boolean> IGNORE_RESEARCH_REQUIREMENT;
     public static final ForgeConfigSpec.ConfigValue<Integer> MAP_SCALE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> ARROW_SCALE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SYNC_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<String> VMSYNC_SERVER;
     public static final ForgeConfigSpec.ConfigValue<String> SYNC_COLOR;
@@ -47,6 +48,7 @@ public class ClientConfig {
         MAP_Y_ANCHOR = BUILDER.comment("Anchor the Map on the y-axis (0-top, 2-center, 4-bottom)").define("MAP_Y_ANCHOR", 4);
 
         MAP_SCALE = BUILDER.comment("Scale of the map, 3 to 30").define("MAP_SCALE", 10);
+        ARROW_SCALE = BUILDER.comment("Scale of the arrow, 3 to 30").define("ARROW_SCALE", 10);
 
         POINTER_COLOR = BUILDER.comment("Color for the current player position").define("POINTER_COLOR", "#00FF00");
         ROOM_COLOR = BUILDER.comment("Color for normal Rooms & Hallways").define("ROOM_COLOR", "#0000FF");
