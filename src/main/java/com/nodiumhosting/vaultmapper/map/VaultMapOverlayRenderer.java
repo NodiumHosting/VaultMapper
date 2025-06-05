@@ -126,8 +126,9 @@ public class VaultMapOverlayRenderer {
 
                 try {
                     ResourceLocation icon = MapRoomIconUtil.getIconForRoom(cell.roomName);
-                    if (!Minecraft.getInstance().getResourceManager().hasResource(icon)) {
+                    if (icon == null) {
                         VaultMapper.LOGGER.error("Icon {} not found for room: {}", icon, cell.roomName);
+                        return;
                     }
                     RenderSystem.setShaderTexture(0, icon);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
